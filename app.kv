@@ -1,0 +1,51 @@
+#:kivy 1.10.1
+
+<NS_Window>:
+    ble_rv: ble_rv
+    canvas.before:
+        Color:
+            rgba: (170, 170, 170, 0.5)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    GridLayout:
+        cols: 1
+        rows: 5
+        width: root.width/2
+        height: root.height
+        Button:
+            text: "Discover Devices"
+            size_hint_y: None
+            height: 55
+            on_release: root.connect_to_bluetooth()
+    BLE_RV:
+        id: ble_rv
+        pos: root.width/2,0
+        height: root.height
+        width: root.width/2
+
+<SelectableLabel>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (0, 97, 62, 0.5) if self.selected else (170, 170, 170, 0)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<BLE_RV>:
+    viewclass: 'SelectableLabel'
+    SelectableRecycleBoxLayout:
+        canvas.before:
+            Color:
+                rgba: (170, 170, 170, 0)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        multiselect: False
+        touch_multiselect: False
