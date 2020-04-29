@@ -14,14 +14,11 @@ ScreenManagement:
 
 <BluetoothDiscoverRV>:
     viewclass: 'SelectableLabel'
-    scroll_type: ['bars', 'content']
-    scroll_wheel_distance: dp(114)
-    bar_width: dp(10)
     SelectableRecycleBoxLayout:
         canvas.before:
             Color:
-                rgba: .3,.3,.3
-            RoundedRectangle:
+                rgba: (170, 170, 170, 0)
+            Rectangle:
                 pos: self.pos
                 size: self.size
         default_size: None, dp(56)
@@ -29,7 +26,6 @@ ScreenManagement:
         size_hint_y: None
         height: self.minimum_height
         orientation: 'vertical'
-        spacing: dp(2)
         multiselect: False
         touch_multiselect: False
 
@@ -37,50 +33,232 @@ ScreenManagement:
 <NeuroStimMainWindow>
     name:"main"
     ble_rv: ble_rv
+    input_frequency: input_frequency
+    input_amplitude: input_amplitude
+    input_pulse_width: input_pulse_width
+    input_interstim_delay: input_interstim_delay
+
     FloatLayout:
         canvas.before:
             Color:
                 rgb: .6, .6, .6
             Rectangle:
                 size: self.size
-        Button
-            size_hint:0.3,0.1
-            pos_hint: {'center_x': .5, 'y': .05}
-            text: "Connect Stimulators via Bluetooth"
-            front_size: 50
-            on_release:
-                app.root.current = "bluetooth"
-                root.manager.transition.direction = "left"
-        Button:
-            text: "Discover Devices"
-            size_hint_y: None
-            height: 55
-            on_release: root.BluetoothDiscoverLoop()
+        GridLayout:
+            cols: 4
+            rows: 1
+            width: root.width
+            height: root.height
+            orientation: 'vertical'
+            GridLayout:
+                cols: 1
+                rows: 3
+                width: root.width
+                height: root.height
+                orientation: 'vertical'
+                Button:
+                    text: "Discover Devices"
+                    size_hint_y: None
+                    height: root.height/10
+                    on_release: root.BluetoothDiscoverLoop()
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'center'
+                    padding_y: 10
+                    front_size: 50
+                BluetoothDiscoverRV:
+                    id: ble_rv
+                    pos: 0,0
+                    height: root.height*8/10
+                    width: root.width
+                Button:
+                    size_hint_y: None
+                    height: root.height/10
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'center'
+                    padding_y: 10
+                    text: "Connect Stimulators via Bluetooth"
+                    front_size: 50
+                    on_release:
+                        app.root.current = "bluetooth"
+                        root.manager.transition.direction = "left"
+            GridLayout:
+                cols: 1
+                rows: 2
+                width: root.width
+                height: root.height
+                orientation: 'vertical'
+                GridLayout:
+                    cols: 3
+                    rows: 4
+                    width: root.width
+                    height: root.height
+                    orientation: 'vertical'
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "Amplitude"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    TextInput:
+                        id: input_amplitude
+                        multiline: False
+                        size_hint_y: None
+                        height: 50
+                        width: root.width/10
+                        hint_text: "0"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                        input_filter: 'float'
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "uA"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "Pulse Width"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    TextInput:
+                        id: input_pulse_width
+                        multiline: False
+                        size_hint_y: None
+                        height: 50
+                        width: root.width/10
+                        hint_text: "0"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                        input_filter: 'float'
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "usec"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "Interstim Delay"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    TextInput:
+                        id: input_interstim_delay
+                        multiline: False
+                        size_hint_y: None
+                        height: 50
+                        width: root.width/10
+                        hint_text: "0"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                        input_filter: 'float'
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "usec"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "Frequency"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                    TextInput:
+                        id: input_frequency
+                        multiline: False
+                        size_hint_y: None
+                        height: 50
+                        width: root.width/10
+                        hint_text: "0"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                        input_filter: 'float'
+                    Label:
+                        multiline: False
+                        size_hint_y: None
+                        height: root.height/10
+                        text: "Hz"
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'center'
+                        padding_y: 10
+                        front_size: 50
+                Button:
+                    size_hint_y: None
+                    height: root.height/10
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'center'
+                    padding_y: 10
+                    text: "Send Data to Stimulators"
+                    front_size: 50
+                    on_release: root.save_input_data()
+            GridLayout:
+                cols: 1
+                rows: 3
+                width: root.width
+                height: root.height
+                orientation: 'vertical'
 
-        Widget:
-            pos_hint:{'center_x': .5, 'y': .25}
-            size_hint:0.4,0.7
-            canvas.before:
-                Color:
-                    rgb: .3,.3,.3
-                RoundedRectangle:
-                    size: self.size
-                    pos: self.pos
-                    radius:[100,100,100,100]
-        BluetoothDiscoverRV:
-            id: ble_rv
-            pos_hint:{'center_x': .5, 'y': .3}
-            size_hint:0.35,0.6
+            GridLayout:
+                cols: 1
+                rows: 3
+                width: root.width
+                height: root.height
+                orientation: 'vertical'
 
 
 <NeuroStimBluetoothWindow>
     name:"bluetooth"
-    FloatLayout:
-        canvas.before:
-            Color:
-                rgb: .6, .6, .6
-            Rectangle:
-                size: self.size
+    GridLayout:
+        cols: 1
+        rows: 1
+        width: root.width
+        height: root.height
         ActionBar:
             pos_hint: {'top':1}
             ActionView:
@@ -95,5 +273,3 @@ ScreenManagement:
                 ActionLabel:
                     text: "99%"
                     front_size: 50
-
-

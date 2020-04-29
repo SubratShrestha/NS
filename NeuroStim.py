@@ -8,9 +8,25 @@ from kivy.properties import BooleanProperty
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
+from kivy.core.window import Window
 import asyncio
-from bleak import discover
+from bleak import discover, BleakClient, BleakScanner
+import json
 
+def disconnected_callback(client):
+        print("Client with address {} got disconnected!".format(client.address))
+
+async def connect(address, loop):
+    async with BleakClient(address, loop=loop) as client:
+        try:
+            if not client.is_connected():
+                await client.connect()
+                if client.is_connected():
+                    client.set_disconnected_callback(disconnected_callback)
+        except Exception as e:
+            print(e)
+        finally:
+            await client.disconnect()
 
 class NeuroStimMainWindow(Screen):
     def __init__(self, **kwargs):
@@ -19,11 +35,25 @@ class NeuroStimMainWindow(Screen):
 
     async def ble_discover(self):
         self.devices = await discover()
-        self.ble_rv.data = [{'text': str(i)} for i in self.devices]
+        self.ble_rv.data = [{'text': str(i)} for i in self.devices if i.address is not None]
 
     def BluetoothDiscoverLoop(self):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.ble_discover())
+
+    def save_input_data(self):
+        print(self.input_amplitude.text)
+        print(self.input_frequency.text)
+        print(self.input_pulse_width.text)
+        print(self.input_interstim_delay.text)
+        msg = json.dumps({
+            "amplitude":str(self.input_amplitude.text) if self.input_amplitude.text else "",
+            "frequency":str(self.input_frequency.text) if self.input_frequency.text else "",
+            "pulse_width":str(self.input_pulse_width.text) if self.input_pulse_width.text else "",
+            "interstim_delay":str(self.input_interstim_delay.text) if self.input_interstim_delay.text else ""
+        })
+        print(msg)
+
 
 
 class BluetoothDiscoverRV(RecycleView):
@@ -51,6 +81,10 @@ class SelectableLabel(RecycleDataViewBehavior, Label):
 
     def apply_selection(self, rv, index, is_selected):
         self.selected = is_selected
+        if is_selected:
+            print(rv.data[index])
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(connect(rv.data[index]['text'],loop))
 
 
 class NeuroStimBluetoothWindow(Screen):
@@ -60,14 +94,18 @@ class NeuroStimBluetoothWindow(Screen):
 class ScreenManagement(ScreenManager):
     pass
 
-
-kvloader = Builder.load_file("UI_Framework.kv")
-
-
 class NeuroStimApp(App):
+    def __init__(self, kvloader):
+        super(NeuroStimApp, self).__init__()
+        self.kvloader = kvloader
+
     def build(self):
-        return kvloader
+        return self.kvloader
 
 
 if __name__ == '__main__':
-    NeuroStimApp().run()
+    # Window.fullscreen = True
+    kvloader = Builder.load_file("UI_Framework.kv")
+    App = NeuroStimApp(kvloader)
+
+    App.run()
