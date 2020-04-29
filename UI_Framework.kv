@@ -1,0 +1,99 @@
+ScreenManagement:
+    NeuroStimMainWindow:
+    NeuroStimBluetoothWindow:
+
+
+<SelectableLabel>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (.5, .5, .5, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+
+<BluetoothDiscoverRV>:
+    viewclass: 'SelectableLabel'
+    scroll_type: ['bars', 'content']
+    scroll_wheel_distance: dp(114)
+    bar_width: dp(10)
+    SelectableRecycleBoxLayout:
+        canvas.before:
+            Color:
+                rgba: .3,.3,.3
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        spacing: dp(2)
+        multiselect: False
+        touch_multiselect: False
+
+
+<NeuroStimMainWindow>
+    name:"main"
+    ble_rv: ble_rv
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgb: .6, .6, .6
+            Rectangle:
+                size: self.size
+        Button
+            size_hint:0.3,0.1
+            pos_hint: {'center_x': .5, 'y': .05}
+            text: "Connect Stimulators via Bluetooth"
+            front_size: 50
+            on_release:
+                app.root.current = "bluetooth"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "Discover Devices"
+            size_hint_y: None
+            height: 55
+            on_release: root.BluetoothDiscoverLoop()
+
+        Widget:
+            pos_hint:{'center_x': .5, 'y': .25}
+            size_hint:0.4,0.7
+            canvas.before:
+                Color:
+                    rgb: .3,.3,.3
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius:[100,100,100,100]
+        BluetoothDiscoverRV:
+            id: ble_rv
+            pos_hint:{'center_x': .5, 'y': .3}
+            size_hint:0.35,0.6
+
+
+<NeuroStimBluetoothWindow>
+    name:"bluetooth"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgb: .6, .6, .6
+            Rectangle:
+                size: self.size
+        ActionBar:
+            pos_hint: {'top':1}
+            ActionView:
+                ActionPrevious:
+                    with_previous: True
+                    on_release:
+                        app.root.current = "main"
+                        root.manager.transition.direction = "right"
+                ActionLabel:
+                    text: "Battery:"
+                    front_size: 50
+                ActionLabel:
+                    text: "99%"
+                    front_size: 50
+
+
