@@ -20,7 +20,7 @@ from kivy.uix.recycleview.views import RecycleDataViewBehavior
 import json
 import serial
 import asyncio
-from bleak import discover, BleakClient
+from bleak import discover, BleakClient, BleakScanner
 from scipy import signal
 import matplotlib.pyplot as plt
 
@@ -58,6 +58,16 @@ async def connect(address, loop):
 			print(e)
 		finally:
 			await client.disconnect()
+
+async def scan(app):
+	scanner = BleakScanner()
+	scanner.register_detection_callback(app.scan_callback())
+	await scanner.start()
+	await asyncio.sleep(5.0)
+	await scanner.stop()
+	devices = await scanner.get_discovered_devices()
+	for i in devices:
+		print(i)
 
 """
 This is the invisible wrapper which takes place over all items in the recyclerview.
@@ -150,6 +160,9 @@ class NS_Window(Widget):
 		"""Add them to the recycler data section as a list of dictionarys'"""
 		self.ble_rv.data = [{'text':str(i)} for i in self.devices]
 
+	def scan_callback(*args):
+		print(args)
+
 
 	"""This function is called when the discover bluetooth button is clicked"""
 	def connect_to_bluetooth(self):
@@ -171,4 +184,6 @@ class App(App):
 
 if __name__ == '__main__':
 	"""Create the App and Run"""
-	App().run()
+	App = App()
+	App.run()
+	scan(App)
