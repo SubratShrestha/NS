@@ -13,20 +13,22 @@ import asyncio
 from bleak import discover, BleakClient, BleakScanner
 import json
 
-def disconnected_callback(client):
-        print("Client with address {} got disconnected!".format(client.address))
-
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:
         try:
-            if not client.is_connected():
-                await client.connect()
-                if client.is_connected():
-                    client.set_disconnected_callback(disconnected_callback)
+            await client.connect()
+            return client
         except Exception as e:
             print(e)
+        except BleakDotNetTaskError as e:
+            print(e)
+        except BleakError as e:
+            print(e)
         finally:
-            await client.disconnect()
+            if await client.is_connected():
+                print("CONNECTED")
+                return client
+            return None
 
 class NeuroStimMainWindow(Screen):
     def __init__(self, **kwargs):
@@ -35,7 +37,7 @@ class NeuroStimMainWindow(Screen):
 
     async def ble_discover(self):
         self.devices = await discover()
-        self.ble_rv.data = [{'text': str(i)} for i in self.devices if i.address is not None]
+        self.ble_rv.data = [{'text': str(i.address)} for i in self.devices if i.address is not None]
 
     def BluetoothDiscoverLoop(self):
         loop = asyncio.get_event_loop()
@@ -84,7 +86,9 @@ class SelectableLabel(RecycleDataViewBehavior, Label):
         if is_selected:
             print(rv.data[index])
             loop = asyncio.get_event_loop()
-            loop.run_until_complete(connect(rv.data[index]['text'],loop))
+            client = loop.run_until_complete(connect(rv.data[index]['text'],loop))
+            if client is not None:
+                print("CLIENT OBJ RETURNED")
 
 
 class NeuroStimBluetoothWindow(Screen):
@@ -107,5 +111,7 @@ if __name__ == '__main__':
     # Window.fullscreen = True
     kvloader = Builder.load_file("UI_Framework.kv")
     App = NeuroStimApp(kvloader)
-
     App.run()
+
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(connect("48:45:20:74:FD:C8",loop))
