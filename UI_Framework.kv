@@ -37,7 +37,7 @@ ScreenManagement:
     input_amplitude: input_amplitude
     input_pulse_width: input_pulse_width
     input_interstim_delay: input_interstim_delay
-
+    grid_plot: grid_plot
     FloatLayout:
         canvas.before:
             Color:
@@ -245,7 +245,8 @@ ScreenManagement:
                 orientation: 'vertical'
 
             GridLayout:
-                cols: 1
+                id: grid_plot
+                cols: 3
                 rows: 3
                 width: root.width
                 height: root.height

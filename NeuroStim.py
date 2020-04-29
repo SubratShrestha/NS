@@ -3,6 +3,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from kivy.uix.label import Label
 from kivy.properties import BooleanProperty
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
@@ -12,6 +13,16 @@ from kivy.core.window import Window
 import asyncio
 from bleak import discover, BleakClient, BleakScanner
 import json
+from scipy import signal
+import matplotlib.pyplot as plt
+import numpy as np
+
+def get_squarewave_plot():
+    t = np.linspace(0, 1, 500, endpoint=False)
+    plt.plot(t, signal.square(2 * np.pi * 5 * t))
+    plt.ylim(-2, 2)
+    # plt.figure()
+    return FigureCanvasKivyAgg(plt.gcf())
 
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:
@@ -55,6 +66,7 @@ class NeuroStimMainWindow(Screen):
             "interstim_delay":str(self.input_interstim_delay.text) if self.input_interstim_delay.text else ""
         })
         print(msg)
+        self.grid_plot.add_widget(get_squarewave_plot())
 
 
 
