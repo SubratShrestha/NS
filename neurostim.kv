@@ -1,0 +1,46 @@
+<HomeButton@Button>
+    font_size: 20
+    color: .1,.5,.6,1
+    size_hint: 0.2, 0.15
+    text: "HOME"
+    pos_hint: {"x":0, "top":1}
+    background_color: 0.1,0.2,0.3,1
+
+<NewDeviceButton@Button>
+    font_size: 20
+    color: .1,.5,.6,1
+    size_hint: 0.2, 0.15
+    text: "New Device"
+    pos_hint: {"x":0, "bottom":1}
+    background_color: 0.2,0.5,0.3,1
+
+<BeginnerTutorial@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Beginner Tutorial"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.3, 0.2
+    pos_hint: {"x":0.65, "top":0.95}
+
+<GetHelp@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Get Help"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.3, 0.2
+    pos_hint: {"x":0.65, "top":0.45}
+
+<LatestUpdate@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Latest Update"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.25, 0.2
+    pos_hint: {"x":0.3, "top":0.95}
+
+<HomeLayout@FloatLayout>:
+    HomeButton:
+    NewDeviceButton:
+    BeginnerTutorial:
+    GetHelp:
+    LatestUpdate:
