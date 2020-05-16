@@ -51,33 +51,128 @@
     name: "home"
     HomeLayout:
 
-<DeviceChannelTabs>:
-    size_hint: 1,1
-    pos_hint: {"x":0, "top":1}
+<CathodicAnodicToggle@BoxLayout>:
+    pos_hint: {"x":0.075, "top":.6}
+    size_hint: .85,.06
+    ToggleButton:
+        text: "Cathodic First"
+        font_size: 14
+        group: "cathodic_anodic"
+    ToggleButton:
+        text: "Anodic First"
+        group: "cathodic_anodic"
+        font_size: 14
+
+<TerminationTabs>:
+    tab_width: (self.parent.width*.85)/3
+    pos_hint: {"x":0.075, "top":.45}
+    size_hint: .85,.25
     do_default_tab: False
     TabbedPanelItem:
-        text: "Channel 1"
-        BoxLayout:
-            orientation: 'horizontal'
-            BoxLayout:
-                orientation: 'vertical'
-                PhaseTimeFrequencyTabs:
-                BurstUniformStimulationTabs:
-            FloatLayout:
-                Button:
-                    size_hint: .4,.1
-                    pos_hint: {"x":0.075, "top":1}
-                    text: "Stop"
-                Button:
-                    size_hint: .4,.1
-                    pos_hint: {"x":0.525, "top":1}
-                    text: "Start"
+        text: "Time"
+        font_size: 14
+        group: "termination"
+        FloatLayout:
+            Label:
+                pos_hint: {"x":0, "top":.99}
+                size_hint: 1,.33
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                text: "Number of Minutes"
+            TextInput:
+                pos_hint: {"x":0, "top":.66}
+                size_hint: 1,.66
+                text: "0"
     TabbedPanelItem:
-        text: "Channel 2"
+        text: "Duty Cycle"
+        group: "termination"
+        font_size: 14
+        FloatLayout:
+            Label:
+                pos_hint: {"x":0, "top":.99}
+                size_hint: 1,.33
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                text: "Number of Cycles"
+            TextInput:
+                pos_hint: {"x":0, "top":.66}
+                size_hint: 1,.66
+                text: "0"
+    TabbedPanelItem:
+        text: "Non-Stop"
+        group: "termination"
+        font_size: 14
+
+<DeviceSettings@BoxLayout>:
+    size_hint: 1,1
+    pos_hint: {"x":0, "top":1}
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
         BoxLayout:
             orientation: 'vertical'
+            FloatLayout:
+                size_hint: 1,.15
+                pos_hint: {"x":0, "top":1}
+                ToggleButton:
+                    size_hint: 0.3, .9
+                    pos_hint: {"x":0.05, "top":.875}
+                    text: "Channel 1"
+                ToggleButton:
+                    size_hint: 0.3, .9
+                    pos_hint: {"x":0.4, "top":.875}
+                    text: "Channel 2"
             PhaseTimeFrequencyTabs:
             BurstUniformStimulationTabs:
+        FloatLayout:
+            Button:
+                size_hint: .25,.06
+                pos_hint: {"x":0.075, "top":.99}
+                text: "Stop"
+            Button:
+                size_hint: .25,.06
+                pos_hint: {"x":0.375, "top":.99}
+                text: "Save"
+            Button:
+                size_hint: .25,.06
+                pos_hint: {"x":0.675, "top":.99}
+                text: "Start"
+            Label:
+                size_hint: .4,.05
+                pos_hint: {"x":0.075, "top":.9}
+                text: "Output Current (A)"
+            TextInput:
+                size_hint: .4,.08
+                pos_hint: {"x":0.075, "top":.85}
+                text: "0"
+            Label:
+                size_hint: .4,.05
+                pos_hint: {"x":0.075, "top":.5}
+                text: "End Stimulation By:"
+            TerminationTabs:
+            CathodicAnodicToggle:
+            ToggleButton:
+                size_hint: .4,.06
+                pos_hint: {"x":0.075, "top":0.7}
+                text: "Ramp Up"
+                group: "ramp_up"
+            ToggleButton:
+                size_hint: .4,.06
+                pos_hint: {"x":0.525, "top":0.7}
+                text: "Short Electrode"
+                group: "electrode"
+            Button:
+                size_hint: .4,.1
+                pos_hint: {"x":0.525, "top":0.15}
+                text: "Generate Graph"
+                group: "electrode"
+    BoxLayout:
+        size_hint: 1,.5
+        pos_hint: {"x":0, "top":1}
+        Button:
+            text:"x"
 
 
 <PhaseTimeFrequencyTabs>:
@@ -89,6 +184,29 @@
     background_color: 0.1,0.2,0.3,1
     TabbedPanelItem:
         text: "Phase Time"
+        FloatLayout:
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":1}
+                text: "Inter-Phase Delay"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.75}
+                text: ""
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":1}
+                text: "Phase Time"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.75}
+                text: ""
     TabbedPanelItem:
         text: "Frequency"
 
@@ -101,6 +219,29 @@
     background_color: 0.1,0.2,0.3,1
     TabbedPanelItem:
         text: "Burst Stimulation"
+        FloatLayout:
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":1}
+                text: "Burst Duration"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.75}
+                text: ""
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":1}
+                text: "Inter-Burst Delay"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.75}
+                text: ""
     TabbedPanelItem:
         text: "Uniform Stimulation"
 
@@ -111,7 +252,7 @@
     tab_width: (self.parent.width*.8)/4
     TabbedPanelItem:
         text: "Stimulation Setting"
-        DeviceChannelTabs:
+        DeviceSettings:
     TabbedPanelItem:
         text: "Stimulation Log"
     TabbedPanelItem:
