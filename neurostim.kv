@@ -5,6 +5,7 @@
     text: "HOME"
     pos_hint: {"x":0, "top":1}
     background_color: 0.1,0.2,0.3,1
+    on_press: app.root.current = 'home'
 
 <NewDeviceButton@Button>
     font_size: 20
@@ -13,6 +14,7 @@
     text: "New Device"
     pos_hint: {"x":0, "bottom":1}
     background_color: 0.2,0.5,0.3,1
+    on_press: app.root.current = 'device'
 
 <BeginnerTutorial@Button>:
     font_size: 20
@@ -44,3 +46,36 @@
     BeginnerTutorial:
     GetHelp:
     LatestUpdate:
+
+<HomeScreen>:
+    name: "home"
+    HomeLayout:
+
+<DeviceTabs>:
+    size_hint: .8,1
+    pos_hint: {"x":.2, "top":1}
+    do_default_tab: False
+    tab_width: (self.parent.width*.8)/4
+    TabbedPanelItem:
+        text: "Stimulation Setting"
+        Label:
+            text: "Content"
+    TabbedPanelItem:
+        text: "Stimulation Log"
+    TabbedPanelItem:
+        text: "EEG recording"
+    TabbedPanelItem:
+        text: "Advanced Settings"
+
+<DeviceLayout@FloatLayout>:
+    HomeButton:
+    NewDeviceButton:
+    DeviceTabs:
+
+<DeviceScreen>:
+    name: "device"
+    DeviceLayout:
+
+ScreenManagement:
+    HomeScreen:
+    DeviceScreen:
