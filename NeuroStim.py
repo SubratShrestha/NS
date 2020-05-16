@@ -18,6 +18,15 @@ class ScreenManagement(ScreenManager):
 class DeviceTabs(TabbedPanel):
     pass
 
+class DeviceChannelTabs(TabbedPanel):
+    pass
+
+class PhaseTimeFrequencyTabs(TabbedPanel):
+    pass
+
+class BurstUniformStimulationTabs(TabbedPanel):
+    pass
+
 kv_loader = Builder.load_file("neurostim.kv")
 
 

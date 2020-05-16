@@ -51,6 +51,59 @@
     name: "home"
     HomeLayout:
 
+<DeviceChannelTabs>:
+    size_hint: 1,1
+    pos_hint: {"x":0, "top":1}
+    do_default_tab: False
+    TabbedPanelItem:
+        text: "Channel 1"
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+                orientation: 'vertical'
+                PhaseTimeFrequencyTabs:
+                BurstUniformStimulationTabs:
+            FloatLayout:
+                Button:
+                    size_hint: .4,.1
+                    pos_hint: {"x":0.075, "top":1}
+                    text: "Stop"
+                Button:
+                    size_hint: .4,.1
+                    pos_hint: {"x":0.525, "top":1}
+                    text: "Start"
+    TabbedPanelItem:
+        text: "Channel 2"
+        BoxLayout:
+            orientation: 'vertical'
+            PhaseTimeFrequencyTabs:
+            BurstUniformStimulationTabs:
+
+
+<PhaseTimeFrequencyTabs>:
+    tab_width: (self.parent.width*.995)/2
+    size_hint: .995,1
+    pos_hint: {"x":0, "top":1}
+    do_default_tab: False
+    color: .2,.2,.1,1
+    background_color: 0.1,0.2,0.3,1
+    TabbedPanelItem:
+        text: "Phase Time"
+    TabbedPanelItem:
+        text: "Frequency"
+
+<BurstUniformStimulationTabs>:
+    tab_width: (self.parent.width*.995)/2
+    size_hint: .995,1
+    pos_hint: {"x":0, "top":1}
+    do_default_tab: False
+    color: .2,.2,.1,1
+    background_color: 0.1,0.2,0.3,1
+    TabbedPanelItem:
+        text: "Burst Stimulation"
+    TabbedPanelItem:
+        text: "Uniform Stimulation"
+
 <DeviceTabs>:
     size_hint: .8,1
     pos_hint: {"x":.2, "top":1}
@@ -58,8 +111,7 @@
     tab_width: (self.parent.width*.8)/4
     TabbedPanelItem:
         text: "Stimulation Setting"
-        Label:
-            text: "Content"
+        DeviceChannelTabs:
     TabbedPanelItem:
         text: "Stimulation Log"
     TabbedPanelItem:
