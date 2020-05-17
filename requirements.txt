@@ -6,6 +6,7 @@ certifi==2020.4.5.1
 chardet==3.0.4
 constantly==15.1.0
 cycler==0.10.0
+Cython==0.29.17
 docutils==0.16
 hyperlink==19.0.0
 idna==2.9
