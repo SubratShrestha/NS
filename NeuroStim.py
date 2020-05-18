@@ -111,17 +111,17 @@ class TerminationTabs(TabbedPanel):
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
-class SelectableLabel(RecycleDataViewBehavior, Label):
+class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
     selectable = BooleanProperty(True)  # permissions as to whether it is selectable
 
     def refresh_view_attrs(self, rv, index, data):
         self.index = index
-        return super(SelectableLabel, self).refresh_view_attrs(rv, index, data)
+        return super(AddDeviceSelectableLabel, self).refresh_view_attrs(rv, index, data)
 
     def on_touch_down(self, touch):
-        if super(SelectableLabel, self).on_touch_down(touch):
+        if super(AddDeviceSelectableLabel, self).on_touch_down(touch):
             return True
         if self.collide_point(*touch.pos) and self.selectable:
             return self.parent.select_with_touch(self.index, touch)
@@ -140,6 +140,32 @@ class SelectableLabel(RecycleDataViewBehavior, Label):
             # if client is not None:
             #     print("CLIENT OBJ RETURNED")
 
+class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, Label):
+    index = None  # this is the index of the label in the recyclerview
+    selected = BooleanProperty(False)  # true if selected, false otherwise
+    selectable = BooleanProperty(True)  # permissions as to whether it is selectable
+
+    def refresh_view_attrs(self, rv, index, data):
+        self.index = index
+        return super(ConnectedDeviceSelectableLabel, self).refresh_view_attrs(rv, index, data)
+
+    def on_touch_down(self, touch):
+        if super(ConnectedDeviceSelectableLabel, self).on_touch_down(touch):
+            return True
+        if self.collide_point(*touch.pos) and self.selectable:
+            return self.parent.select_with_touch(self.index, touch)
+
+    def apply_selection(self, rv, index, is_selected):
+        if is_selected and not self.selected:
+            self.selected = is_selected
+            print("Device")
+            App.get_running_app().root.current = 'device'
+            App.get_running_app().root.current_screen.device_rv.data = rv.data
+        elif is_selected and self.selected:
+            self.selected = not is_selected
+            print("Home")
+            App.get_running_app().root.current = 'home'
+            App.get_running_app().root.current_screen.device_rv.data = rv.data
 
 class NeuroStimApp(App):
     def __init__(self, kvloader):

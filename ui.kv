@@ -1,10 +1,14 @@
 #:import Factory kivy.factory.Factory
 
 ScreenManagement:
+    home:home
+    device:device
     HomeScreen:
+        id:home
     DeviceScreen:
+        id:device
 
-<SelectableLabel>:
+<AddDeviceSelectableLabel>:
     # Draw a background to indicate selection
     canvas.before:
         Color:
@@ -13,6 +17,19 @@ ScreenManagement:
             pos: self.pos
             size: self.size
 
+<ConnectedDeviceSelectableLabel>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            FloatLayout:
+                Button:
+                    size_hint: 0.25, 0.15
+                    pos_hint: {"x":0.75, "top":0.15}
+                    text: "Exit"
 
 <HomeButton@Button>
     font_size: 20
@@ -35,7 +52,7 @@ ScreenManagement:
             size_hint: 1, 0.9
             pos_hint: {"x":0, "top":1}
             background_color: 0.0,0.50,0,1
-            viewclass: 'SelectableLabel'
+            viewclass: 'AddDeviceSelectableLabel'
             SelectableRecycleBoxLayout:
                 default_size: None, dp(56)
                 default_size_hint: 1, None
@@ -332,22 +349,34 @@ ScreenManagement:
             size_hint: .2, 0.7
             pos_hint: {"x":0, "top":.85}
             background_color: 0.0,0.50,0,1
-            viewclass: 'SelectableLabel'
+            viewclass: 'ConnectedDeviceSelectableLabel'
             SelectableRecycleBoxLayout:
                 default_size: None, dp(56)
                 default_size_hint: 1, None
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
-                multiselect: True
-                touch_multiselect: True
-
-
-<DeviceLayout@FloatLayout>:
-    HomeButton:
-    NewDeviceButton:
-    DeviceTabs:
+                multiselect: False
+                touch_multiselect: False
 
 <DeviceScreen>:
     name: "device"
-    DeviceLayout:
+    device_rv: device_rv
+    FloatLayout:
+        HomeButton:
+        NewDeviceButton:
+        DeviceTabs:
+        RecycleView:
+            id: device_rv
+            size_hint: .2, 0.7
+            pos_hint: {"x":0, "top":.85}
+            background_color: 0.0,0.50,0,1
+            viewclass: 'ConnectedDeviceSelectableLabel'
+            SelectableRecycleBoxLayout:
+                default_size: None, dp(56)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                multiselect: False
+                touch_multiselect: False
