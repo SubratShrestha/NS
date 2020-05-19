@@ -140,7 +140,7 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
             # if client is not None:
             #     print("CLIENT OBJ RETURNED")
 
-class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, Label):
+class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, Label, FloatLayout):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
     selectable = BooleanProperty(True)  # permissions as to whether it is selectable

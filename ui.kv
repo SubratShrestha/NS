@@ -25,11 +25,18 @@ ScreenManagement:
         Rectangle:
             pos: self.pos
             size: self.size
-            FloatLayout:
-                Button:
-                    size_hint: 0.25, 0.15
-                    pos_hint: {"x":0.75, "top":0.15}
-                    text: "Exit"
+    Image:
+        size_hint: .2, .2
+        pos_hint: {"x":0.75, "top":0.25}
+        source: './Icon/delete.png'
+    Image:
+        size_hint: .2, .2
+        pos_hint: {"x":0.55, "top":0.25}
+        source: './Icon/Rename.png'
+    Image:
+        size_hint: .2, .2
+        pos_hint: {"x":0.05, "top":0.25}
+        source: './Icon/battery.png'
 
 <HomeButton@Button>
     font_size: 20
@@ -351,7 +358,6 @@ ScreenManagement:
             background_color: 0.0,0.50,0,1
             viewclass: 'ConnectedDeviceSelectableLabel'
             SelectableRecycleBoxLayout:
-                default_size: None, dp(56)
                 default_size_hint: 1, None
                 size_hint_y: None
                 height: self.minimum_height
@@ -373,7 +379,6 @@ ScreenManagement:
             background_color: 0.0,0.50,0,1
             viewclass: 'ConnectedDeviceSelectableLabel'
             SelectableRecycleBoxLayout:
-                default_size: None, dp(56)
                 default_size_hint: 1, None
                 size_hint_y: None
                 height: self.minimum_height
