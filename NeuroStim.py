@@ -140,13 +140,14 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
             # if client is not None:
             #     print("CLIENT OBJ RETURNED")
 
-class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, Label, FloatLayout):
+class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
     selectable = BooleanProperty(True)  # permissions as to whether it is selectable
 
     def refresh_view_attrs(self, rv, index, data):
         self.index = index
+        self._label.text = data['text']
         return super(ConnectedDeviceSelectableLabel, self).refresh_view_attrs(rv, index, data)
 
     def on_touch_down(self, touch):

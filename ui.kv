@@ -19,24 +19,54 @@ ScreenManagement:
 
 <ConnectedDeviceSelectableLabel>:
     # Draw a background to indicate selection
+    _label:_label
     canvas.before:
         Color:
-            rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
+            rgba: (.0, 0.9, .1, .3) if self.selected else (0.1, 0, 0.1, 1)
         Rectangle:
             pos: self.pos
             size: self.size
+    Label:
+        id: _label
+        size_hint: 1, .2
+        color: 1, 1, 0, 1
+        font_size: 16
+        valign: 'top'
+        halign: 'center'
+        pos_hint: {"x":0, "top":.95}
+    Image:
+        size_hint: .125, .125
+        pos_hint: {"x":0.05, "top":0.6}
+        source: './Icon2/working.png'
+    Image:
+        size_hint: .125, .125
+        pos_hint: {"x":0.2, "top":0.6}
+        source: './Icon2/working.png'
+    Image:
+        size_hint: .125, .125
+        pos_hint: {"x":0.35, "top":0.6}
+        source: './Icon2/not_working.png'
+    Image:
+        size_hint: .125, .125
+        pos_hint: {"x":0.825, "top":0.6}
+        source: './Icon2/malfunction.png'
     Image:
         size_hint: .2, .2
         pos_hint: {"x":0.75, "top":0.25}
-        source: './Icon/delete.png'
+        source: './Icon2/delete.png'
     Image:
         size_hint: .2, .2
         pos_hint: {"x":0.55, "top":0.25}
-        source: './Icon/Rename.png'
+        source: './Icon2/Rename.png'
     Image:
         size_hint: .2, .2
         pos_hint: {"x":0.05, "top":0.25}
-        source: './Icon/battery.png'
+        source: './Icon2/battery.png'
+    Label:
+        size_hint: .2, .2
+        pos_hint: {"x":0.275, "top":0.25}
+        text: "89%"
+
 
 <HomeButton@Button>
     font_size: 20
@@ -364,6 +394,7 @@ ScreenManagement:
                 orientation: 'vertical'
                 multiselect: False
                 touch_multiselect: False
+                spacing: 2
 
 <DeviceScreen>:
     name: "device"
@@ -385,3 +416,4 @@ ScreenManagement:
                 orientation: 'vertical'
                 multiselect: False
                 touch_multiselect: False
+                spacing: 2
