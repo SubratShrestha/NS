@@ -21,6 +21,7 @@ import json
 from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
+import pprint as pp
 
 devices_dict = {}
 
@@ -65,7 +66,7 @@ class AddDevicePopup(Popup):
 
     def Close(self):
         # print(devices_dict)
-        data = App.get_running_app().root.current_screen.device_rv.data
+        data = App.get_running_app().root.device_rv.data
 
         for j in devices_dict.keys():
             adding = True
@@ -73,8 +74,8 @@ class AddDevicePopup(Popup):
                 if i['text'] == j:
                     adding = False
             if adding and devices_dict[j]:
-                App.get_running_app().root.current_screen.device_rv.data.append({'text': j})
-        print(App.get_running_app().root.current_screen.device_rv.data)
+                App.get_running_app().root.device_rv.data.append({'text': j})
+        print(App.get_running_app().root.device_rv.data)
         self.dismiss()
 
 class HomeScreen(Screen):
@@ -140,6 +141,18 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
             # if client is not None:
             #     print("CLIENT OBJ RETURNED")
 
+def switch_between_device_pages():
+    pass
+    # pp.pprint(vars(App.get_running_app().root.device_rv))
+    # for i in App.get_running_app().root.screen_manager.current_screen:
+    #     print(i)
+
+class DeviceRV(RecycleView):
+    def __init__(self, **kwargs):
+        super(DeviceRV, self).__init__(**kwargs)
+        self.selected_count = 0
+        self.buffer_count = 0
+
 class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
@@ -158,15 +171,74 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
 
     def apply_selection(self, rv, index, is_selected):
         if is_selected and not self.selected:
-            self.selected = is_selected
-            print("Device")
-            App.get_running_app().root.current = 'device'
-            App.get_running_app().root.current_screen.device_rv.data = rv.data
+            self.selected = True
+            App.get_running_app().root.screen_manager.transition.direction = 'up'
+            App.get_running_app().root.screen_manager.current = 'device'
+            App.get_running_app().root.device_rv.selected_count += 1
         elif is_selected and self.selected:
-            self.selected = not is_selected
-            print("Home")
-            App.get_running_app().root.current = 'home'
-            App.get_running_app().root.current_screen.device_rv.data = rv.data
+            App.get_running_app().root.device_rv.selected_count -= 1
+            self.selected = False
+            if App.get_running_app().root.device_rv.selected_count == 0:
+                App.get_running_app().root.screen_manager.transition.direction = 'down'
+                App.get_running_app().root.screen_manager.current = 'home'
+
+        # if not is_selected and self.selected:
+        #     App.get_running_app().root.screen_manager.transition.direction = 'up'
+        #     App.get_running_app().root.device_rv.data = rv.data
+        #     App.get_running_app().root.screen_manager.current = 'device'
+
+        # if not is_selected and not self.selected:
+        #     App.get_running_app().root.device_rv.data = rv.data
+        #     App.get_running_app().root.screen_manager.transition.direction = 'down'
+        #     App.get_running_app().root.screen_manager.current = 'home'
+
+        # if not is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 1:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "A")
+        # elif not is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 0:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "B")
+        # if not is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 1:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "C")
+        #     if App.get_running_app().root.device_rv.buffer_count == 0:
+        #         self.selected = is_selected
+        #         App.get_running_app().root.device_rv.selected_count = 0
+        #         App.get_running_app().root.device_rv.buffer_count = 0
+        #     else:
+        #         print("C Buffer == 1")
+        # elif not is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 0:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "D")
+        # elif is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 1:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "E")
+        #     if App.get_running_app().root.device_rv.buffer_count == 0:
+        #         self.selected = is_selected
+        #         App.get_running_app().root.device_rv.selected_count = 1
+        #         App.get_running_app().root.device_rv.buffer_count = 1
+        #     else:
+        #         print("E buffer == 1")
+        # elif is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 0:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "F")
+        #     self.selected = is_selected
+        #     App.get_running_app().root.device_rv.selected_count = 1
+        #     App.get_running_app().root.device_rv.buffer_count = 1
+        # if is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 1:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "G")
+        #     if App.get_running_app().root.device_rv.buffer_count == 0:
+        #         self.selected = not is_selected
+        #         App.get_running_app().root.device_rv.selected_count = 0
+        #         App.get_running_app().root.device_rv.buffer_count = 0
+        #     else:
+        #         self.selected = is_selected
+        #         App.get_running_app().root.device_rv.selected_count = 1
+        #         App.get_running_app().root.device_rv.buffer_count = 0
+        #
+        # elif is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 0:
+        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, "H")
+        #
+        # print("\n\n========================================")
+
+
+
+class MainWindow(FloatLayout):
+    pass
 
 class NeuroStimApp(App):
     def __init__(self, kvloader):
@@ -174,7 +246,7 @@ class NeuroStimApp(App):
         self.kvloader = kvloader
 
     def build(self):
-        return self.kvloader
+        return MainWindow()
 
 if __name__ == '__main__':
     # Window.fullscreen = True
