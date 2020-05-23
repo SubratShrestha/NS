@@ -197,60 +197,6 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         keys = App.get_running_app().root.device_rv.deselected_clock.keys()
         for k in keys:
             App.get_running_app().root.device_rv.deselected_clock[k] += 1
-        # if not is_selected and self.selected:
-        #     App.get_running_app().root.screen_manager.transition.direction = 'up'
-        #     App.get_running_app().root.device_rv.data = rv.data
-        #     App.get_running_app().root.screen_manager.current = 'device'
-
-        # if not is_selected and not self.selected:
-        #     App.get_running_app().root.device_rv.data = rv.data
-        #     App.get_running_app().root.screen_manager.transition.direction = 'down'
-        #     App.get_running_app().root.screen_manager.current = 'home'
-
-        # if not is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 1:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "A")
-        # elif not is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 0:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "B")
-        # if not is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 1:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "C")
-        #     if App.get_running_app().root.device_rv.buffer_count == 0:
-        #         self.selected = is_selected
-        #         App.get_running_app().root.device_rv.selected_count = 0
-        #         App.get_running_app().root.device_rv.buffer_count = 0
-        #     else:
-        #         print("C Buffer == 1")
-        # elif not is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 0:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "D")
-        # elif is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 1:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "E")
-        #     if App.get_running_app().root.device_rv.buffer_count == 0:
-        #         self.selected = is_selected
-        #         App.get_running_app().root.device_rv.selected_count = 1
-        #         App.get_running_app().root.device_rv.buffer_count = 1
-        #     else:
-        #         print("E buffer == 1")
-        # elif is_selected and not self.selected and App.get_running_app().root.device_rv.selected_count == 0:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "F")
-        #     self.selected = is_selected
-        #     App.get_running_app().root.device_rv.selected_count = 1
-        #     App.get_running_app().root.device_rv.buffer_count = 1
-        # if is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 1:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, App.get_running_app().root.device_rv.buffer_count, index, "G")
-        #     if App.get_running_app().root.device_rv.buffer_count == 0:
-        #         self.selected = not is_selected
-        #         App.get_running_app().root.device_rv.selected_count = 0
-        #         App.get_running_app().root.device_rv.buffer_count = 0
-        #     else:
-        #         self.selected = is_selected
-        #         App.get_running_app().root.device_rv.selected_count = 1
-        #         App.get_running_app().root.device_rv.buffer_count = 0
-        #
-        # elif is_selected and self.selected and App.get_running_app().root.device_rv.selected_count == 0:
-        #     print(is_selected, self.selected, App.get_running_app().root.device_rv.selected_count, "H")
-        #
-        # print("\n\n========================================")
-
-
 
 class MainWindow(FloatLayout):
     pass
