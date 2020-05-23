@@ -152,11 +152,13 @@ class DeviceRV(RecycleView):
         super(DeviceRV, self).__init__(**kwargs)
         self.selected_count = 0
         self.buffer_count = 0
+        self.deselected_clock = {}
 
 class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
     selectable = BooleanProperty(True)  # permissions as to whether it is selectable
+    deselected = False
 
     def refresh_view_attrs(self, rv, index, data):
         self.index = index
@@ -170,7 +172,17 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
-        if is_selected and not self.selected:
+        print(index, is_selected, self.selected, self.deselected)
+        if not is_selected and self.selected:
+            print("here")
+            self.selected = False
+            App.get_running_app().root.screen_manager.transition.direction = 'down'
+            App.get_running_app().root.screen_manager.current = 'home'
+            App.get_running_app().root.device_rv.selected_count -= 1
+            self.deselected = True
+            App.get_running_app().root.device_rv.deselected_clock[rv.data[index]['text']] = 0
+            return None
+        elif is_selected and not self.selected and (not self.deselected or App.get_running_app().root.device_rv.deselected_clock[rv.data[index]['text']] > 0):
             self.selected = True
             App.get_running_app().root.screen_manager.transition.direction = 'up'
             App.get_running_app().root.screen_manager.current = 'device'
@@ -181,7 +193,10 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             if App.get_running_app().root.device_rv.selected_count == 0:
                 App.get_running_app().root.screen_manager.transition.direction = 'down'
                 App.get_running_app().root.screen_manager.current = 'home'
-
+        self.deselected = False
+        keys = App.get_running_app().root.device_rv.deselected_clock.keys()
+        for k in keys:
+            App.get_running_app().root.device_rv.deselected_clock[k] += 1
         # if not is_selected and self.selected:
         #     App.get_running_app().root.screen_manager.transition.direction = 'up'
         #     App.get_running_app().root.device_rv.data = rv.data
