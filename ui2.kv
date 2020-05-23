@@ -1,0 +1,77 @@
+<MainWindow>:
+    cols:2
+    SideBar:
+    HomeScreen:
+
+<SideBar>:
+    size_hint:0.3,1
+    canvas.before:
+        Color:
+            rgb: .172,.184,.196
+        Rectangle:
+            size: self.size
+
+<ScreenManagement>
+    HomeScreen:
+    DeviceScreen:
+
+<HomeScreen>:
+    name: "home"
+    canvas.before:
+        Color:
+            rgb:1,1,1
+        Rectangle:
+            size: self.size
+    BeginnerTutorial:
+    GetHelp:
+    LatestUpdate:
+    ReportBug:
+    SettingsHome:
+
+<DeviceScreen>:
+    name: "device"
+    FloatLayout:
+        Button:
+
+
+<BeginnerTutorial@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Beginner Tutorial"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.3, 0.35
+    pos_hint: {"x":0.65, "top":0.95}
+
+<GetHelp@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Get Help"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.12, 0.08
+    font_size: 15
+    pos_hint: {"x":0.65, "top":0.53}
+
+<ReportBug@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Report Bug"
+    font_size: 15
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.12, 0.08
+    pos_hint: {"x":0.83, "top":0.53}
+
+<LatestUpdate@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Latest Update"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.25, 0.5
+    pos_hint: {"x":0.3, "top":0.95}
+
+<SettingsHome@Button>:
+    font_size: 20
+    color: .1,.5,.6,1
+    text: "Settings"
+    background_color: 0.2,0.5,0.3,1
+    size_hint: 0.65, 0.3
+    pos_hint: {"x":0.3, "top":0.375}
