@@ -533,17 +533,129 @@
         pos_hint: {"x":0.05,"top":0.9}
         font_size: 13
         text: "Auto shutdown when stimulation is finished"
+        group: "finished_shutdown"
     StrokeButton:
         size_hint: 0.425, .08
         pos_hint: {"x":0.525,"top":0.9}
         font_size: 13
         text: "Auto shutdown when surge is detected"
+        group: "shutdown_surge"
+    SmoothButton:
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.05,"top":0.7825}
+        font_size: 13
+        text: "Firmware Info"
+    SmoothButton:
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.3,"top":0.7825}
+        font_size: 13
+        text: "Hardware Info"
+    SmoothButton:
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.55,"top":0.7825}
+        font_size: 13
+        text: "Bootloader Access"
+    StrokeButton:
+        size_hint: 0.16, .08
+        pos_hint: {"x":0.05,"top":0.6}
+        font_size: 13
+        text: "Ramp Up"
+        group: "ramp_up"
+    StrokeButton:
+        size_hint: 0.16, .08
+        pos_hint: {"x":0.25,"top":0.6}
+        font_size: 13
+        text: "Short"
+        group: "short"
+    SmoothButton:
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.45,"top":0.6}
+        font_size: 13
+        text: "Continuity Check"
+    StrokeButton:
+        size_hint: 0.16, .08
+        pos_hint: {"x":0.79,"top":0.6}
+        font_size: 13
+        text: "Triggered Mode"
+        group:"triggered_mode"
+    FloatLayout:
+        size_hint: 0.65, .1
+        pos_hint: {"x":0.3,"top":0.5}
+        background_color: (0, 0, 0, 0)
+        background_normal: ''
+        back_color: 0.16, 0.45, 0.75, 1
+        border_radius: 5
+        color: 0,0,0,1
+        canvas.before:
+            Color:
+                rgba: self.back_color
+            Line:
+                rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+                width: 1.2
+        StrokeButton:
+            size_hint: 0.15, .8
+            pos_hint: {"x":0.025,"top":0.9}
+            font_size: 11
+            text: "None"
+            state: "down"
+            group:"trigger_mode"
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+        StrokeButton:
+            size_hint: 0.15, .8
+            pos_hint: {"x":0.225,"top":0.9}
+            font_size: 11
+            text: "Phase 1"
+            group:"trigger_mode"
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+        StrokeButton:
+            size_hint: 0.15, .8
+            pos_hint: {"x":0.425,"top":0.9}
+            font_size: 11
+            text: "Phase 2"
+            group:"trigger_mode"
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+        StrokeButton:
+            size_hint: 0.15, .8
+            pos_hint: {"x":0.625,"top":0.9}
+            font_size: 11
+            text: "Phase\n1 & 2"
+            group:"trigger_mode"
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+        StrokeButton:
+            size_hint: 0.15, .8
+            pos_hint: {"x":0.825,"top":0.9}
+            font_size: 11
+            text: "Inter-Stim\nTime"
+            group:"trigger_mode"
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
 
-
-<SmoothButton@ToggleButton>:
-    background_color: 1,0,1,1 if self.state=='down' else (0, 0, 0, 1)
+<SmoothButton@Button>:
+    background_color: (0, 0, 0, 0)
     background_normal: ''
-    back_color: 1,0,1,1
+    back_color: 0.16, 0.45, 0.75, 1
+    border_radius: [5]
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: self.border_radius
+
+<SmoothToggleButton@ToggleButton>:
+    background_color: (0, 0, 0, 0)
+    background_normal: ''
+    back_color: 0.16, 0.45, 0.75, 1
     border_radius: [5]
     canvas.before:
         Color:
@@ -554,7 +666,7 @@
             radius: self.border_radius
 
 <StrokeButton@Button>:
-    background_color: 1,0,1,1 if self.state!='down' else 0, 0, 0, 1
+    background_color: (0.16, 0.45, 0.75, 1) if self.state=='down' else (0, 0, 0, 0)
     background_normal: ''
     back_color: 0.16, 0.45, 0.75, 1
     border_radius: 5
