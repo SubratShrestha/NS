@@ -103,6 +103,9 @@ class DeviceTabs(TabbedPanel):
 class PhaseTimeFrequencyTabs(TabbedPanel):
     pass
 
+class ChannelStimulationTabs(TabbedPanel):
+    pass
+
 class BurstUniformStimulationTabs(TabbedPanel):
     pass
 
@@ -172,9 +175,8 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
-        print(index, is_selected, self.selected, self.deselected)
+        # print(index, is_selected, self.selected, self.deselected)
         if not is_selected and self.selected:
-            print("here")
             self.selected = False
             App.get_running_app().root.screen_manager.transition.direction = 'down'
             App.get_running_app().root.screen_manager.current = 'home'
