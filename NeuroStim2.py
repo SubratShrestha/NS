@@ -15,6 +15,11 @@ from bleak import discover, BleakClient, BleakScanner
 from bleak.exc import BleakDotNetTaskError, BleakError
 from kivy.uix.popup import Popup
 import asyncio
+from kivy.config import Config
+Config.set('graphics', 'width', 1024)
+Config.set('graphics', 'height', 768)
+Config.set('graphics', 'resizable', 'False')
+
 
 devices_dict = {}
 

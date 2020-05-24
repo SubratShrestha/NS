@@ -20,7 +20,7 @@
     Label:
         text:"NeuroStim"
         color:1,1,1,1
-        font_size:50
+        font_size:55
         size_hint:1,0.1
         pos_hint:{"top":1}
     HomeButton:
@@ -114,10 +114,11 @@
 
 <AddDeviceSelectableLabel>:
     # Draw a background to indicate selection
+    color:0,0,0,1
     canvas.before:
         Color:
-            rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
-        Rectangle:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (1, 1, 1, 1)
+        RoundedRectangle:
             pos: self.pos
             size: self.size
 
@@ -189,22 +190,21 @@
     title_align:'center'
     separator_height:0
     ble_rv: ble_rv
-    size_hint: .5,.81
+    size_hint: .45,.73
     pos_hint: {"center_x":0.5,"center_y":0.5}
     auto_dismiss : True
     on_open: root.BluetoothDiscoverLoop()
     FloatLayout:
         canvas.before:
             Color:
-                rgb:1,1,1
+                rgb:0.878,0.898,0.933
             Rectangle:
-                size: self.size
-                pos: self.pos
+                size:self.size
+                pos:self.pos
         RecycleView:
             id: ble_rv
-            size_hint: 1, 0.9
+            size_hint: 1, 0.895
             pos_hint: {"x":0, "top":1}
-            background_color: 0.0,0.50,0,1
             viewclass: 'AddDeviceSelectableLabel'
             SelectableRecycleBoxLayout:
                 default_size: None, dp(56)
@@ -212,17 +212,33 @@
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
-                multiselect: True
-                touch_multiselect: True
-        Button:
-            text: "Add Devices"
+                multiselect: False
+                touch_multiselect: False
+                spacing:dp(2)
+        Label:
             size_hint: 1, 0.1
-            pos_hint: {"x":0, "top":.1}
-            background_color: 0.0,0.50,0,1
+            pos_hint: {"x":0, "y":0}
+            canvas.before:
+                Color:
+                    rgb:0.953,0.9608,0.9765
+                Rectangle:
+                    size:self.size
+                    pos:self.pos
+        Button:
+            text: "Connect"
+            size_hint: 0.3, 0.08
+            pos_hint: {"x":0.65, "top":.09}
+            background_color: 0.420,0.864,1.773,1
             on_press: root.Close()
+        Button:
+            text: "Refresh"
+            size_hint: 0.3, 0.08
+            pos_hint: {"x":0.05, "top":.09}
+            background_color: 1,1,1,1
+            on_press: root.BluetoothDiscoverLoop()
 
 <NewDeviceButton@Button>
-    font_size: 25
+    font_size: 30
     color: 1,1,1,1
     size_hint: 1, 0.06
     text: "+ New Device"
