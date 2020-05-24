@@ -523,7 +523,7 @@
         text: "Stimulation Setting"
         font_size: 15
         size_hint: 0.9, .08
-        pos_hint: {"x":0.05,"top":0.7}
+        pos_hint: {"x":0.05,"top":0.675}
         multiline: False
         text_size:self.size
         halign:'left'
@@ -561,6 +561,7 @@
         font_size: 13
         text: "Ramp Up"
         group: "ramp_up"
+    RampUpInput:
     StrokeButton:
         size_hint: 0.16, .08
         pos_hint: {"x":0.25,"top":0.6}
@@ -578,66 +579,95 @@
         font_size: 13
         text: "Triggered Mode"
         group:"triggered_mode"
-    FloatLayout:
-        size_hint: 0.65, .1
-        pos_hint: {"x":0.3,"top":0.5}
-        background_color: (0, 0, 0, 0)
-        background_normal: ''
-        back_color: 0.16, 0.45, 0.75, 1
-        border_radius: 5
-        color: 0,0,0,1
-        canvas.before:
-            Color:
-                rgba: self.back_color
-            Line:
-                rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
-                width: 1.2
-        StrokeButton:
-            size_hint: 0.15, .8
-            pos_hint: {"x":0.025,"top":0.9}
-            font_size: 11
-            text: "None"
-            state: "down"
-            group:"trigger_mode"
-            text_size: self.size
-            halign: 'center'
-            valign: 'middle'
-        StrokeButton:
-            size_hint: 0.15, .8
-            pos_hint: {"x":0.225,"top":0.9}
-            font_size: 11
-            text: "Phase 1"
-            group:"trigger_mode"
-            text_size: self.size
-            halign: 'center'
-            valign: 'middle'
-        StrokeButton:
-            size_hint: 0.15, .8
-            pos_hint: {"x":0.425,"top":0.9}
-            font_size: 11
-            text: "Phase 2"
-            group:"trigger_mode"
-            text_size: self.size
-            halign: 'center'
-            valign: 'middle'
-        StrokeButton:
-            size_hint: 0.15, .8
-            pos_hint: {"x":0.625,"top":0.9}
-            font_size: 11
-            text: "Phase\n1 & 2"
-            group:"trigger_mode"
-            text_size: self.size
-            halign: 'center'
-            valign: 'middle'
-        StrokeButton:
-            size_hint: 0.15, .8
-            pos_hint: {"x":0.825,"top":0.9}
-            font_size: 11
-            text: "Inter-Stim\nTime"
-            group:"trigger_mode"
-            text_size: self.size
-            halign: 'center'
-            valign: 'middle'
+    TriggeredModeToggle:
+
+<RampUpInput@FloatLayout>:
+    size_hint: 0.16, .1
+    pos_hint: {"x":0.05,"top":0.5}
+    background_color: (0, 0, 0, 0)
+    background_normal: ''
+    back_color: 0.16, 0.45, 0.75, 1
+    border_radius: 5
+    color: 0,0,0,1
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        Line:
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+            width: 1.2
+    Label:
+        text: "Ramp Up (ms)"
+        size_hint: .9, 0.4
+        font_size: 12
+        pos_hint: {"x":0.05,"top":.95}
+        multiline: False
+    TextInput:
+        text: "0"
+        size_hint: 0.9, 0.45
+        font_size: 12
+        multiline:False
+        pos_hint: {"x":0.05,"top":.55}
+
+<TriggeredModeToggle@FloatLayout>:
+    size_hint: 0.65, .1
+    pos_hint: {"x":0.3,"top":0.5}
+    background_color: (0, 0, 0, 0)
+    background_normal: ''
+    back_color: 0.16, 0.45, 0.75, 1
+    border_radius: 5
+    color: 0,0,0,1
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        Line:
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+            width: 1.2
+    StrokeButton:
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.025,"top":0.9}
+        font_size: 11
+        text: "None"
+        state: "down"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.225,"top":0.9}
+        font_size: 11
+        text: "Phase 1"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.425,"top":0.9}
+        font_size: 11
+        text: "Phase 2"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.625,"top":0.9}
+        font_size: 11
+        text: "Phase\n1 & 2"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.825,"top":0.9}
+        font_size: 11
+        text: "Inter-Stim\nTime"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
 
 <SmoothButton@Button>:
     background_color: (0, 0, 0, 0)
