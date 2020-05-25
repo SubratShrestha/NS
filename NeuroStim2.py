@@ -11,6 +11,7 @@ from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip
 from bleak import discover, BleakClient, BleakScanner
 from bleak.exc import BleakDotNetTaskError, BleakError
 from kivy.uix.popup import Popup
@@ -62,13 +63,33 @@ class DeviceScreen(Screen):
     pass
 
 
+class DeviceTabs_TPS():
+    pass
+
+
+class PhaseTimeFrequencyTabs(TabbedPanel):
+    pass
+
+
+class ChannelStimulationTabs(TabbedPanel):
+    pass
+
+
+class BurstUniformStimulationTabs(TabbedPanel):
+    pass
+
+
+class TerminationTabs(TabbedPanel):
+    pass
+
+
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
 
 class AddDevicePopup(Popup):
     async def ble_discover(self):
-        self.devices = await discover(2)
+        self.devices = await discover(0.5)
         self.ble_rv.data = [{'text': str(i.address)} for i in self.devices if i.address is not None]
 
     def BluetoothDiscoverLoop(self):
@@ -127,15 +148,6 @@ class DeviceRV(RecycleView):
         self.deselected_clock = {}
 
 
-class NeuroStimApp(App):
-    def __init__(self, kvloader):
-        super(NeuroStimApp, self).__init__()
-        self.kvloader = kvloader
-
-    def build(self):
-        return MainWindow()
-
-
 class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
@@ -179,6 +191,15 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         keys = App.get_running_app().root.side_bar.device_rv.deselected_clock.keys()
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
+
+
+class NeuroStimApp(App):
+    def __init__(self, kvloader):
+        super(NeuroStimApp, self).__init__()
+        self.kvloader = kvloader
+
+    def build(self):
+        return MainWindow()
 
 
 if __name__ == '__main__':
