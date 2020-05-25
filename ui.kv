@@ -46,6 +46,14 @@
 <ConnectedDeviceSelectableLabel>:
     # Draw a background to indicate selection
     _label:_label
+    working_image_1: working_image_1
+    working_image_2:working_image_2
+    working_image_3:working_image_3
+    malfunction_image:malfunction_image
+    delete_image:delete_image
+    rename_image:rename_image
+    battery_image:battery_image
+    battery_percent:battery_percent
     canvas.before:
         Color:
             rgba: (.0, 0.9, .1, .3) if self.selected else (0.1, 0, 0.1, 1)
@@ -61,34 +69,42 @@
         halign: 'center'
         pos_hint: {"x":0, "top":.95}
     Image:
+        id: working_image_1
         size_hint: .125, .125
         pos_hint: {"x":0.05, "top":0.6}
         source: './Icon2/working.png'
     Image:
+        id: working_image_2
         size_hint: .125, .125
         pos_hint: {"x":0.2, "top":0.6}
         source: './Icon2/working.png'
     Image:
+        id: working_image_3
         size_hint: .125, .125
         pos_hint: {"x":0.35, "top":0.6}
         source: './Icon2/not_working.png'
     Image:
+        id: malfunction_image
         size_hint: .125, .125
         pos_hint: {"x":0.825, "top":0.6}
         source: './Icon2/malfunction.png'
     Image:
+        id: delete_image
         size_hint: .2, .2
         pos_hint: {"x":0.75, "top":0.25}
         source: './Icon2/delete.png'
     Image:
+        id: rename_image
         size_hint: .2, .2
         pos_hint: {"x":0.55, "top":0.25}
         source: './Icon2/Rename.png'
     Image:
+        id: battery_image
         size_hint: .2, .2
         pos_hint: {"x":0.05, "top":0.25}
         source: './Icon2/battery.png'
     Label:
+        id: battery_percent
         size_hint: .2, .2
         pos_hint: {"x":0.275, "top":0.25}
         text: "89%"
@@ -755,12 +771,22 @@
 
 <HomeScreen>:
     name: "home"
+    beginner_tutorial:beginner_tutorial
+    get_help:get_help
+    latest_update:latest_update
+    report_bug:report_bug
+    settings_home:settings_home
     FloatLayout:
         BeginnerTutorial:
+            id: beginner_tutorial
         GetHelp:
+            id: get_help
         LatestUpdate:
+            id: latest_update
         ReportBug:
+            id: report_bug
         SettingsHome:
+            id: settings_home
 
 <DeviceScreen>:
     name: "device"
