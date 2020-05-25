@@ -365,12 +365,16 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
+    channel_1_panel:channel_1_panel
+    channel_2_panel:channel_2_panel
     TabbedPanelItem:
         text: "Channel 1"
         ChannelPanel:
+            id: channel_1_panel
     TabbedPanelItem:
         text: "Channel 2"
         ChannelPanel:
+            id: channel_2_panel
 
 <BurstUniformStimulationTabs>:
     tab_width: (self.parent.width*.995)/2
@@ -379,6 +383,8 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
+    burst_duration_input:burst_duration_input
+    inter_burst_delay:inter_burst_delay
     TabbedPanelItem:
         text: "Burst Stimulation"
         FloatLayout:
@@ -390,6 +396,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id:burst_duration_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: ""
@@ -401,6 +408,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id:inter_burst_delay
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 text: ""
@@ -433,6 +441,9 @@
     bottom_graph:bottom_graph
     size_hint: 1,1
     pos_hint: {"x":0, "top":1}
+    stop_button:stop_button
+    recording_button:recording_button
+    save_log_button:save_log_button
     Label:
         text: "Sample info (1k)"
         size_hint: .16, .08
@@ -443,14 +454,17 @@
         pos_hint: {"x":0.25,"top":0.94}
         multiline:False
     Button:
+        id: stop_button
         size_hint: .16,0.06
         pos_hint: {"x":0.59,"top":0.94}
         text: "Stop"
     Button:
+        id: recording_button
         size_hint: .16,0.06
         pos_hint: {"x":0.79,"top":0.94}
         text: "Recording..."
     Button:
+        id: save_log_button
         size_hint: .16,0.06
         pos_hint: {"x":0.79,"top":0.85}
         text: "Save Log"
