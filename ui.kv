@@ -270,6 +270,8 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
+    inter_phase_delay_input:inter_phase_delay_input
+    phase_time_input:phase_time_input
     TabbedPanelItem:
         text: "Phase Time"
         FloatLayout:
@@ -281,6 +283,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id: inter_phase_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: ""
@@ -292,11 +295,68 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id: phase_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 text: ""
     TabbedPanelItem:
         text: "Frequency"
+
+<ChannelPanel@BoxLayout>:
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            orientation: 'vertical'
+            PhaseTimeFrequencyTabs:
+            BurstUniformStimulationTabs:
+        FloatLayout:
+            Button:
+                size_hint: .25,.06
+                pos_hint: {"x":0.075, "top":.99}
+                text: "Stop"
+            Button:
+                size_hint: .25,.06
+                pos_hint: {"x":0.375, "top":.99}
+                text: "Save"
+            Button:
+                size_hint: .25,.06
+                pos_hint: {"x":0.675, "top":.99}
+                text: "Start"
+            Label:
+                size_hint: .4,.05
+                pos_hint: {"x":0.075, "top":.9}
+                text: "Output Current (A)"
+            TextInput:
+                size_hint: .4,.08
+                pos_hint: {"x":0.075, "top":.85}
+                text: "0"
+            Label:
+                size_hint: .4,.05
+                pos_hint: {"x":0.075, "top":.5}
+                text: "End Stimulation By:"
+            TerminationTabs:
+            CathodicAnodicToggle:
+            ToggleButton:
+                size_hint: .4,.06
+                pos_hint: {"x":0.075, "top":0.7}
+                text: "Ramp Up"
+                group: "ramp_up"
+            ToggleButton:
+                size_hint: .4,.06
+                pos_hint: {"x":0.525, "top":0.7}
+                text: "Short Electrode"
+                group: "electrode"
+            Button:
+                size_hint: .4,.1
+                pos_hint: {"x":0.525, "top":0.15}
+                text: "Generate Graph"
+                group: "electrode"
+    BoxLayout:
+        size_hint: 1,.5
+        pos_hint: {"x":0, "top":1}
+        Button:
+            text:"x"
 
 <ChannelStimulationTabs>:
     tab_width: (self.parent.width)/2
@@ -307,118 +367,10 @@
     background_color: 0.1,0.2,0.3,1
     TabbedPanelItem:
         text: "Channel 1"
-        BoxLayout:
-            orientation: 'vertical'
-            BoxLayout:
-                orientation: 'horizontal'
-                BoxLayout:
-                    orientation: 'vertical'
-                    PhaseTimeFrequencyTabs:
-                    BurstUniformStimulationTabs:
-                FloatLayout:
-                    Button:
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.075, "top":.99}
-                        text: "Stop"
-                    Button:
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.375, "top":.99}
-                        text: "Save"
-                    Button:
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.675, "top":.99}
-                        text: "Start"
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (A)"
-                    TextInput:
-                        size_hint: .4,.08
-                        pos_hint: {"x":0.075, "top":.85}
-                        text: "0"
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "End Stimulation By:"
-                    TerminationTabs:
-                    CathodicAnodicToggle:
-                    ToggleButton:
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.075, "top":0.7}
-                        text: "Ramp Up"
-                        group: "ramp_up"
-                    ToggleButton:
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.525, "top":0.7}
-                        text: "Short Electrode"
-                        group: "electrode"
-                    Button:
-                        size_hint: .4,.1
-                        pos_hint: {"x":0.525, "top":0.15}
-                        text: "Generate Graph"
-                        group: "electrode"
-            BoxLayout:
-                size_hint: 1,.5
-                pos_hint: {"x":0, "top":1}
-                Button:
-                    text:"x"
+        ChannelPanel:
     TabbedPanelItem:
         text: "Channel 2"
-        BoxLayout:
-            orientation: 'vertical'
-            BoxLayout:
-                orientation: 'horizontal'
-                BoxLayout:
-                    orientation: 'vertical'
-                    PhaseTimeFrequencyTabs:
-                    BurstUniformStimulationTabs:
-                FloatLayout:
-                    Button:
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.075, "top":.99}
-                        text: "Stop"
-                    Button:
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.375, "top":.99}
-                        text: "Save"
-                    Button:
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.675, "top":.99}
-                        text: "Start"
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (A)"
-                    TextInput:
-                        size_hint: .4,.08
-                        pos_hint: {"x":0.075, "top":.85}
-                        text: "0"
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "End Stimulation By:"
-                    TerminationTabs:
-                    CathodicAnodicToggle:
-                    ToggleButton:
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.075, "top":0.7}
-                        text: "Ramp Up"
-                        group: "ramp_up"
-                    ToggleButton:
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.525, "top":0.7}
-                        text: "Short Electrode"
-                        group: "electrode"
-                    Button:
-                        size_hint: .4,.1
-                        pos_hint: {"x":0.525, "top":0.15}
-                        text: "Generate Graph"
-                        group: "electrode"
-            BoxLayout:
-                size_hint: 1,.5
-                pos_hint: {"x":0, "top":1}
-                Button:
-                    text:"x"
+        ChannelPanel:
 
 <BurstUniformStimulationTabs>:
     tab_width: (self.parent.width*.995)/2
