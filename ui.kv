@@ -580,6 +580,50 @@
         text: "Triggered Mode"
         group:"triggered_mode"
     TriggeredModeToggle:
+    Label:
+        text: "Diagnostic Tools"
+        font_size: 15
+        size_hint: 0.9, .08
+        pos_hint: {"x":0.05,"top":0.375}
+        multiline: False
+        text_size:self.size
+        halign:'left'
+        valign:'middle'
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.05,"top":0.3}
+        font_size: 13
+        text: "Ramp DAC"
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.285,"top":0.3}
+        font_size: 13
+        text: "Phase 1"
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.53,"top":0.3}
+        font_size: 13
+        text: "Phase 2"
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.765,"top":0.3}
+        font_size: 13
+        text: "All Off"
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.05,"top":0.2}
+        font_size: 13
+        text: "Null Command"
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.285,"top":0.2}
+        font_size: 13
+        text: "Test Trigger"
+    SmoothButton:
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.53,"top":0.2}
+        font_size: 13
+        text: "Debug Mode"
 
 <RampUpInput@FloatLayout>:
     size_hint: 0.16, .1
