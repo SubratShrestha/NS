@@ -109,6 +109,13 @@ class AddDevicePopup(Popup):
         print(App.get_running_app().root.side_bar.device_rv.data)
         self.dismiss()
 
+class DT_TPS(TabbedPanelStrip):
+    pass
+
+class DeviceTabs(TabbedPanel, DT_TPS):
+    def __init__(self, **kargs):
+        super(DeviceTabs, self).__init__(**kargs)
+        self._tab_layout.padding = '2dp', '-2dp', '2dp', '-2dp'
 
 class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
     index = None  # this is the index of the label in the recyclerview
