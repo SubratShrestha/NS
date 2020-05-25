@@ -645,7 +645,7 @@
 
 <RampUpInput@FloatLayout>:
     input:input
-    size_hint: 0.16, .1
+    size_hint: 0.21, .1
     pos_hint: {"x":0.05,"top":0.5}
     background_color: (0, 0, 0, 0)
     background_normal: ''
@@ -744,9 +744,9 @@
         valign: 'middle'
 
 <SmoothButton@Button>:
-    background_color: (0, 0, 0, 0)
+    background_color: (0.0, 0.96, 1, 1) if self.state=='down' else (0, 0, 0, 0)
     background_normal: ''
-    back_color: 0.16, 0.45, 0.75, 1
+    back_color: (0.16, 0.45, 0.75, 1)
     border_radius: [5]
     canvas.before:
         Color:
@@ -757,7 +757,7 @@
             radius: self.border_radius
 
 <SmoothToggleButton@ToggleButton>:
-    background_color: (0, 0, 0, 0)
+    background_color: (0.0, 0.96, 1, 1) if self.state=='down' else (0, 0, 0, 0)
     background_normal: ''
     back_color: 0.16, 0.45, 0.75, 1
     border_radius: [5]
