@@ -17,6 +17,7 @@ from bleak import discover, BleakClient, BleakScanner
 from bleak.exc import BleakDotNetTaskError, BleakError
 from kivy.uix.popup import Popup
 import asyncio
+import threading
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
@@ -202,8 +203,6 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         keys = App.get_running_app().root.side_bar.device_rv.deselected_clock.keys()
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
-
-import threading
 
 async def ble_discover(loop, time):
     task1 = loop.create_task(discover(time))
