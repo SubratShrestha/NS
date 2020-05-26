@@ -1,21 +1,28 @@
 #:import Factory kivy.factory.Factory
 <MainWindow>:
-    cols:2
     screen_manager: screen_manager
     side_bar: side_bar
-    SideBar:
-        id: side_bar
-    ScreenManagement:
-        id: screen_manager
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos:self.pos
+    FloatLayout:
+        SideBar:
+            id: side_bar
+            size_hint:0.2,1
+            pos_hint:{"x":0}
+        ScreenManagement:
+            id: screen_manager
+            size_hint:0.8,1
+            pos_hint:{"x":0.2}
 <SideBar>:
     orientation: 'vertical'
-    size_hint:0.3,1
     canvas.before:
         Color:
             rgb: .172,.184,.196
         Rectangle:
             size: self.size
-
+            pos:self.pos
     device_rv:device_rv
     Label:
         text:"NeuroStim"
@@ -39,11 +46,17 @@
             rgb:1,1,1
         Rectangle:
             size: self.size
-    BeginnerTutorial:
-    GetHelp:
-    LatestUpdate:
-    ReportBug:
-    SettingsHome:
+            pos:self.pos
+    FloatLayout:
+        BeginnerTutorial:
+            size_hint: 0.25, 0.2
+            title: 'Drag me'
+        GetHelp:
+        LatestUpdate:
+        ReportBug:
+        SettingsHome:
+
+
 
 <DeviceScreen>:
     name: "device"
@@ -52,19 +65,18 @@
             rgb:1,1,1
         Rectangle:
             size: self.size
+            pos:self.pos
     device_tabs: device_tabs
     DeviceTabs:
         id: device_tabs
 
 ###widgets for homescreen###
 ##################################################
-<BeginnerTutorial@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Beginner Tutorial"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.3, 0.35
-    pos_hint: {"x":0.65, "top":0.95}
+<BeginnerTutorial@Button+DragBehavior>:
+    drag_rectangle: self.x, self.y, self.width, self.height
+    drag_timeout: 10000000
+    drag_distance: 0
+
 
 <GetHelp@Button>:
     font_size: 20
@@ -90,7 +102,7 @@
     text: "Latest Update"
     background_color: 0.2,0.5,0.3,1
     size_hint: 0.25, 0.5
-    pos_hint: {"x":0.3, "top":0.95}
+    pos_hint: {"x":0, "top":0.95}
 
 <SettingsHome@Button>:
     font_size: 20
@@ -190,7 +202,7 @@
         app.root.screen_manager.transition.direction = 'down'
         app.root.screen_manager.current = 'home'
 
-<AddDevicePopup@Popup>:
+<AddDevicePopup>:
     title: "Bluetooth Discovery"
     title_size:35
     title_align:'center'
@@ -533,7 +545,6 @@
         DeviceAdvancedSettings:
             id: advanced_settings
 <DT_TPS@TabbedPanelStrip>
-    spacing:[20,0]
     canvas:
         Color:
             rgba: 0, 1, 0, 1

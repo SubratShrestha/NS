@@ -4,6 +4,7 @@ from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.behaviors import DragBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import BooleanProperty
 from kivy.uix.recycleview import RecycleView
@@ -43,7 +44,7 @@ async def connect(address, loop):
             return None
 
 
-class MainWindow(BoxLayout):
+class MainWindow(FloatLayout):
     pass
 
 
@@ -60,10 +61,6 @@ class HomeScreen(Screen):
 
 
 class DeviceScreen(Screen):
-    pass
-
-
-class DeviceTabs_TPS():
     pass
 
 
@@ -109,13 +106,16 @@ class AddDevicePopup(Popup):
         print(App.get_running_app().root.side_bar.device_rv.data)
         self.dismiss()
 
+
 class DT_TPS(TabbedPanelStrip):
     pass
+
 
 class DeviceTabs(TabbedPanel, DT_TPS):
     def __init__(self, **kargs):
         super(DeviceTabs, self).__init__(**kargs)
-        self._tab_layout.padding = '2dp', '-2dp', '2dp', '-2dp'
+        self._tab_layout.padding = '2dp', '-1dp', '2dp', '-2dp'
+
 
 class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
     index = None  # this is the index of the label in the recyclerview
