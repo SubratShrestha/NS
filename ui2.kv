@@ -6,15 +6,14 @@
         Rectangle:
             size: self.size
             pos:self.pos
-    FloatLayout:
-        SideBar:
-            id: side_bar
-            size_hint:0.2,1
-            pos_hint:{"x":0}
-        ScreenManagement:
-            id: screen_manager
-            size_hint:0.8,1
-            pos_hint:{"x":0.2}
+    SideBar:
+        id: side_bar
+        size_hint:0.2,1
+        pos_hint:{"x":0}
+    ScreenManagement:
+        id: screen_manager
+        size_hint:0.8,1
+        pos_hint:{"x":0.2}
 <SideBar>:
     orientation: 'vertical'
     canvas.before:
@@ -47,14 +46,27 @@
         Rectangle:
             size: self.size
             pos:self.pos
-    FloatLayout:
-        BeginnerTutorial:
-            size_hint: 0.25, 0.2
-            title: 'Drag me'
-        GetHelp:
-        LatestUpdate:
-        ReportBug:
-        SettingsHome:
+    HomeScreenWindows:
+        #change window size/pos here
+        size_hint:0.4,0.5
+        pos_hint: {"center_x":0.76,"center_y":0.71}
+        Label:
+            canvas.before:
+                Color:
+                    rgb:0.176,0.188,0.2
+                RoundedRectangle:
+                    size: self.size
+                    pos:self.pos
+                    radius:20,20,0,0
+            text:"Beginner Tutorial" #change the name of window
+            font_size:40
+            color:1,1,1,1
+            pos_hint:{"top":1,"x":0}
+            size_hint:1,0.1
+
+
+
+
 
 
 
@@ -70,47 +82,20 @@
     DeviceTabs:
         id: device_tabs
 
-###widgets for homescreen###
+###windows for homescreen###
 ##################################################
-<BeginnerTutorial@Button+DragBehavior>:
+<HomeScreenWindows@FloatLayout+DragBehavior>
     drag_rectangle: self.x, self.y, self.width, self.height
     drag_timeout: 10000000
     drag_distance: 0
+    canvas.before:
+        Color:
+            rgb:0.9,0.9,0.9
+        RoundedRectangle:
+            size: self.size
+            pos:self.pos
+            radius:20,20,20,20
 
-
-<GetHelp@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Get Help"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.12, 0.08
-    font_size: 15
-    pos_hint: {"x":0.65, "top":0.53}
-
-<ReportBug@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Report Bug"
-    font_size: 15
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.12, 0.08
-    pos_hint: {"x":0.83, "top":0.53}
-
-<LatestUpdate@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Latest Update"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.25, 0.5
-    pos_hint: {"x":0, "top":0.95}
-
-<SettingsHome@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Settings"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.65, 0.3
-    pos_hint: {"x":0.3, "top":0.375}
 ##################################################
 
 

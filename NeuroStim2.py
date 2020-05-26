@@ -56,7 +56,7 @@ class ScreenManagement(ScreenManager):
     pass
 
 
-class HomeScreen(Screen):
+class HomeScreen(Screen, FloatLayout):
     pass
 
 
