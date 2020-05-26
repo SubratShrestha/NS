@@ -18,6 +18,8 @@ from kivy.properties import BooleanProperty
 import asyncio
 from bleak import discover, BleakClient, BleakScanner
 import json
+
+from kivy.uix.togglebutton import ToggleButton
 from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
@@ -114,6 +116,14 @@ class TerminationTabs(TabbedPanel):
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
+
+class StrokeButton(ToggleButton):
+    def __init__(self, **kwargs):
+        super(StrokeButton, self).__init__(**kwargs)
+
+    def on_state(self, widget, value):
+        if value == 'down':
+            print(self.background_color)
 
 class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
     index = None  # this is the index of the label in the recyclerview
