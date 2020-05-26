@@ -90,8 +90,12 @@ class AddDevicePopup(Popup):
         self.ble_rv.data = [{'text': str(i.address)} for i in self.devices if i.address is not None]
 
     def BluetoothDiscoverLoop(self):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.ble_discover())
+        data = App.get_running_app().device_data
+        if len(data) == 0:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(self.ble_discover())
+        else:
+            self.ble_rv.data = data
 
     def Close(self):
         data = App.get_running_app().root.side_bar.device_rv.data
@@ -199,15 +203,44 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
 
+import threading
+
+async def ble_discover(loop, time):
+    task1 = loop.create_task(discover(time))
+    await asyncio.wait([task1])
+    return task1
+
+def BluetoothDiscoverLoop():
+    time = 0.5
+    while App.get_running_app().search:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.set_debug(1)
+        r1 = loop.run_until_complete(ble_discover(loop, time))
+        devices = r1.result()
+        data = [{'text': str(i.address)} for i in devices if i.address is not None]
+        App.get_running_app().device_data = data
+        if time < 10:
+            time += 1
 
 class NeuroStimApp(App):
     def __init__(self, kvloader):
         super(NeuroStimApp, self).__init__()
         self.kvloader = kvloader
+        self.device_data = []
+        self.search = True
+        self.t = threading.Thread(target=BluetoothDiscoverLoop)
+        self.t.start()
 
     def build(self):
         return MainWindow()
 
+    def on_stop(self):
+        '''Event handler for the `on_stop` event which is fired when the
+        application has finished running (i.e. the window is about to be
+        closed).
+        '''
+        self.search = False
 
 if __name__ == '__main__':
     kvloader = Builder.load_file("ui2.kv")
