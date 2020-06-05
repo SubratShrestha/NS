@@ -14,6 +14,7 @@
         id: screen_manager
         size_hint:0.8,1
         pos_hint:{"x":0.2}
+
 <SideBar>:
     orientation: 'vertical'
     canvas.before:
@@ -23,23 +24,34 @@
             size: self.size
             pos:self.pos
     device_rv:device_rv
+    home_button:home_button
+    new_device_button:new_device_button
+    side_bar_title:side_bar_title
     Label:
+        id: side_bar_title
         text:"NeuroStim"
         color:1,1,1,1
         font_size:45
         size_hint:1,0.1
         pos_hint:{"top":1}
     HomeButton:
+        id: home_button
     NewDeviceButton:
+        id: new_device_button
     DeviceRV:
         id: device_rv
 
 <ScreenManagement>
+    home_screen: home_screen
+    device_screen: device_screen
     HomeScreen:
+        id: home_screen
     DeviceScreen:
+        id: device_screen
 
 <HomeScreen>:
     name: "home"
+    windows: windows
     canvas.before:
         Color:
             rgb:1,1,1
@@ -47,6 +59,7 @@
             size: self.size
             pos:self.pos
     HomeScreenWindows:
+        id: windows
         #change window size/pos here
         size_hint:0.4,0.5
         pos_hint: {"center_x":0.76,"center_y":0.71}
@@ -63,12 +76,6 @@
             color:1,1,1,1
             pos_hint:{"top":1,"x":0}
             size_hint:1,0.1
-
-
-
-
-
-
 
 <DeviceScreen>:
     name: "device"
@@ -269,6 +276,8 @@
     pos_hint: {"x":0.075, "top":.45}
     size_hint: .85,.25
     do_default_tab: False
+    termination_tabs_time_input:termination_tabs_time_input
+    termination_tabs_duty_cycle_input:termination_tabs_duty_cycle_input
     TabbedPanelItem:
         text: "Time"
         font_size: 14
@@ -282,6 +291,7 @@
                 valign: 'middle'
                 text: " Number of Minutes"
             TextInput:
+                id: termination_tabs_time_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
                 text: "0"
@@ -299,6 +309,7 @@
                 valign: 'middle'
                 text: " Number of Cycles"
             TextInput:
+                id: termination_tabs_duty_cycle_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
                 text: "0"
@@ -309,10 +320,12 @@
         font_size: 14
 
 <DeviceSettings@BoxLayout>:
+    stimulation_tabs: stimulation_tabs
     size_hint: 1,1
     pos_hint: {"x":0, "top":1}
     orientation: 'vertical'
     ChannelStimulationTabs:
+        id: stimulation_tabs
 
 
 <PhaseTimeFrequencyTabs>:
@@ -357,6 +370,27 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
+
+    channel_1_stop_button:channel_1_stop_button
+    channel_1_save_button:channel_1_save_button
+    channel_1_start_button:channel_1_start_button
+    channel_1_output_current_input:channel_1_output_current_input
+    channel_1_termination_tabs:channel_1_termination_tabs
+    channel_1_cathodic_anodic_toggle:channel_1_cathodic_anodic_toggle
+    channel_1_ramp_up_toggle:channel_1_ramp_up_toggle
+    channel_1_electrode_toggle:channel_1_electrode_toggle
+    channel_1_electrode_button:channel_1_electrode_button
+
+    channel_2_stop_button:channel_2_stop_button
+    channel_2_save_button:channel_2_save_button
+    channel_2_start_button:channel_2_start_button
+    channel_2_output_current_input:channel_2_output_current_input
+    channel_2_termination_tabs:channel_2_termination_tabs
+    channel_2_cathodic_anodic_toggle:channel_2_cathodic_anodic_toggle
+    channel_2_ramp_up_toggle:channel_2_ramp_up_toggle
+    channel_2_electrode_toggle:channel_2_electrode_toggle
+    channel_2_electrode_button:channel_2_electrode_button
+
     TabbedPanelItem:
         text: "Channel 1"
         BoxLayout:
@@ -369,14 +403,17 @@
                     BurstUniformStimulationTabs:
                 FloatLayout:
                     Button:
+                        id: channel_1_stop_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.075, "top":.99}
                         text: "Stop"
                     Button:
+                        id:channel_1_save_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.375, "top":.99}
                         text: "Save"
                     Button:
+                        id:channel_1_start_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.675, "top":.99}
                         text: "Start"
@@ -385,6 +422,7 @@
                         pos_hint: {"x":0.075, "top":.9}
                         text: "Output Current (A)"
                     TextInput:
+                        id:channel_1_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
                         text: "0"
@@ -393,18 +431,23 @@
                         pos_hint: {"x":0.075, "top":.5}
                         text: "End Stimulation By:"
                     TerminationTabs:
+                        id: channel_1_termination_tabs
                     CathodicAnodicToggle:
+                        id: channel_1_cathodic_anodic_toggle
                     ToggleButton:
+                        id: channel_1_ramp_up_toggle
                         size_hint: .4,.06
                         pos_hint: {"x":0.075, "top":0.7}
                         text: "Ramp Up"
                         group: "ramp_up"
                     ToggleButton:
+                        id: channel_1_electrode_toggle
                         size_hint: .4,.06
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
                     Button:
+                        id: channel_1_electrode_button
                         size_hint: .4,.1
                         pos_hint: {"x":0.525, "top":0.15}
                         text: "Generate Graph"
@@ -426,14 +469,17 @@
                     BurstUniformStimulationTabs:
                 FloatLayout:
                     Button:
+                        id: channel_2_stop_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.075, "top":.99}
                         text: "Stop"
                     Button:
+                        id: channel_2_save_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.375, "top":.99}
                         text: "Save"
                     Button:
+                        id: channel_2_start_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.675, "top":.99}
                         text: "Start"
@@ -442,6 +488,7 @@
                         pos_hint: {"x":0.075, "top":.9}
                         text: "Output Current (A)"
                     TextInput:
+                        id: channel_2_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
                         text: "0"
@@ -450,18 +497,23 @@
                         pos_hint: {"x":0.075, "top":.5}
                         text: "End Stimulation By:"
                     TerminationTabs:
+                        id: channel_2_termination_tabs
                     CathodicAnodicToggle:
+                        id: channel_2_cathodic_anodic_toggle
                     ToggleButton:
+                        id: channel_2_ramp_up_toggle
                         size_hint: .4,.06
                         pos_hint: {"x":0.075, "top":0.7}
                         text: "Ramp Up"
                         group: "ramp_up"
                     ToggleButton:
+                        id: channel_2_electrode_toggle
                         size_hint: .4,.06
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
                     Button:
+                        id: channel_2_electrode_button
                         size_hint: .4,.1
                         pos_hint: {"x":0.525, "top":0.15}
                         text: "Generate Graph"
@@ -510,6 +562,7 @@
 <DeviceTabs@TabbedPanel+DT_TPS>:
     stimulation_log_tab: stimulation_log_tab
     advanced_settings: advanced_settings
+    device_settings: device_settings
     size_hint: 1,1
     pos_hint: {"top":1}
     do_default_tab: False
@@ -518,6 +571,7 @@
     TabbedPanelItem:
         text: "Stimulation Setting"
         DeviceSettings:
+            id: device_settings
     TabbedPanelItem:
         text: "Stimulation Log"
         StimulationLogTab:
@@ -528,6 +582,7 @@
         text: "Advanced Settings"
         DeviceAdvancedSettings:
             id: advanced_settings
+
 <DT_TPS@TabbedPanelStrip>
     canvas:
         Color:
@@ -538,28 +593,38 @@
 
 
 <StimulationLogTab@FloatLayout>:
-    top_graph:top_graph
-    bottom_graph:bottom_graph
     size_hint: 1,1
     pos_hint: {"x":0, "top":1}
+
+    top_graph:top_graph
+    bottom_graph:bottom_graph
+    sample_info:sample_info
+    log_stop_button:log_stop_button
+    log_recording_button:log_recording_button
+    save_log_button:save_log_button
+
     Label:
         text: "Sample info (1k)"
         size_hint: .16, .08
         pos_hint: {"x":0.05,"top":0.95}
     TextInput:
+        id: sample_info
         text: "0"
         size_hint: .16, .06
         pos_hint: {"x":0.25,"top":0.94}
         multiline:False
     Button:
+        id: log_stop_button
         size_hint: .16,0.06
         pos_hint: {"x":0.59,"top":0.94}
         text: "Stop"
     Button:
+        id: log_recording_button
         size_hint: .16,0.06
         pos_hint: {"x":0.79,"top":0.94}
         text: "Recording..."
     Button:
+        id: save_log_button
         size_hint: .16,0.06
         pos_hint: {"x":0.79,"top":0.85}
         text: "Save Log"

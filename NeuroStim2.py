@@ -25,7 +25,49 @@ Config.set('graphics', 'resizable', 'False')
 
 
 devices_dict = {}
-
+ids = [
+    'screen_manager',
+    'side_bar',
+    'device_rv',
+    'home_button',
+    'new_device_button',
+    'side_bar_title',
+    'home_screen',
+    'device_screen',
+    'home_screen_windows',
+    'device_screen_device_tabs',
+    'device_settings',
+    'device_advanced_settings',
+    'stimulation_log_tab',
+    'channel_1_stop_button',
+    'channel_1_save_button',
+    'channel_1_start_button',
+    'channel_1_output_current_input',
+    'channel_1_termination_tabs',
+    'channel_1_cathodic_anodic_toggle',
+    'channel_1_ramp_up_toggle',
+    'channel_1_electrode_toggle',
+    'channel_1_electrode_button',
+    'channel_2_stop_button',
+    'channel_2_save_button',
+    'channel_2_start_button',
+    'channel_2_output_current_input',
+    'channel_2_termination_tabs',
+    'channel_2_cathodic_anodic_toggle',
+    'channel_2_ramp_up_toggle',
+    'channel_2_electrode_toggle',
+    'channel_2_electrode_button',
+    'termination_tabs_time_input_1',
+    'termination_tabs_duty_cycle_input_1',
+    'termination_tabs_time_input_2',
+    'termination_tabs_duty_cycle_input_2',
+    'stimulation_log_tab_top_graph',
+    'stimulation_log_tab_bottom_graph',
+    'stimulation_log_tab_sample_info',
+    'stimulation_log_tab_log_stop_button',
+    'stimulation_log_tab_log_recording_button',
+    'stimulation_log_save_log_button'
+]
 
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:
@@ -108,7 +150,7 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
-        print(App.get_running_app().root.side_bar.device_rv.data)
+        # print(App.get_running_app().root.side_bar.device_rv.data)
         self.dismiss()
 
 
@@ -178,9 +220,9 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
-        print(index, is_selected, self.selected, self.deselected)
+        # print(index, is_selected, self.selected, self.deselected)
         if not is_selected and self.selected:
-            print("here")
+            # print("here")
             self.selected = False
             App.get_running_app().root.screen_manager.transition.direction = 'down'
             App.get_running_app().root.screen_manager.current = 'home'
@@ -203,6 +245,9 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         keys = App.get_running_app().root.side_bar.device_rv.deselected_clock.keys()
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
+
+        for i in ids:
+            print(App.get_running_app().get_components(i))
 
 async def ble_discover(loop, time):
     task1 = loop.create_task(discover(time))
@@ -230,6 +275,107 @@ class NeuroStimApp(App):
         self.search = True
         self.t = threading.Thread(target=BluetoothDiscoverLoop)
         self.t.start()
+
+    def get_components(self, id):
+        if id == 'screen_manager':
+            return self.root.screen_manager
+        if id == 'side_bar':
+            return self.root.side_bar
+        if id == 'device_rv':
+            return self.root.side_bar.device_rv
+        if id == 'home_button':
+            return self.root.side_bar.home_button
+        if id == 'new_device_button':
+            return self.root.side_bar.new_device_button
+        if id == 'side_bar_title':
+            return self.root.side_bar.side_bar_title
+        if id == 'home_screen':
+            return self.root.screen_manager.home_screen
+        if id == 'device_screen':
+            return self.root.screen_manager.device_screen
+        if id == 'home_screen_windows':
+            return self.root.screen_manager.home_screen.windows
+        if id == 'device_screen_device_tabs':
+            return self.root.screen_manager.device_screen.device_tabs
+        if id == 'device_settings':
+            return self.root.screen_manager.device_screen.device_tabs.device_settings
+        if id == 'device_advanced_settings':
+            return self.root.screen_manager.device_screen.device_tabs.advanced_settings
+        if id == 'stimulation_log_tab':
+            return self.root.screen_manager.device_screen.device_tabs.stimulation_log_tab
+        if id == 'stimulation_tabs':
+            return self.get_components('device_settings').stimulation_tabs
+        if id == 'stimulation_tabs':
+            return self.get_components('device_settings').stimulation_tabs
+        if id == 'stimulation_tabs':
+            return self.get_components('device_settings').stimulation_tabs
+
+        if id == 'channel_1_stop_button':
+            return self.get_components('stimulation_tabs').channel_1_stop_button
+        if id == 'channel_1_save_button':
+            return self.get_components('stimulation_tabs').channel_1_save_button
+        if id == 'channel_1_start_button':
+            return self.get_components('stimulation_tabs').channel_1_start_button
+        if id == 'channel_1_output_current_input':
+            return self.get_components('stimulation_tabs').channel_1_output_current_input
+        if id == 'channel_1_termination_tabs':
+            return self.get_components('stimulation_tabs').channel_1_termination_tabs
+        if id == 'channel_1_cathodic_anodic_toggle':
+            return self.get_components('stimulation_tabs').channel_1_cathodic_anodic_toggle
+        if id == 'channel_1_ramp_up_toggle':
+            return self.get_components('stimulation_tabs').channel_1_ramp_up_toggle
+        if id == 'channel_1_electrode_toggle':
+            return self.get_components('stimulation_tabs').channel_1_electrode_toggle
+        if id == 'channel_1_electrode_button':
+            return self.get_components('stimulation_tabs').channel_1_electrode_button
+
+        if id == 'channel_2_stop_button':
+            return self.get_components('stimulation_tabs').channel_2_stop_button
+        if id == 'channel_2_save_button':
+            return self.get_components('stimulation_tabs').channel_2_save_button
+        if id == 'channel_2_start_button':
+            return self.get_components('stimulation_tabs').channel_2_start_button
+        if id == 'channel_2_output_current_input':
+            return self.get_components('stimulation_tabs').channel_2_output_current_input
+        if id == 'channel_2_termination_tabs':
+            return self.get_components('stimulation_tabs').channel_2_termination_tabs
+        if id == 'channel_2_cathodic_anodic_toggle':
+            return self.get_components('stimulation_tabs').channel_2_cathodic_anodic_toggle
+        if id == 'channel_2_ramp_up_toggle':
+            return self.get_components('stimulation_tabs').channel_2_ramp_up_toggle
+        if id == 'channel_2_electrode_toggle':
+            return self.get_components('stimulation_tabs').channel_2_electrode_toggle
+        if id == 'channel_2_electrode_button':
+            return self.get_components('stimulation_tabs').channel_2_electrode_button
+
+        if id == 'termination_tabs_time_input_1':
+            return self.get_components('channel_1_termination_tabs').termination_tabs_time_input
+        if id == 'termination_tabs_duty_cycle_input_1':
+            return self.get_components('channel_1_termination_tabs').termination_tabs_duty_cycle_input
+
+        if id == 'termination_tabs_time_input_2':
+            return self.get_components('channel_2_termination_tabs').termination_tabs_time_input
+        if id == 'termination_tabs_duty_cycle_input_2':
+            return self.get_components('channel_2_termination_tabs').termination_tabs_duty_cycle_input
+
+        if id == 'stimulation_log_tab_top_graph':
+            return self.get_components('stimulation_log_tab').top_graph
+        if id == 'stimulation_log_tab_bottom_graph':
+            return self.get_components('stimulation_log_tab').bottom_graph
+        if id == 'stimulation_log_tab_sample_info':
+            return self.get_components('stimulation_log_tab').sample_info
+        if id == 'stimulation_log_tab_log_stop_button':
+            return self.get_components('stimulation_log_tab').log_stop_button
+        if id == 'stimulation_log_tab_log_recording_button':
+            return self.get_components('stimulation_log_tab').log_recording_button
+        if id == 'stimulation_log_save_log_button':
+            return self.get_components('stimulation_log_tab').save_log_button
+
+        if id == '':
+            return self.get_components('device_advanced_settings')
+
+        print("missing id: ",id)
+        return None
 
     def build(self):
         return MainWindow()
