@@ -66,8 +66,34 @@ ids = [
     'stimulation_log_tab_sample_info',
     'stimulation_log_tab_log_stop_button',
     'stimulation_log_tab_log_recording_button',
-    'stimulation_log_save_log_button'
+    'stimulation_log_save_log_button',
+    'auto_shutdown_when_stim_is_finished',
+    'auto_shutdown_when_surge_is_detected',
+    'firmware_info_button',
+    'hardware_info_button',
+    'bootloader_access_button',
+    'ramp_up_button',
+    'ramp_up_input',
+    'short_button',
+    'continuity_check_button',
+    'triggered_mode_button',
+    'triggered_mode_toggle',
+    'ramp_dac_button',
+    'null_command_button',
+    'debug_mode_button',
+    'test_trigger_button',
+    'all_off_button',
+    'phase_2_button',
+    'phase_1_button',
+    'triggered_mode_toggle_none_button',
+    'triggered_mode_toggle_phase_1_button',
+    'triggered_mode_toggle_phase_2_button',
+    'triggered_mode_toggle_phase_1_and_2_button',
+    'triggered_mode_toggle_inter_stim_time_button',
+    'ramp_up_text_input'
 ]
+
+
 
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:
@@ -371,8 +397,56 @@ class NeuroStimApp(App):
         if id == 'stimulation_log_save_log_button':
             return self.get_components('stimulation_log_tab').save_log_button
 
-        if id == '':
-            return self.get_components('device_advanced_settings')
+        if id == 'auto_shutdown_when_stim_is_finished':
+            return self.get_components('device_advanced_settings').auto_shutdown_when_stim_is_finished
+        if id == 'auto_shutdown_when_surge_is_detected':
+            return self.get_components('device_advanced_settings').auto_shutdown_when_surge_is_detected
+        if id == 'firmware_info_button':
+            return self.get_components('device_advanced_settings').firmware_info_button
+        if id == 'hardware_info_button':
+            return self.get_components('device_advanced_settings').hardware_info_button
+        if id == 'bootloader_access_button':
+            return self.get_components('device_advanced_settings').bootloader_access_button
+        if id == 'ramp_up_button':
+            return self.get_components('device_advanced_settings').ramp_up_button
+        if id == 'ramp_up_input':
+            return self.get_components('device_advanced_settings').ramp_up_input
+        if id == 'short_button':
+            return self.get_components('device_advanced_settings').short_button
+        if id == 'continuity_check_button':
+            return self.get_components('device_advanced_settings').continuity_check_button
+        if id == 'triggered_mode_button':
+            return self.get_components('device_advanced_settings').triggered_mode_button
+        if id == 'triggered_mode_toggle':
+            return self.get_components('device_advanced_settings').triggered_mode_toggle
+        if id == 'ramp_dac_button':
+            return self.get_components('device_advanced_settings').ramp_dac_button
+        if id == 'null_command_button':
+            return self.get_components('device_advanced_settings').null_command_button
+        if id == 'debug_mode_button':
+            return self.get_components('device_advanced_settings').debug_mode_button
+        if id == 'test_trigger_button':
+            return self.get_components('device_advanced_settings').test_trigger_button
+        if id == 'all_off_button':
+            return self.get_components('device_advanced_settings').all_off_button
+        if id == 'phase_2_button':
+            return self.get_components('device_advanced_settings').phase_2_button
+        if id == 'phase_1_button':
+            return self.get_components('device_advanced_settings').phase_1_button
+
+        if id == 'ramp_up_text_input':
+            return self.get_components('ramp_up_input').ramp_up_text_input
+
+        if id == 'triggered_mode_toggle_none_button':
+            return self.get_components('triggered_mode_toggle').none_button
+        if id == 'triggered_mode_toggle_phase_1_button':
+            return self.get_components('triggered_mode_toggle').phase_1_button
+        if id == 'triggered_mode_toggle_phase_2_button':
+            return self.get_components('triggered_mode_toggle').phase_2_button
+        if id == 'triggered_mode_toggle_phase_1_and_2_button':
+            return self.get_components('triggered_mode_toggle').phase_1_and_2_button
+        if id == 'triggered_mode_toggle_inter_stim_time_button':
+            return self.get_components('triggered_mode_toggle').inter_stim_time_button
 
         print("missing id: ",id)
         return None

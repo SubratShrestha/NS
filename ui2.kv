@@ -652,6 +652,24 @@
 <DeviceAdvancedSettings@FloatLayout>:
     size_hint: 1,1
     pos_hint: {"x":0, "top":1}
+    auto_shutdown_when_stim_is_finished:auto_shutdown_when_stim_is_finished
+    auto_shutdown_when_surge_is_detected:auto_shutdown_when_surge_is_detected
+    firmware_info_button:firmware_info_button
+    hardware_info_button:hardware_info_button
+    bootloader_access_button:bootloader_access_button
+    ramp_up_button:ramp_up_button
+    ramp_up_input:ramp_up_input
+    short_button:short_button
+    continuity_check_button:continuity_check_button
+    triggered_mode_button:triggered_mode_button
+    triggered_mode_toggle:triggered_mode_toggle
+    ramp_dac_button:ramp_dac_button
+    null_command_button:null_command_button
+    debug_mode_button:debug_mode_button
+    test_trigger_button:test_trigger_button
+    all_off_button:all_off_button
+    phase_2_button:phase_2_button
+    phase_1_button:phase_1_button
     Label:
         text: "General"
         font_size: 15
@@ -665,27 +683,230 @@
         text: "Stimulation Setting"
         font_size: 15
         size_hint: 0.9, .08
-        pos_hint: {"x":0.05,"top":0.7}
+        pos_hint: {"x":0.05,"top":0.675}
         multiline: False
         text_size:self.size
         halign:'left'
         valign:'middle'
     StrokeButton:
+        id: auto_shutdown_when_stim_is_finished
         size_hint: 0.425, .08
         pos_hint: {"x":0.05,"top":0.9}
         font_size: 13
         text: "Auto shutdown when stimulation is finished"
+        group: "finished_shutdown"
     StrokeButton:
+        id: auto_shutdown_when_surge_is_detected
         size_hint: 0.425, .08
         pos_hint: {"x":0.525,"top":0.9}
         font_size: 13
         text: "Auto shutdown when surge is detected"
+        group: "shutdown_surge"
+    SmoothButton:
+        id: firmware_info_button
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.05,"top":0.7825}
+        font_size: 13
+        text: "Firmware Info"
+    SmoothButton:
+        id: hardware_info_button
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.3,"top":0.7825}
+        font_size: 13
+        text: "Hardware Info"
+    SmoothButton:
+        id: bootloader_access_button
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.55,"top":0.7825}
+        font_size: 13
+        text: "Bootloader Access"
+    StrokeButton:
+        id: ramp_up_button
+        size_hint: 0.16, .08
+        pos_hint: {"x":0.05,"top":0.6}
+        font_size: 13
+        text: "Ramp Up"
+        group: "ramp_up"
+    RampUpInput:
+        id: ramp_up_input
+    StrokeButton:
+        id: short_button
+        size_hint: 0.16, .08
+        pos_hint: {"x":0.25,"top":0.6}
+        font_size: 13
+        text: "Short"
+        group: "short"
+    SmoothButton:
+        id: continuity_check_button
+        size_hint: 0.2, .08
+        pos_hint: {"x":0.45,"top":0.6}
+        font_size: 13
+        text: "Continuity Check"
+    StrokeButton:
+        id: triggered_mode_button
+        size_hint: 0.16, .08
+        pos_hint: {"x":0.79,"top":0.6}
+        font_size: 13
+        text: "Triggered Mode"
+        group:"triggered_mode"
+    TriggeredModeToggle:
+        id: triggered_mode_toggle
+    Label:
+        text: "Diagnostic Tools"
+        font_size: 15
+        size_hint: 0.9, .08
+        pos_hint: {"x":0.05,"top":0.375}
+        multiline: False
+        text_size:self.size
+        halign:'left'
+        valign:'middle'
+    SmoothButton:
+        id: ramp_dac_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.05,"top":0.3}
+        font_size: 13
+        text: "Ramp DAC"
+    SmoothButton:
+        id: phase_1_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.285,"top":0.3}
+        font_size: 13
+        text: "Phase 1"
+    SmoothButton:
+        id: phase_2_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.53,"top":0.3}
+        font_size: 13
+        text: "Phase 2"
+    SmoothButton:
+        id: all_off_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.765,"top":0.3}
+        font_size: 13
+        text: "All Off"
+    SmoothButton:
+        id: null_command_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.05,"top":0.2}
+        font_size: 13
+        text: "Null Command"
+    SmoothButton:
+        id: test_trigger_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.285,"top":0.2}
+        font_size: 13
+        text: "Test Trigger"
+    SmoothButton:
+        id: debug_mode_button
+        size_hint: 0.185, .08
+        pos_hint: {"x":0.53,"top":0.2}
+        font_size: 13
+        text: "Debug Mode"
 
-
-<SmoothButton@ToggleButton>:
-    background_color: 1,0,1,1 if self.state=='down' else (0, 0, 0, 1)
+<RampUpInput@FloatLayout>:
+    size_hint: 0.21, .1
+    pos_hint: {"x":0.05,"top":0.5}
+    background_color: (0, 0, 0, 0)
     background_normal: ''
-    back_color: 1,0,1,1
+    back_color: 0.16, 0.45, 0.75, 1
+    border_radius: 5
+    color: 0,0,0,1
+    ramp_up_text_input: ramp_up_text_input
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        Line:
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+            width: 1.2
+    Label:
+        text: "Ramp Up (ms)"
+        size_hint: .9, 0.4
+        font_size: 12
+        pos_hint: {"x":0.05,"top":.95}
+        multiline: False
+    TextInput:
+        id: ramp_up_text_input
+        text: "0"
+        size_hint: 0.9, 0.45
+        font_size: 12
+        multiline:False
+        pos_hint: {"x":0.05,"top":.55}
+
+<TriggeredModeToggle@FloatLayout>:
+    size_hint: 0.65, .1
+    pos_hint: {"x":0.3,"top":0.5}
+    background_color: (0, 0, 0, 0)
+    background_normal: ''
+    back_color: 0.16, 0.45, 0.75, 1
+    border_radius: 5
+    color: 0,0,0,1
+    none_button:none_button
+    phase_1_button:phase_1_button
+    phase_2_button:phase_2_button
+    phase_1_and_2_button:phase_1_and_2_button
+    inter_stim_time_button:inter_stim_time_button
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        Line:
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+            width: 1.2
+    StrokeButton:
+        id: none_button
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.025,"top":0.9}
+        font_size: 11
+        text: "None"
+        state: "down"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        id: phase_1_button
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.225,"top":0.9}
+        font_size: 11
+        text: "Phase 1"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        id: phase_2_button
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.425,"top":0.9}
+        font_size: 11
+        text: "Phase 2"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        id: phase_1_and_2_button
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.625,"top":0.9}
+        font_size: 11
+        text: "Phase\n1 & 2"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+    StrokeButton:
+        id: inter_stim_time_button
+        size_hint: 0.15, .8
+        pos_hint: {"x":0.825,"top":0.9}
+        font_size: 11
+        text: "Inter-Stim\nTime"
+        group:"trigger_mode"
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+
+<SmoothButton@Button>:
+    background_color: (0.0, 0.96, 1, 1) if self.state=='down' else (0, 0, 0, 0)
+    background_normal: ''
+    back_color: (0.16, 0.45, 0.75, 1)
     border_radius: [5]
     canvas.before:
         Color:
@@ -695,8 +916,21 @@
             pos: self.pos
             radius: self.border_radius
 
-<StrokeButton@Button>:
-    background_color: 1,0,1,1 if self.state!='down' else 0, 0, 0, 1
+<SmoothToggleButton@ToggleButton>:
+    background_color: (0.0, 0.96, 1, 1) if self.state=='down' else (0, 0, 0, 0)
+    background_normal: ''
+    back_color: 0.16, 0.45, 0.75, 1
+    border_radius: [5]
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: self.border_radius
+
+<StrokeButton@ToggleButton>:
+    background_color: (0.16, 0.45, 0.75, 1) if self.state=='down' else (0, 0, 0, 0)
     background_normal: ''
     back_color: 0.16, 0.45, 0.75, 1
     border_radius: 5
