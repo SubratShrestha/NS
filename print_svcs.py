@@ -1,47 +1,66 @@
 import asyncio
-import threading
-from bleak import discover, BleakClient, BleakScanner
+
+from bleak import discover, BleakClient
 from bleak.exc import BleakDotNetTaskError, BleakError
-import pprint
 
-svcs_dict = {
-    'CHANNEL_NUM_CHAR': [0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01],
-    'MAX_FREQ_CHAR': [0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01],
-    'OTA_SUPPORT_CHAR': [0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01],
-    'BATTRY_SERVICE': [0x180F],
-    'BATTRY_LEVEL_CHAR':[0x2A19],
-    'STIMULATION_COMMAND_SERVICE': [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'STIM_AMP_READ_CHAR': [0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'STIM_AMP_WRITE_CHAR':[0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'PHASE_ONE_READ_CHAR':[0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'PHASE_ONE_WRITE_CHAR':[0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'INTER_PHASE_GAP_READ_CHAR':[0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'INTER_PHASE_GAP_WRITE_CHAR':[0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'PHASE_TWO_READ_CHAR':[0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'PHASE_TWO_WRITE_CHAR':[0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'INTER_STIM_DELAY_READ_CHAR':[0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'INTER_STIM_DELAY_WRITE_CHAR':[0x06, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'STIMULATION_DURATION_READ_CHAR':[0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'STIMULATION_DURATION_WRITE_CHAR':[0x07, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'PULSE_PERIOD_READ_CHAR':[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02],
-    'PULSE_PERIOD_WRITE_CHAR':[0x08, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02]
-}
+DEVICE_INFO_SERVICE               = '180A'
+MANUFACTURER_NAME_CHAR            = '2A29'
+HARDWARE_REVISION_CHAR            = '2A27'
+FIRMWARE_REVISION_CHAR            = '2A26'
+SOFTWARE_REVISION_CHAR            = '2A28'
+BATTRY_SERVICE                    = '180F'
+BATTRY_LEVEL_CHAR                 = '2A19'
 
-# for k,v in svcs_dict.items():
-#     print(k, end=':')
-#     for i in v:
-#         print(hex(int(i, 16)))
+CHANNEL_NUM_CHAR                  =  '01000000-0000-0000-0000-000000000006'
+MAX_FREQ_CHAR                     =  '01000000-0000-0000-0000-000000000007'
+OTA_SUPPORT_CHAR                  =  '01000000-0000-0000-0000-000000000008'
+STIMULATION_COMMAND_SERVICE       =  '02000000-0000-0000-0000-000000000001'
+STIM_AMP_READ_CHAR                =  '02000000-0000-0000-0000-000000000002'
+STIM_AMP_WRITE_CHAR               =  '02000000-0000-0000-0000-000000000102'
+PHASE_ONE_READ_CHAR               =  '02000000-0000-0000-0000-000000000003'
+PHASE_ONE_WRITE_CHAR              =  '02000000-0000-0000-0000-000000000103'
+INTER_PHASE_GAP_READ_CHAR         =  '02000000-0000-0000-0000-000000000004'
+INTER_PHASE_GAP_WRITE_CHAR        =  '02000000-0000-0000-0000-000000000104'
+PHASE_TWO_READ_CHAR               =  '02000000-0000-0000-0000-000000000005'
+PHASE_TWO_WRITE_CHAR              =  '02000000-0000-0000-0000-000000000105'
+INTER_STIM_DELAY_READ_CHAR        =  '02000000-0000-0000-0000-000000000006'
+INTER_STIM_DELAY_WRITE_CHAR       =  '02000000-0000-0000-0000-000000000106'
+STIMULATION_DURATION_READ_CHAR    =  '02000000-0000-0000-0000-000000000007'
+STIMULATION_DURATION_WRITE_CHAR   =  '02000000-0000-0000-0000-000000000107'
+ANODIC_CATHODIC_FIRST_READ_CHAR   =  '02000000-0000-0000-0000-000000000008'
+ANODIC_CATHODIC_FIRST_WRITE_CHAR  =  '02000000-0000-0000-0000-000000000108'
+STIM_TYPE_READ_CHAR               =  '02000000-0000-0000-0000-000000000009'
+STIM_TYPE_WRITE_CHAR              =  '02000000-0000-0000-0000-000000000109'
+BURST_TIME_READ_CHAR              =  '02000000-0000-0000-0000-00000000000A'
+BURST_TIME_WRITE_CHAR             =  '02000000-0000-0000-0000-00000000010A'
+INTER_BURST_DELAY_READ_CHAR       =  '02000000-0000-0000-0000-00000000000B'
+INTER_BURST_DELAY_WRITE_CHAR      =  '02000000-0000-0000-0000-00000000010B'
 
-# def print_hex(text):
-#     l = [text.replace('-', '')[z:z + 2] for z in range(0, len(text.replace('-', '')), 2)]
-#     match = []
-#     for hx in l:
-#         h = hex(int(hx, 16))
-#         print(h, end=',')
-#         match.append(h)
-#     print(match)
+readable_chars = [
+    STIM_AMP_READ_CHAR,
+    PHASE_ONE_READ_CHAR,
+    INTER_PHASE_GAP_READ_CHAR,
+    PHASE_TWO_READ_CHAR,
+    INTER_STIM_DELAY_READ_CHAR,
+    STIMULATION_DURATION_READ_CHAR,
+    ANODIC_CATHODIC_FIRST_READ_CHAR,
+    STIM_TYPE_READ_CHAR,
+    BURST_TIME_READ_CHAR,
+    INTER_BURST_DELAY_READ_CHAR
+]
 
-
+writeable_chars = [
+    STIM_AMP_WRITE_CHAR,
+    PHASE_ONE_WRITE_CHAR,
+    INTER_PHASE_GAP_WRITE_CHAR,
+    PHASE_TWO_WRITE_CHAR,
+    INTER_STIM_DELAY_WRITE_CHAR,
+    STIMULATION_DURATION_WRITE_CHAR,
+    ANODIC_CATHODIC_FIRST_WRITE_CHAR,
+    STIM_TYPE_WRITE_CHAR,
+    BURST_TIME_WRITE_CHAR,
+    INTER_BURST_DELAY_WRITE_CHAR
+]
 
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:
@@ -58,24 +77,37 @@ async def connect(address, loop):
             if await client.is_connected():
                 print("CONNECTED")
                 services = await client.get_services()
-                services = vars(services)
-                for k,v in services.items():
+                svs = vars(services)
+                tes = services.get_service(STIMULATION_COMMAND_SERVICE)
+                print(tes)
+                for k,v in svs.items():
                     if 'services' in k:
+                        print(k)
+                        print(v)
                         print("=================== Services ==================")
                         for sk,sv in v.items():
-                            print(sv)
+                            # print(sv)
+                            # print(sk)
+                            print(services.get_service(sk))
                         print("\n===============================================\n\n")
                     if 'characteristics' in k:
                         print("=================== characteristics ==================")
                         for sk,sv in v.items():
-                            print(sv)
+                            print(sk)
+                            if sk in readable_chars:
+                                print(await client.read_gatt_char(sk))
+                            if sk in writeable_chars:
+                                print(await client.write_gatt_char(sk, bytearray(b'0'), True))
                         print("===============================================\n\n")
-
+                    #
                     if 'descript' in k:
                         print("=================== descript ==================")
                         for sk,sv in v.items():
-                            print(sv)
-                        print("===============================================\n\n")
+                            print(sk)
+                            print(await client.read_gatt_descriptor(sk))
+                    #     print("===============================================\n\n")
+
+                print(await client.disconnect())
                 return client
 
 async def ble_discover(loop, time):
