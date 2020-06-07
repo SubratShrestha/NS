@@ -18,10 +18,15 @@ from bleak.exc import BleakDotNetTaskError, BleakError
 from kivy.uix.popup import Popup
 import asyncio
 import threading
+from scipy import signal
+import matplotlib.pyplot as plt
+import numpy as np
+import pprint
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
 Config.set('graphics', 'resizable', 'False')
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
 
 devices_dict = {}
@@ -107,10 +112,25 @@ ids = [
     'channel_2_phase_time_input',
 ]
 
+def update_graph():
+    graph = get_squarewave_plot()
+    App.get_running_app().get_components('channel_1_stimulation_graph_display').add_widget(graph)
+
+def get_squarewave_plot():
+    t = np.linspace(0, 1, 500, endpoint=False)
+    plt.plot(t, signal.square(2 * np.pi * 5 * t))
+    plt.ylim(-2, 2)
+    # plt.figure()
+    return FigureCanvasKivyAgg(plt.gcf())
+
 def update_graph_on_text_channel_1(instance, value):
     print(instance, value)
+    update_graph()
 
 
+def update_graph_on_toggle_channel_1(button,state):
+    print(button.text, state)
+    update_graph()
 
 live_update_references = {
     'channel_1_stimulation_graph_display': [
@@ -296,12 +316,12 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             App.get_running_app().root.screen_manager.current = 'device'
             App.get_running_app().root.side_bar.device_rv.selected_count += 1
 
-            graph = App.get_running_app().get_components('channel_1_stimulation_graph_display')
+
             for i in live_update_references['channel_1_stimulation_graph_display']:
                 if 'input' in i:
                     App.get_running_app().get_components(i).bind(text=update_graph_on_text_channel_1)
-                # if 'toggle' in i:
-                #     App.get_running_app().get_components(i).bind()
+                if 'toggle' in i:
+                    App.get_running_app().get_components(i).bind(state=update_graph_on_toggle_channel_1)
                 print(i,App.get_running_app().get_components(i))
 
         elif is_selected and self.selected:
