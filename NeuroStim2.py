@@ -26,6 +26,7 @@ from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
 Config.set('graphics', 'resizable', 'False')
+"""Must be below config setting, otherwise it's reset"""
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
 
