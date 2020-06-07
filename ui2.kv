@@ -262,11 +262,15 @@
 <CathodicAnodicToggle@BoxLayout>:
     pos_hint: {"x":0.075, "top":.6}
     size_hint: .85,.06
+    cathodic: cathodic
+    anodic: anodic
     ToggleButton:
+        id: cathodic
         text: "Cathodic First"
         font_size: 14
         group: "cathodic_anodic"
     ToggleButton:
+        id: anodic
         text: "Anodic First"
         group: "cathodic_anodic"
         font_size: 14
@@ -335,6 +339,10 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
+
+    inter_phase_delay: inter_phase_delay
+    phase_time: phase_time
+
     TabbedPanelItem:
         text: "Phase Time"
         FloatLayout:
@@ -346,6 +354,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id: inter_phase_delay
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: ""
@@ -357,6 +366,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id: phase_time
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 text: ""
@@ -391,6 +401,14 @@
     channel_2_electrode_toggle:channel_2_electrode_toggle
     channel_2_electrode_button:channel_2_electrode_button
 
+    channel_1_stimulation_graph_display: channel_1_stimulation_graph_display
+    channel_2_stimulation_graph_display: channel_2_stimulation_graph_display
+
+    channel_1_phase_time_frequency_tab:channel_1_phase_time_frequency_tab
+    channel_1_burst_uniform_stimulation_tab:channel_1_burst_uniform_stimulation_tab
+    channel_2_phase_time_frequency_tab:channel_2_phase_time_frequency_tab
+    channel_2_burst_uniform_stimulation_tab:channel_2_burst_uniform_stimulation_tab
+
     TabbedPanelItem:
         text: "Channel 1"
         BoxLayout:
@@ -400,7 +418,9 @@
                 BoxLayout:
                     orientation: 'vertical'
                     PhaseTimeFrequencyTabs:
+                        id: channel_1_phase_time_frequency_tab
                     BurstUniformStimulationTabs:
+                        id: channel_1_burst_uniform_stimulation_tab
                 FloatLayout:
                     Button:
                         id: channel_1_stop_button
@@ -453,10 +473,15 @@
                         text: "Generate Graph"
                         group: "electrode"
             BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 0, 1, 0, 1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
                 size_hint: 1,.5
                 pos_hint: {"x":0, "top":1}
-                Button:
-                    text:"x"
+                id: channel_1_stimulation_graph_display
     TabbedPanelItem:
         text: "Channel 2"
         BoxLayout:
@@ -466,7 +491,9 @@
                 BoxLayout:
                     orientation: 'vertical'
                     PhaseTimeFrequencyTabs:
+                        id: channel_2_phase_time_frequency_tab
                     BurstUniformStimulationTabs:
+                        id: channel_2_burst_uniform_stimulation_tab
                 FloatLayout:
                     Button:
                         id: channel_2_stop_button
@@ -519,10 +546,16 @@
                         text: "Generate Graph"
                         group: "electrode"
             BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 0, 1, 0, 1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
                 size_hint: 1,.5
                 pos_hint: {"x":0, "top":1}
-                Button:
-                    text:"x"
+                id: channel_2_stimulation_graph_display
+
 
 <BurstUniformStimulationTabs>:
     tab_width: (self.parent.width*.995)/2
@@ -531,6 +564,8 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
+    inter_burst_delay:inter_burst_delay
+    burst_duration:burst_duration
     TabbedPanelItem:
         text: "Burst Stimulation"
         FloatLayout:
@@ -542,6 +577,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id: burst_duration
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: ""
@@ -553,6 +589,7 @@
                 halign: 'left'
                 valign: 'middle'
             TextInput:
+                id: inter_burst_delay
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 text: ""

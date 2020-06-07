@@ -90,10 +90,44 @@ ids = [
     'triggered_mode_toggle_phase_2_button',
     'triggered_mode_toggle_phase_1_and_2_button',
     'triggered_mode_toggle_inter_stim_time_button',
-    'ramp_up_text_input'
+    'ramp_up_text_input',
+    'channel_1_stimulation_graph_display',
+    'channel_2_stimulation_graph_display',
+    'channel_2_cathodic_toggle',
+    'channel_2_anodic_toggle',
+    'channel_1_cathodic_toggle',
+    'channel_1_anodic_toggle',
+    'channel_1_inter_burst_delay_input',
+    'channel_1_burst_duration_input',
+    'channel_2_inter_burst_delay',
+    'channel_2_burst_duration',
+    'channel_1_inter_phase_delay_input',
+    'channel_1_phase_time_input',
+    'channel_2_inter_phase_delay_input',
+    'channel_2_phase_time_input',
 ]
 
+def update_graph_on_text_channel_1(instance, value):
+    print(instance, value)
 
+
+
+live_update_references = {
+    'channel_1_stimulation_graph_display': [
+        'termination_tabs_time_input_1',
+        'termination_tabs_duty_cycle_input_1',
+        'termination_tabs_time_input_1',
+        'channel_1_output_current_input',
+        'channel_1_cathodic_toggle',
+        'channel_1_anodic_toggle',
+        'channel_1_ramp_up_toggle',
+        'channel_1_electrode_toggle',
+        'channel_1_inter_burst_delay_input',
+        'channel_1_burst_duration_input',
+        'channel_1_inter_phase_delay_input',
+        'channel_1_phase_time_input',
+    ]
+}
 
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:
@@ -261,6 +295,15 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             App.get_running_app().root.screen_manager.transition.direction = 'up'
             App.get_running_app().root.screen_manager.current = 'device'
             App.get_running_app().root.side_bar.device_rv.selected_count += 1
+
+            graph = App.get_running_app().get_components('channel_1_stimulation_graph_display')
+            for i in live_update_references['channel_1_stimulation_graph_display']:
+                if 'input' in i:
+                    App.get_running_app().get_components(i).bind(text=update_graph_on_text_channel_1)
+                # if 'toggle' in i:
+                #     App.get_running_app().get_components(i).bind()
+                print(i,App.get_running_app().get_components(i))
+
         elif is_selected and self.selected:
             App.get_running_app().root.side_bar.device_rv.selected_count -= 1
             self.selected = False
@@ -272,8 +315,8 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
 
-        for i in ids:
-            print(App.get_running_app().get_components(i))
+        # for i in ids:
+        #     print(App.get_running_app().get_components(i))
 
 async def ble_discover(loop, time):
     task1 = loop.create_task(discover(time))
@@ -348,6 +391,10 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').channel_1_termination_tabs
         if id == 'channel_1_cathodic_anodic_toggle':
             return self.get_components('stimulation_tabs').channel_1_cathodic_anodic_toggle
+        if id == 'channel_1_cathodic_toggle':
+            return self.get_components('channel_1_cathodic_anodic_toggle').cathodic
+        if id == 'channel_1_anodic_toggle':
+            return self.get_components('channel_1_cathodic_anodic_toggle').anodic
         if id == 'channel_1_ramp_up_toggle':
             return self.get_components('stimulation_tabs').channel_1_ramp_up_toggle
         if id == 'channel_1_electrode_toggle':
@@ -367,6 +414,10 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').channel_2_termination_tabs
         if id == 'channel_2_cathodic_anodic_toggle':
             return self.get_components('stimulation_tabs').channel_2_cathodic_anodic_toggle
+        if id == 'channel_2_cathodic_toggle':
+            return self.get_components('channel_2_cathodic_anodic_toggle').cathodic
+        if id == 'channel_2_anodic_toggle':
+            return self.get_components('channel_2_cathodic_anodic_toggle').anodic
         if id == 'channel_2_ramp_up_toggle':
             return self.get_components('stimulation_tabs').channel_2_ramp_up_toggle
         if id == 'channel_2_electrode_toggle':
@@ -448,6 +499,37 @@ class NeuroStimApp(App):
         if id == 'triggered_mode_toggle_inter_stim_time_button':
             return self.get_components('triggered_mode_toggle').inter_stim_time_button
 
+        if id == 'channel_1_phase_time_frequency_tab':
+            return self.get_components('stimulation_tabs').channel_1_phase_time_frequency_tab
+        if id == 'channel_1_burst_uniform_stimulation_tab':
+            return self.get_components('stimulation_tabs').channel_1_burst_uniform_stimulation_tab
+        if id == 'channel_2_phase_time_frequency_tab':
+            return self.get_components('stimulation_tabs').channel_2_phase_time_frequency_tab
+        if id == 'channel_2_burst_uniform_stimulation_tab':
+            return self.get_components('stimulation_tabs').channel_2_burst_uniform_stimulation_tab
+
+        if id == 'channel_1_inter_burst_delay_input':
+            return self.get_components('channel_1_burst_uniform_stimulation_tab').inter_burst_delay
+        if id == 'channel_1_burst_duration_input':
+            return self.get_components('channel_1_burst_uniform_stimulation_tab').burst_duration
+        if id == 'channel_2_inter_burst_delay':
+            return self.get_components('channel_2_burst_uniform_stimulation_tab').inter_burst_delay
+        if id == 'channel_2_burst_duration':
+            return self.get_components('channel_2_burst_uniform_stimulation_tab').burst_duration
+
+        if id == 'channel_1_inter_phase_delay_input':
+            return self.get_components('channel_1_phase_time_frequency_tab').inter_phase_delay
+        if id == 'channel_1_phase_time_input':
+            return self.get_components('channel_1_phase_time_frequency_tab').phase_time
+        if id == 'channel_2_inter_phase_delay_input':
+            return self.get_components('channel_2_phase_time_frequency_tab').inter_phase_delay
+        if id == 'channel_2_phase_time_input':
+            return self.get_components('channel_2_phase_time_frequency_tab').phase_time
+
+        if id == 'channel_1_stimulation_graph_display':
+            return self.get_components('stimulation_tabs').channel_1_stimulation_graph_display
+        if id == 'channel_2_stimulation_graph_display':
+            return self.get_components('stimulation_tabs').channel_2_stimulation_graph_display
         print("missing id: ",id)
         return None
 
