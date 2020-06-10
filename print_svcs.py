@@ -99,7 +99,7 @@ async def connect(address, loop):
                             if sk in writeable_chars:
                                 print(await client.write_gatt_char(sk, bytearray(b'0'), True))
                         print("===============================================\n\n")
-                    #
+
                     if 'descript' in k:
                         print("=================== descript ==================")
                         for sk,sv in v.items():

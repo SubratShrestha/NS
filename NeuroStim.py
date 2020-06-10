@@ -320,7 +320,6 @@ class NeuroStimApp(App):
         while self.search:
             msg = conn.recv()
             if msg == 'close':
-                conn.send('close')
                 conn.close()
                 break
             else:
