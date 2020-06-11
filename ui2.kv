@@ -269,6 +269,7 @@
         text: "Cathodic First"
         font_size: 14
         group: "cathodic_anodic"
+        state: "down"
     ToggleButton:
         id: anodic
         text: "Anodic First"
@@ -298,8 +299,11 @@
                 id: termination_tabs_time_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
-                text: "0"
+                text: "1"
                 multiline:False
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
     TabbedPanelItem:
         text: "Duty Cycle"
         group: "termination"
@@ -316,7 +320,9 @@
                 id: termination_tabs_duty_cycle_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
-                text: "0"
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
                 multiline: False
     TabbedPanelItem:
         text: "Non-Stop"
@@ -360,7 +366,10 @@
                 id: channel_1_inter_phase_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.5}
@@ -372,7 +381,10 @@
                 id: channel_1_inter_stim_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.25}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
@@ -384,7 +396,10 @@
                 id: channel_1_phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.5}
@@ -396,7 +411,10 @@
                 id: channel_1_phase_2_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.25}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
     TabbedPanelItem:
         text: "Frequency"
         FloatLayout:
@@ -411,7 +429,10 @@
                 id: channel_1_frequency_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
 
 <ChannelStimulationTabs>:
     tab_width: (self.parent.width)/2
@@ -429,7 +450,7 @@
     channel_1_cathodic_anodic_toggle:channel_1_cathodic_anodic_toggle
     channel_1_ramp_up_toggle:channel_1_ramp_up_toggle
     channel_1_electrode_toggle:channel_1_electrode_toggle
-    channel_1_electrode_button:channel_1_electrode_button
+    # channel_1_electrode_button:channel_1_electrode_button
 
     channel_2_stop_button:channel_2_stop_button
     channel_2_save_button:channel_2_save_button
@@ -439,7 +460,7 @@
     channel_2_cathodic_anodic_toggle:channel_2_cathodic_anodic_toggle
     channel_2_ramp_up_toggle:channel_2_ramp_up_toggle
     channel_2_electrode_toggle:channel_2_electrode_toggle
-    channel_2_electrode_button:channel_2_electrode_button
+    # channel_2_electrode_button:channel_2_electrode_button
 
     channel_1_stimulation_graph_display: channel_1_stimulation_graph_display
     channel_2_stimulation_graph_display: channel_2_stimulation_graph_display
@@ -485,7 +506,10 @@
                         id:channel_1_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
-                        text: "0"
+                        text: "1"
+                        input_type: 'number'
+                        input_filter: 'float'
+                        multiline: False
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.5}
@@ -506,13 +530,13 @@
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
-                    Button:
-                        id: channel_1_electrode_button
-                        size_hint: .4,.1
-                        pos_hint: {"x":0.525, "top":0.15}
-                        text: "Generate Graph"
-                        group: "electrode"
-                        on_press: get_squarewave_plot()
+                    #Button:
+                    #    id: channel_1_electrode_button
+                    #    size_hint: .4,.1
+                    #    pos_hint: {"x":0.525, "top":0.15}
+                    #    text: "Generate Graph"
+                    #    group: "electrode"
+                    #    on_press: get_squarewave_plot()
             BoxLayout:
                 canvas:
                     Color:
@@ -559,7 +583,10 @@
                         id: channel_2_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
-                        text: "0"
+                        text: "1"
+                        input_type: 'number'
+                        input_filter: 'float'
+                        multiline: False
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.5}
@@ -580,12 +607,11 @@
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
-                    Button:
-                        id: channel_2_electrode_button
-                        size_hint: .4,.1
-                        pos_hint: {"x":0.525, "top":0.15}
-                        text: "Generate Graph"
-                        group: "electrode"
+                    # Button:
+                    #     id: channel_2_electrode_button
+                    #     size_hint: .4,.1
+                    #     pos_hint: {"x":0.525, "top":0.15}
+                    #     text: "Generate Graph"
             BoxLayout:
                 canvas:
                     Color:
@@ -621,7 +647,10 @@
                 id: burst_duration
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
@@ -633,7 +662,10 @@
                 id: inter_burst_delay
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: ""
+                text: "1"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
     TabbedPanelItem:
         text: "Uniform Stimulation"
 
@@ -687,10 +719,13 @@
         pos_hint: {"x":0.05,"top":0.95}
     TextInput:
         id: sample_info
-        text: "0"
+        text: "1"
         size_hint: .16, .06
         pos_hint: {"x":0.25,"top":0.94}
         multiline:False
+        input_type: 'number'
+        input_filter: 'float'
+        multiline: False
     Button:
         id: log_stop_button
         size_hint: .16,0.06
@@ -904,11 +939,14 @@
         multiline: False
     TextInput:
         id: ramp_up_text_input
-        text: "0"
+        text: "1"
         size_hint: 0.9, 0.45
         font_size: 12
         multiline:False
         pos_hint: {"x":0.05,"top":.55}
+        input_type: 'number'
+        input_filter: 'float'
+        multiline: False
 
 <TriggeredModeToggle@FloatLayout>:
     size_hint: 0.65, .1

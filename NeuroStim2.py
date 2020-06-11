@@ -18,6 +18,8 @@ from bleak import discover, BleakClient, BleakScanner
 from bleak.exc import BleakDotNetTaskError, BleakError
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
+from kivy.uix.textinput import TextInput
+
 import asyncio
 import threading
 from scipy import signal
@@ -115,54 +117,103 @@ ids = [
     'channel_2_phase_time_input',
 ]
 
+class custom_test(TextInput):
+    pass
+
 def update_graph():
     graph = get_squarewave_plot()
+    App.get_running_app().get_components('channel_1_stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('channel_1_stimulation_graph_display').add_widget(graph)
 
 def get_squarewave_plot():
-# points on the x-axis
-#timing of frist cycle
-    T = [0, 0, channel_1_phase_1_time_input, channel_1_phase_1_time_input,
-         channel_1_phase_1_time_input + channel_1_inter_phase_delay_input,
-         channel_1_phase_1_time_input + channel_1_inter_phase_delay_input,
-         channel_1_phase_1_time_input + channel_1_phase_2_time_input + channel_1_inter_phase_delay_input,
-         channel_1_phase_1_time_input + channel_1_phase_2_time_input + channel_1_inter_phase_delay_input,
-         channel_1_phase_1_time_input + channel_1_phase_2_time_input + channel_1_inter_phase_delay_input + channel_1_inter_stim_delay_input]
+    settings = App.get_running_app().get_channel_1_graph_variables()
+    print(settings)
+
+    burst = settings['channel_1_burst_uniform_stimulation_tab'] == 'Burst Stimulation'
+    if burst:
+        bursttime = settings['channel_1_burst_duration_input']
+        bursttime = int(bursttime) * 1000
+        interburst = settings['channel_1_inter_burst_delay_input']
+        interburst = int(interburst) * 1000 * 1000
+        # TODO:======================================================
+        # if interburst == 0:
+        #     burstfrequency = input("burstfrequency (Hz): \n")
+        #     burstfrequency = int(burstfrequency)
+        #     interburst = 1000000 / burstfrequency - bursttime
+
+    anodic = settings['channel_1_anodic_toggle'] == 'down'
+    current = int(settings['channel_1_output_current_input'])
+    phasetime1 = int(settings['channel_1_phase_1_time_input'])
+    phasetime2 = int(settings['channel_1_phase_2_time_input'])
+    interphase = int(settings['channel_1_inter_phase_delay_input'])
+    interstim = 0
+    if settings['channel_1_phase_time_frequency_tab'] == 'Phase Time':
+        interstim = int(settings['channel_1_inter_stim_delay_input'])
+    if settings['channel_1_phase_time_frequency_tab'] == 'Frequency':
+        wavefrequency = int(settings['channel_1_frequency_input'])
+        interstim = 1000000 / wavefrequency - phasetime1 - phasetime2 - interphase
+
+    if anodic:
+        andoic_y_axis = [0, 1, 1, 0, 0, -1, -1, 0, 0]
+        V = [i * current * 0.001 for i in andoic_y_axis]
+    else:
+        cathodic_y_axis = [0, -1, -1, 0, 0, 1, 1, 0, 0]
+        V = [i * current * 0.001 for i in cathodic_y_axis]
+
+    T = [
+        0,
+        0,
+        phasetime1,
+        phasetime1,
+        phasetime1+interphase,
+        phasetime1+interphase,
+        phasetime1+phasetime2+interphase,
+        phasetime1+phasetime2+interphase,
+        phasetime1+phasetime2+interphase+interstim
+    ]
+
+    if settings['channel_1_burst_uniform_stimulation_tab'] == 'Burst Stimulation':
+        # constantly add last element of previous "T list"to all element in previous T to make a new list of timing for next peroid. and then join all lists together to form a set for y-axis data
+        b = T.copy()
+        while (b[len(b) - 1] < (bursttime + interburst)):
+            for i in range(len(b)):
+                b[i] = T[i] + b[len(b) - 1]
+            T = T + b
+
+        # change the T[-1]to bursttime
+        T[len(T) - 1] = bursttime
+        # count how many element in the T list, divide by the 9, and repeat V list this many time, make set V2
+        # V * (len(T) / 9)
+        m = V.copy()
+        for i in range(int(len(T) / 9.0 - 1)):
+            m = m + V
+        V = m
+        # add one more element to T, that is bursttime + interburst
+        T.append(bursttime + interburst)
+        V.append(0)
+    # if settings['channel_1_burst_uniform_stimulation_tab'] == 'Uniform Stimulation':
+
 
     plt.plot(T, V)
     plt.xlabel('time (us)')
     plt.ylabel('voltage (mV)')
-    plt.show()
 
     return FigureCanvasKivyAgg(plt.gcf())
 
 def update_graph_on_text_channel_1(instance, value):
-    channel_1_output_current_input = NumericProperty(None)
-    channel_1_phase_1_time_input = NumericProperty(None)
-    channel_1_phase_2_time_input = NumericProperty(None)
-    channel_1_inter_phase_delay_input = NumericProperty(None)
-    channel_1_inter_stim_delay_input = NumericProperty(None)
-    channel_1_frequency_input = NumericProperty(None)
     update_graph()
 
 
 def update_graph_on_toggle_channel_1(button,state):
-# points on y-axis
-    andoic_y_axis = [0, 1, 1, 0, 0, -1, -1, 0, 0]
-    cathodic_y_axis = [0, -1, -1, 0, 0, 1, 1, 0, 0]
-    if state == "down":
-        V = [i * current * 0.001 for i in andoic_y_axis]
-    else:
-        V = [i * current * 0.001 for i in cathodic_y_axis]
     update_graph()
 
 live_update_references = {
     'channel_1_stimulation_graph_display': [
         'termination_tabs_time_input_1',
         'termination_tabs_duty_cycle_input_1',
-        'termination_tabs_time_input_1',
         'channel_1_output_current_input',
         'channel_1_cathodic_toggle',
+        'channel_1_inter_stim_delay_input',
         'channel_1_anodic_toggle',
         'channel_1_ramp_up_toggle',
         'channel_1_electrode_toggle',
@@ -342,7 +393,6 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             App.get_running_app().root.screen_manager.current = 'device'
             App.get_running_app().root.side_bar.device_rv.selected_count += 1
 
-
             for i in live_update_references['channel_1_stimulation_graph_display']:
                 if 'input' in i:
                     App.get_running_app().get_components(i).bind(text=update_graph_on_text_channel_1)
@@ -391,6 +441,27 @@ class NeuroStimApp(App):
         self.t = threading.Thread(target=BluetoothDiscoverLoop)
         self.t.start()
 
+    def get_channel_1_graph_variables(self):
+        return {
+            'channel_1_termination_tabs': self.get_components('channel_1_termination_tabs').current_tab.text,
+            'channel_1_phase_time_frequency_tab': self.get_components('channel_1_phase_time_frequency_tab').current_tab.text,
+            'channel_1_burst_uniform_stimulation_tab': self.get_components('channel_1_burst_uniform_stimulation_tab').current_tab.text,
+            'channel_1_inter_burst_delay_input': self.get_components('channel_1_inter_burst_delay_input').text,
+            'channel_1_burst_duration_input': self.get_components('channel_1_burst_duration_input').text,
+            'channel_1_inter_phase_delay_input': self.get_components('channel_1_inter_phase_delay_input').text,
+            'channel_1_inter_stim_delay_input': self.get_components('channel_1_inter_stim_delay_input').text,
+            'channel_1_phase_1_time_input': self.get_components('channel_1_phase_1_time_input').text,
+            'channel_1_phase_2_time_input': self.get_components('channel_1_phase_2_time_input').text,
+            'channel_1_frequency_input': self.get_components('channel_1_frequency_input').text,
+            'termination_tabs_time_input_1': self.get_components('termination_tabs_time_input_1').text,
+            'termination_tabs_duty_cycle_input_1': self.get_components('termination_tabs_duty_cycle_input_1').text,
+            'channel_1_output_current_input': self.get_components('channel_1_output_current_input').text,
+            'channel_1_cathodic_toggle':self.get_components('channel_1_cathodic_toggle').state,
+            'channel_1_anodic_toggle':self.get_components('channel_1_anodic_toggle').state,
+            'channel_1_ramp_up_toggle':self.get_components('channel_1_ramp_up_toggle').state,
+            'channel_1_electrode_toggle':self.get_components('channel_1_electrode_toggle').state
+        }
+
     def get_components(self, id):
         if id == 'screen_manager':
             return self.root.screen_manager
@@ -418,10 +489,6 @@ class NeuroStimApp(App):
             return self.root.screen_manager.device_screen.device_tabs.advanced_settings
         if id == 'stimulation_log_tab':
             return self.root.screen_manager.device_screen.device_tabs.stimulation_log_tab
-        if id == 'stimulation_tabs':
-            return self.get_components('device_settings').stimulation_tabs
-        if id == 'stimulation_tabs':
-            return self.get_components('device_settings').stimulation_tabs
         if id == 'stimulation_tabs':
             return self.get_components('device_settings').stimulation_tabs
 
