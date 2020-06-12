@@ -116,7 +116,7 @@ ids = [
     'channel_1_phase_time_input',
     'channel_2_inter_phase_delay_input',
     'channel_2_phase_time_input',
-    'channel_1_burst_frequency_input'
+    # 'channel_1_burst_frequency_input'
 ]
 
 class custom_test(TextInput):
@@ -129,21 +129,15 @@ def update_graph():
 
 def get_squarewave_plot():
     settings = App.get_running_app().get_channel_1_graph_variables()
-    print(settings['channel_1_burst_frequency_input'])
 
     burst = settings['channel_1_burst_uniform_stimulation_tab'] == 'Burst Stimulation'
     if burst:
-        bursttime = settings['channel_1_burst_duration_input'] if settings['channel_1_burst_duration_input'] != "" else 0
-        bursttime = int(bursttime) * 1000
-        interburst = settings['channel_1_inter_burst_delay_input'] if settings['channel_1_inter_burst_delay_input'] != "" else 0
-        interburst = int(interburst) * 1000 * 1000
-        # TODO:======================================================
-        if interburst == 0:
-            burstfrequency = settings['channel_1_burst_frequency_input'] if settings['channel_1_burst_frequency_input'] != "" else 0
-            burstfrequency = int(burstfrequency)
-            if burstfrequency != 0:
-                # TODO:
-                interburst = 1000000 / burstfrequency - bursttime
+        burstperiod = settings['channel_1_burst_duration_input'] if settings['channel_1_burst_duration_input'] != "" else 0
+        burstperiod = int(burstperiod) * 1000
+        dutycycle = settings['channel_1_inter_burst_delay_input'] if settings['channel_1_inter_burst_delay_input'] != "" else 0
+        dutycycle = int(dutycycle)/100
+        burstduration = dutycycle*burstperiod
+        interburst = burstperiod - burstduration
 
     anodic = settings['channel_1_anodic_toggle'] == 'down'
     current = int(settings['channel_1_output_current_input']) if settings['channel_1_output_current_input'] != "" else 0
@@ -154,55 +148,54 @@ def get_squarewave_plot():
     if settings['channel_1_phase_time_frequency_tab'] == 'Phase Time':
         interstim = int(settings['channel_1_inter_stim_delay_input']) if settings['channel_1_inter_stim_delay_input'] != "" else 0
     if settings['channel_1_phase_time_frequency_tab'] == 'Frequency':
-        wavefrequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
-        interstim = 1000000 / wavefrequency - phasetime1 - phasetime2 - interphase
+        frequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
+        if frequency != 0:
+            interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
 
+    # points on y-axis
+    andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
+    cathodic = [0, -1, -1, 0, 0, 1, 1, 0, 0]
     if anodic:
-        andoic_y_axis = [0, 1, 1, 0, 0, -1, -1, 0, 0]
-        V = [i * current * 0.001 for i in andoic_y_axis]
+        I = [i * current for i in andoic]
     else:
-        cathodic_y_axis = [0, -1, -1, 0, 0, 1, 1, 0, 0]
-        V = [i * current * 0.001 for i in cathodic_y_axis]
+        I = [i * current for i in cathodic]
 
-    T = [
-        0,
-        0,
-        phasetime1,
-        phasetime1,
-        phasetime1+interphase,
-        phasetime1+interphase,
-        phasetime1+phasetime2+interphase,
-        phasetime1+phasetime2+interphase,
-        phasetime1+phasetime2+interphase+interstim
-    ]
+    # points on x-axis
+    # timing of frist cycle
+    T = [0, 0, phasetime1, phasetime1, phasetime1 + interphase, phasetime1 + interphase,
+         phasetime1 + phasetime2 + interphase, phasetime1 + phasetime2 + interphase,
+         phasetime1 + phasetime2 + interphase + interstim]
+
     # if its uniform stim, graph stop plotting after one peroid
     # if its burst stim, graph stop plotting after one burst peroid
     if burst:
-        # constantly add last element of previous "T list"to all element in previous T to make a new list of timing for next peroid. and then join all lists together to form a set for y-axis data
+        # constantly add last element of previous "T list"to all element in previous T to make the point on y-axis
         b = T.copy()
-        while (b[len(b) - 1] < (bursttime + interburst)):
+        while (b[len(b) - 1] + phasetime1 + phasetime2 + interphase + interstim < (burstduration)):
             for i in range(len(b)):
                 b[i] = T[i] + b[len(b) - 1]
-            print("here")
             T = T + b
 
-        # change the T[-1]to bursttime
-        T[len(T) - 1] = bursttime
+        # change the T[-1]to burstduration
+        T[len(T) - 1] = burstduration
         # count how many element in the T list, divide by the 9, and repeat V list this many time, make set V2
-        # V * (len(T) / 9)
-        m = V.copy()
+        m = I.copy()
         for i in range(int(len(T) / 9.0 - 1)):
-            m = m + V
-        V = m
-        # add one more element to T, that is bursttime + interburst
-        T.append(bursttime + interburst)
-        V.append(0)
-    # if settings['channel_1_burst_uniform_stimulation_tab'] == 'Uniform Stimulation':
+            m = m + I
+        I = m
+        # add one more element to T, that is burstduration + interburst
+        T.append(burstduration + interburst)
+        I.append(0)
 
     plt.close("all")
-    plt.plot(T, V)
-    plt.xlabel('time (us)')
-    plt.ylabel('voltage (mV)')
+    plt.plot(T, I)
+
+    """Previous Labels"""
+    # plt.xlabel('time (us)')
+    # plt.ylabel('voltage (mV)')
+    """Mitchells latest labels"""
+    plt.xlabel('Time (us)')
+    plt.ylabel('Current (uA)')
 
     return FigureCanvasKivyAgg(plt.gcf())
 
@@ -229,7 +222,7 @@ live_update_references = {
         'channel_1_phase_1_time_input',
         'channel_1_phase_2_time_input',
         'channel_1_frequency_input',
-        'channel_1_burst_frequency_input'
+        # 'channel_1_burst_frequency_input'
     ]
 }
 
@@ -469,7 +462,7 @@ class NeuroStimApp(App):
             'channel_1_anodic_toggle':self.get_components('channel_1_anodic_toggle').state,
             'channel_1_ramp_up_toggle':self.get_components('channel_1_ramp_up_toggle').state,
             'channel_1_electrode_toggle':self.get_components('channel_1_electrode_toggle').state,
-            'channel_1_burst_frequency_input':self.get_components('channel_1_burst_frequency_input').text
+            # 'channel_1_burst_frequency_input':self.get_components('channel_1_burst_frequency_input').text
         }
 
     def get_components(self, id):
@@ -524,8 +517,8 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').channel_1_electrode_toggle
         if id == 'channel_1_electrode_button':
             return self.get_components('stimulation_tabs').channel_1_electrode_button
-        if id =='channel_1_burst_frequency_input':
-            return self.get_components('channel_1_burst_uniform_stimulation_tab').burst_frequency
+        # if id =='channel_1_burst_frequency_input':
+        #     return self.get_components('channel_1_burst_uniform_stimulation_tab').burst_frequency
 
         if id == 'channel_2_stop_button':
             return self.get_components('stimulation_tabs').channel_2_stop_button

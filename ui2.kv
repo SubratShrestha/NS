@@ -644,7 +644,7 @@
     background_color: 0.1,0.2,0.3,1
     inter_burst_delay:inter_burst_delay
     burst_duration:burst_duration
-    burst_frequency: burst_frequency
+    # burst_frequency: burst_frequency
     TabbedPanelItem:
         text: "Burst Stimulation"
         FloatLayout:
@@ -687,15 +687,15 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
-            TextInput:
-                id: burst_frequency
-                size_hint: .4,.25
-                pos_hint: {"x":0.05, "top":0.25}
-                text: "0"
-                hint_text: "0"
-                input_type: 'number'
-                input_filter: 'float'
-                multiline: False
+            # TextInput:
+            #     id: burst_frequency
+            #     size_hint: .4,.25
+            #     pos_hint: {"x":0.05, "top":0.25}
+            #     text: "0"
+            #     hint_text: "0"
+            #     input_type: 'number'
+            #     input_filter: 'float'
+            #     multiline: False
     TabbedPanelItem:
         text: "Continuous Stimulation"
 
