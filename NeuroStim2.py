@@ -23,7 +23,6 @@ from kivy.uix.textinput import TextInput
 import asyncio
 import threading
 from scipy import signal
-import matplotlib.pyplot as plt
 import numpy as np
 import pprint
 from kivy.config import Config
@@ -32,7 +31,9 @@ Config.set('graphics', 'height', 768)
 Config.set('graphics', 'resizable', 'False')
 """Must be below config setting, otherwise it's reset"""
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
-
+import matplotlib
+matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
+import matplotlib.pyplot as plt
 
 devices_dict = {}
 ids = [
@@ -131,9 +132,9 @@ def get_squarewave_plot():
 
     burst = settings['channel_1_burst_uniform_stimulation_tab'] == 'Burst Stimulation'
     if burst:
-        bursttime = settings['channel_1_burst_duration_input']
+        bursttime = settings['channel_1_burst_duration_input'] if settings['channel_1_burst_duration_input'] != "" else 0
         bursttime = int(bursttime) * 1000
-        interburst = settings['channel_1_inter_burst_delay_input']
+        interburst = settings['channel_1_inter_burst_delay_input'] if settings['channel_1_inter_burst_delay_input'] != "" else 0
         interburst = int(interburst) * 1000 * 1000
         # TODO:======================================================
         # if interburst == 0:
@@ -142,15 +143,15 @@ def get_squarewave_plot():
         #     interburst = 1000000 / burstfrequency - bursttime
 
     anodic = settings['channel_1_anodic_toggle'] == 'down'
-    current = int(settings['channel_1_output_current_input'])
-    phasetime1 = int(settings['channel_1_phase_1_time_input'])
-    phasetime2 = int(settings['channel_1_phase_2_time_input'])
-    interphase = int(settings['channel_1_inter_phase_delay_input'])
+    current = int(settings['channel_1_output_current_input']) if settings['channel_1_output_current_input'] != "" else 0
+    phasetime1 = int(settings['channel_1_phase_1_time_input']) if settings['channel_1_phase_1_time_input'] != "" else 0
+    phasetime2 = int(settings['channel_1_phase_2_time_input']) if settings['channel_1_phase_2_time_input'] != "" else 0
+    interphase = int(settings['channel_1_inter_phase_delay_input']) if settings['channel_1_inter_phase_delay_input'] != "" else 0
     interstim = 0
     if settings['channel_1_phase_time_frequency_tab'] == 'Phase Time':
-        interstim = int(settings['channel_1_inter_stim_delay_input'])
+        interstim = int(settings['channel_1_inter_stim_delay_input']) if settings['channel_1_inter_stim_delay_input'] != "" else 0
     if settings['channel_1_phase_time_frequency_tab'] == 'Frequency':
-        wavefrequency = int(settings['channel_1_frequency_input'])
+        wavefrequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
         interstim = 1000000 / wavefrequency - phasetime1 - phasetime2 - interphase
 
     if anodic:
@@ -171,13 +172,15 @@ def get_squarewave_plot():
         phasetime1+phasetime2+interphase,
         phasetime1+phasetime2+interphase+interstim
     ]
-
-    if settings['channel_1_burst_uniform_stimulation_tab'] == 'Burst Stimulation':
+    # if its uniform stim, graph stop plotting after one peroid
+    # if its burst stim, graph stop plotting after one burst peroid
+    if burst and bursttime != 0 and interburst != 0:
         # constantly add last element of previous "T list"to all element in previous T to make a new list of timing for next peroid. and then join all lists together to form a set for y-axis data
         b = T.copy()
         while (b[len(b) - 1] < (bursttime + interburst)):
             for i in range(len(b)):
                 b[i] = T[i] + b[len(b) - 1]
+            print("here")
             T = T + b
 
         # change the T[-1]to bursttime
@@ -193,7 +196,7 @@ def get_squarewave_plot():
         V.append(0)
     # if settings['channel_1_burst_uniform_stimulation_tab'] == 'Uniform Stimulation':
 
-
+    plt.close()
     plt.plot(T, V)
     plt.xlabel('time (us)')
     plt.ylabel('voltage (mV)')
@@ -393,6 +396,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             App.get_running_app().root.screen_manager.current = 'device'
             App.get_running_app().root.side_bar.device_rv.selected_count += 1
 
+
             for i in live_update_references['channel_1_stimulation_graph_display']:
                 if 'input' in i:
                     App.get_running_app().get_components(i).bind(text=update_graph_on_text_channel_1)
@@ -439,6 +443,7 @@ class NeuroStimApp(App):
         self.device_data = []
         self.search = True
         self.t = threading.Thread(target=BluetoothDiscoverLoop)
+        self.t.daemon = True
         self.t.start()
 
     def get_channel_1_graph_variables(self):

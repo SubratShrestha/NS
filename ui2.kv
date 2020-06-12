@@ -269,11 +269,13 @@
         text: "Cathodic First"
         font_size: 14
         group: "cathodic_anodic"
+        allow_no_selection: False
         state: "down"
     ToggleButton:
         id: anodic
         text: "Anodic First"
         group: "cathodic_anodic"
+        allow_no_selection: False
         font_size: 14
 
 <TerminationTabs>:
@@ -299,7 +301,8 @@
                 id: termination_tabs_time_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 multiline:False
                 input_type: 'number'
                 input_filter: 'float'
@@ -320,7 +323,8 @@
                 id: termination_tabs_duty_cycle_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -366,7 +370,8 @@
                 id: channel_1_inter_phase_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -381,7 +386,8 @@
                 id: channel_1_inter_stim_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.25}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -396,7 +402,8 @@
                 id: channel_1_phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -411,7 +418,8 @@
                 id: channel_1_phase_2_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.25}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -429,7 +437,8 @@
                 id: channel_1_frequency_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -506,7 +515,8 @@
                         id:channel_1_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
-                        text: "1"
+                        text: "0"
+                        hint_text: "0"
                         input_type: 'number'
                         input_filter: 'float'
                         multiline: False
@@ -583,7 +593,8 @@
                         id: channel_2_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
-                        text: "1"
+                        text: "0"
+                        hint_text: "0"
                         input_type: 'number'
                         input_filter: 'float'
                         multiline: False
@@ -647,7 +658,8 @@
                 id: burst_duration
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -662,7 +674,8 @@
                 id: inter_burst_delay
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: "1"
+                text: "0"
+                hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -719,7 +732,8 @@
         pos_hint: {"x":0.05,"top":0.95}
     TextInput:
         id: sample_info
-        text: "1"
+        text: "0"
+        hint_text: "0"
         size_hint: .16, .06
         pos_hint: {"x":0.25,"top":0.94}
         multiline:False
@@ -939,7 +953,8 @@
         multiline: False
     TextInput:
         id: ramp_up_text_input
-        text: "1"
+        text: "0"
+        hint_text: "0"
         size_hint: 0.9, 0.45
         font_size: 12
         multiline:False
@@ -978,6 +993,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
     StrokeButton:
         id: phase_1_button
         size_hint: 0.15, .8
@@ -998,6 +1014,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
     StrokeButton:
         id: phase_1_and_2_button
         size_hint: 0.15, .8
@@ -1008,6 +1025,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
     StrokeButton:
         id: inter_stim_time_button
         size_hint: 0.15, .8
@@ -1018,6 +1036,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
 
 <SmoothButton@Button>:
     background_color: (0.0, 0.96, 1, 1) if self.state=='down' else (0, 0, 0, 0)
