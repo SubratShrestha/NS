@@ -138,10 +138,12 @@ def get_squarewave_plot():
         interburst = settings['channel_1_inter_burst_delay_input'] if settings['channel_1_inter_burst_delay_input'] != "" else 0
         interburst = int(interburst) * 1000 * 1000
         # TODO:======================================================
-        # if interburst == 0:
-        #     burstfrequency = input("burstfrequency (Hz): \n")
-        #     burstfrequency = int(burstfrequency)
-        #     interburst = 1000000 / burstfrequency - bursttime
+        if interburst == 0:
+            burstfrequency = settings['channel_1_burst_frequency_input'] if settings['channel_1_burst_frequency_input'] != "" else 0
+            burstfrequency = int(burstfrequency)
+            if burstfrequency != 0:
+                # TODO:
+                interburst = 1000000 / burstfrequency - bursttime
 
     anodic = settings['channel_1_anodic_toggle'] == 'down'
     current = int(settings['channel_1_output_current_input']) if settings['channel_1_output_current_input'] != "" else 0
@@ -175,7 +177,7 @@ def get_squarewave_plot():
     ]
     # if its uniform stim, graph stop plotting after one peroid
     # if its burst stim, graph stop plotting after one burst peroid
-    if burst and bursttime != 0 and interburst != 0:
+    if burst:
         # constantly add last element of previous "T list"to all element in previous T to make a new list of timing for next peroid. and then join all lists together to form a set for y-axis data
         b = T.copy()
         while (b[len(b) - 1] < (bursttime + interburst)):
