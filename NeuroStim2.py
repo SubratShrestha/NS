@@ -116,7 +116,7 @@ ids = [
     'channel_1_phase_time_input',
     'channel_2_inter_phase_delay_input',
     'channel_2_phase_time_input',
-    'channel_1_burst_frequency'
+    'channel_1_burst_frequency_input'
 ]
 
 class custom_test(TextInput):
@@ -129,7 +129,7 @@ def update_graph():
 
 def get_squarewave_plot():
     settings = App.get_running_app().get_channel_1_graph_variables()
-    print(settings['channel_1_burst_frequency'])
+    print(settings['channel_1_burst_frequency_input'])
 
     burst = settings['channel_1_burst_uniform_stimulation_tab'] == 'Burst Stimulation'
     if burst:
@@ -227,7 +227,7 @@ live_update_references = {
         'channel_1_phase_1_time_input',
         'channel_1_phase_2_time_input',
         'channel_1_frequency_input',
-        'channel_1_burst_frequency'
+        'channel_1_burst_frequency_input'
     ]
 }
 
@@ -467,7 +467,7 @@ class NeuroStimApp(App):
             'channel_1_anodic_toggle':self.get_components('channel_1_anodic_toggle').state,
             'channel_1_ramp_up_toggle':self.get_components('channel_1_ramp_up_toggle').state,
             'channel_1_electrode_toggle':self.get_components('channel_1_electrode_toggle').state,
-            'channel_1_burst_frequency':self.get_components('channel_1_burst_frequency').text
+            'channel_1_burst_frequency_input':self.get_components('channel_1_burst_frequency_input').text
         }
 
     def get_components(self, id):
@@ -522,7 +522,7 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').channel_1_electrode_toggle
         if id == 'channel_1_electrode_button':
             return self.get_components('stimulation_tabs').channel_1_electrode_button
-        if id =='channel_1_burst_frequency':
+        if id =='channel_1_burst_frequency_input':
             return self.get_components('channel_1_burst_uniform_stimulation_tab').burst_frequency
 
         if id == 'channel_2_stop_button':
