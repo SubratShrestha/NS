@@ -362,7 +362,7 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":1}
-                text: "Inter-Phase Delay(ms)"
+                text: "Inter-Phase Delay(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
@@ -378,7 +378,7 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.5}
-                text: "Inter-Stim Delay(ms)"
+                text: "Inter-Stim Delay(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
@@ -394,7 +394,7 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Phase 1 Time(ms)"
+                text: "Phase 1 Time(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
@@ -410,7 +410,7 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.5}
-                text: "Phase 2 Time(ms)"
+                text: "Phase 2 Time(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
@@ -510,7 +510,7 @@
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (A)"
+                        text: "Output Current (mA)"
                     TextInput:
                         id:channel_1_output_current_input
                         size_hint: .4,.08
@@ -644,13 +644,14 @@
     background_color: 0.1,0.2,0.3,1
     inter_burst_delay:inter_burst_delay
     burst_duration:burst_duration
+    burst_frequency: burst_frequency
     TabbedPanelItem:
         text: "Burst Stimulation"
         FloatLayout:
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":1}
-                text: "Burst Duration"
+                text: "Burst Period(ms)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
@@ -666,7 +667,7 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Inter-Burst Delay"
+                text: "Duty Cycle(%)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
@@ -679,8 +680,24 @@
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.5}
+                text: "Burst Frequency(Hz)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                id: burst_frequency
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.25}
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
     TabbedPanelItem:
-        text: "Uniform Stimulation"
+        text: "Continuous Stimulation"
 
 <DeviceTabs@TabbedPanel+DT_TPS>:
     stimulation_log_tab: stimulation_log_tab
@@ -700,7 +717,7 @@
         StimulationLogTab:
             id: stimulation_log_tab
     TabbedPanelItem:
-        text: "EEG recording"
+        text: "Neural recording"
     TabbedPanelItem:
         text: "Advanced Settings"
         DeviceAdvancedSettings:
@@ -784,7 +801,7 @@
     firmware_info_button:firmware_info_button
     hardware_info_button:hardware_info_button
     bootloader_access_button:bootloader_access_button
-    ramp_up_button:ramp_up_button
+    #ramp_up_button:ramp_up_button
     ramp_up_input:ramp_up_input
     short_button:short_button
     continuity_check_button:continuity_check_button
@@ -847,13 +864,13 @@
         pos_hint: {"x":0.55,"top":0.7825}
         font_size: 13
         text: "Bootloader Access"
-    StrokeButton:
-        id: ramp_up_button
-        size_hint: 0.16, .08
-        pos_hint: {"x":0.05,"top":0.6}
-        font_size: 13
-        text: "Ramp Up"
-        group: "ramp_up"
+   #StrokeButton:
+   #    id: ramp_up_button
+   #    size_hint: 0.16, .08
+   #    pos_hint: {"x":0.05,"top":0.6}
+   #    font_size: 13
+   #    text: "Ramp Up"
+   #    group: "ramp_up"
     RampUpInput:
         id: ramp_up_input
     StrokeButton:

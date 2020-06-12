@@ -43,12 +43,42 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="NeuroStim2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NeuroStim2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.NeuroStim2" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -60,8 +90,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1591006987674</updated>
+      <workItem from="1591928723447" duration="3570000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -80,9 +114,40 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="67" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1591920860016" />
+    <state width="873" height="2" key="GridCell.Tab.0.bottom" timestamp="1591931242940">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state width="1011" height="2" key="GridCell.Tab.0.bottom/0.23.1440.829@0.23.1440.829" timestamp="1591929569445" />
+    <state width="873" height="2" key="GridCell.Tab.0.bottom/0.23.1440.830@0.23.1440.830" timestamp="1591930508261" />
+    <state width="873" height="2" key="GridCell.Tab.0.bottom/0.23.1440.831@0.23.1440.831" timestamp="1591930634567" />
+    <state width="873" height="2" key="GridCell.Tab.0.bottom/0.23.1440.833@0.23.1440.833" timestamp="1591931242940" />
+    <state width="873" height="2" key="GridCell.Tab.0.center" timestamp="1591931242938">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state width="1011" height="2" key="GridCell.Tab.0.center/0.23.1440.829@0.23.1440.829" timestamp="1591929569443" />
+    <state width="873" height="2" key="GridCell.Tab.0.center/0.23.1440.830@0.23.1440.830" timestamp="1591930508251" />
+    <state width="873" height="2" key="GridCell.Tab.0.center/0.23.1440.831@0.23.1440.831" timestamp="1591930634566" />
+    <state width="873" height="2" key="GridCell.Tab.0.center/0.23.1440.833@0.23.1440.833" timestamp="1591931242938" />
+    <state width="873" height="2" key="GridCell.Tab.0.left" timestamp="1591931242937">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state width="1011" height="2" key="GridCell.Tab.0.left/0.23.1440.829@0.23.1440.829" timestamp="1591929569443" />
+    <state width="873" height="2" key="GridCell.Tab.0.left/0.23.1440.830@0.23.1440.830" timestamp="1591930508250" />
+    <state width="873" height="2" key="GridCell.Tab.0.left/0.23.1440.831@0.23.1440.831" timestamp="1591930634565" />
+    <state width="873" height="2" key="GridCell.Tab.0.left/0.23.1440.833@0.23.1440.833" timestamp="1591931242937" />
+    <state width="873" height="2" key="GridCell.Tab.0.right" timestamp="1591931242938">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state width="1011" height="2" key="GridCell.Tab.0.right/0.23.1440.829@0.23.1440.829" timestamp="1591929569444" />
+    <state width="873" height="2" key="GridCell.Tab.0.right/0.23.1440.830@0.23.1440.830" timestamp="1591930508260" />
+    <state width="873" height="2" key="GridCell.Tab.0.right/0.23.1440.831@0.23.1440.831" timestamp="1591930634567" />
+    <state width="873" height="2" key="GridCell.Tab.0.right/0.23.1440.833@0.23.1440.833" timestamp="1591931242938" />
     <state x="67" y="187" key="SettingsEditor" timestamp="1591920887170">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="67" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1591920887170" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/NS$NeuroStim2.coverage" NAME="NeuroStim2 Coverage Results" MODIFIED="1591932355051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
