@@ -20,12 +20,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1458dba-22e0-4749-9745-aad5409b37fc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/ui2.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui2.kv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,8 +46,6 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -48,20 +53,19 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="NeuroStim2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NS" />
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NeuroStim2.py" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -70,11 +74,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.NeuroStim2" />
-      </list>
-    </recent_temporary>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -86,12 +113,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1591006987674</updated>
-      <workItem from="1591933305710" duration="1597000" />
     </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -106,33 +129,9 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="67" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591920860016">
+    <state x="684" y="161" width="618" height="783" key="find.popup" timestamp="1592060439505">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="67" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1591920860016" />
-    <state width="1011" height="51" key="GridCell.Tab.0.bottom" timestamp="1591934604880">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1011" height="140" key="GridCell.Tab.0.bottom/0.23.1440.832@0.23.1440.832" timestamp="1591933604349" />
-    <state width="1011" height="51" key="GridCell.Tab.0.bottom/0.23.1440.833@0.23.1440.833" timestamp="1591934604880" />
-    <state width="1011" height="51" key="GridCell.Tab.0.center" timestamp="1591934604879">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1011" height="140" key="GridCell.Tab.0.center/0.23.1440.832@0.23.1440.832" timestamp="1591933604346" />
-    <state width="1011" height="51" key="GridCell.Tab.0.center/0.23.1440.833@0.23.1440.833" timestamp="1591934604879" />
-    <state width="1011" height="51" key="GridCell.Tab.0.left" timestamp="1591934604878">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1011" height="140" key="GridCell.Tab.0.left/0.23.1440.832@0.23.1440.832" timestamp="1591933604345" />
-    <state width="1011" height="51" key="GridCell.Tab.0.left/0.23.1440.833@0.23.1440.833" timestamp="1591934604878" />
-    <state width="1011" height="51" key="GridCell.Tab.0.right" timestamp="1591934604880">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1011" height="140" key="GridCell.Tab.0.right/0.23.1440.832@0.23.1440.832" timestamp="1591933604349" />
-    <state width="1011" height="51" key="GridCell.Tab.0.right/0.23.1440.833@0.23.1440.833" timestamp="1591934604880" />
-    <state x="67" y="187" key="SettingsEditor" timestamp="1591920887170">
-      <screen x="67" y="27" width="1853" height="1053" />
-    </state>
-    <state x="67" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1591920887170" />
+    <state x="684" y="161" width="618" height="783" key="find.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1592060439505" />
   </component>
 </project>

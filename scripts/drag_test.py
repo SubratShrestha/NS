@@ -3,6 +3,7 @@ from kivy.app import App
 from kivy.uix.behaviors import DragBehavior
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
+
 # You could also put the following in your kv file...
 kv = '''
 <DragLabel>:
@@ -21,7 +22,7 @@ FloatLayout:
     # Define the root widget
     DragLabel:
         size_hint: 0.25, 0.2
-        
+
 '''
 
 
@@ -32,5 +33,6 @@ class DragLabel(DragBehavior, FloatLayout):
 class TestApp(App):
     def build(self):
         return Builder.load_string(kv)
+
 
 TestApp().run()

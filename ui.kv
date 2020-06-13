@@ -1,27 +1,114 @@
 #:import Factory kivy.factory.Factory
-
 <MainWindow>:
     screen_manager: screen_manager
-    device_rv: device_rv
-    home_btn: home_btn
-    new_device_btn: new_device_btn
+    side_bar: side_bar
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos:self.pos
+    SideBar:
+        id: side_bar
+        size_hint:0.2,1
+        pos_hint:{"x":0}
+    ScreenManagement:
+        id: screen_manager
+        size_hint:0.8,1
+        pos_hint:{"x":0.2}
+
+<SideBar>:
+    orientation: 'vertical'
+    canvas.before:
+        Color:
+            rgb: .172,.184,.196
+        Rectangle:
+            size: self.size
+            pos:self.pos
+    device_rv:device_rv
+    home_button:home_button
+    new_device_button:new_device_button
+    side_bar_title:side_bar_title
+    Label:
+        id: side_bar_title
+        text:"NeuroStim"
+        color:1,1,1,1
+        font_size:45
+        size_hint:1,0.1
+        pos_hint:{"top":1}
+    HomeButton:
+        id: home_button
+    NewDeviceButton:
+        id: new_device_button
     DeviceRV:
         id: device_rv
-    HomeButton:
-        id: home_btn
-    NewDeviceButton:
-        id: new_device_btn
-    ScreenManager:
-        id: screen_manager
-        home:home
-        device:device
-        HomeScreen:
-            id:home
-        DeviceScreen:
-            id:device
 
+<ScreenManagement>
+    home_screen: home_screen
+    device_screen: device_screen
+    HomeScreen:
+        id: home_screen
+    DeviceScreen:
+        id: device_screen
+
+<HomeScreen>:
+    name: "home"
+    windows: windows
+    canvas.before:
+        Color:
+            rgb:1,1,1
+        Rectangle:
+            size: self.size
+            pos:self.pos
+    HomeScreenWindows:
+        id: windows
+        #change window size/pos here
+        size_hint:0.4,0.5
+        pos_hint: {"center_x":0.76,"center_y":0.71}
+        Label:
+            canvas.before:
+                Color:
+                    rgb:0.176,0.188,0.2
+                RoundedRectangle:
+                    size: self.size
+                    pos:self.pos
+                    radius:10,10,0,0
+            text:"Beginner Tutorial" #change the name of window
+            font_size:40
+            color:1,1,1,1
+            pos_hint:{"top":1,"x":0}
+            size_hint:1,0.1
+
+<DeviceScreen>:
+    name: "device"
+    canvas.before:
+        Color:
+            rgb:1,1,1
+        Rectangle:
+            size: self.size
+            pos:self.pos
+    device_tabs: device_tabs
+    DeviceTabs:
+        id: device_tabs
+
+###windows for homescreen###
+##################################################
+<HomeScreenWindows@FloatLayout+DragBehavior>
+    drag_rectangle: self.x, self.y, self.width, self.height
+    drag_timeout: 10000000
+    drag_distance: 0
+    canvas.before:
+        Color:
+            rgb:0.9,0.9,0.9
+        RoundedRectangle:
+            size: self.size
+            pos:self.pos
+
+##################################################
+
+
+###widgets for sidebar###
+##################################################
 <DeviceRV>:
-    size_hint: .2, 0.7
+    size_hint: 1, 0.7
     pos_hint: {"x":0, "top":.85}
     background_color: 0.0,0.50,0,1
     viewclass: 'ConnectedDeviceSelectableLabel'
@@ -36,24 +123,17 @@
 
 <AddDeviceSelectableLabel>:
     # Draw a background to indicate selection
+    color:0,0,0,1
     canvas.before:
         Color:
-            rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
-        Rectangle:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (1, 1, 1, 1)
+        RoundedRectangle:
             pos: self.pos
             size: self.size
 
 <ConnectedDeviceSelectableLabel>:
     # Draw a background to indicate selection
     _label:_label
-    working_image_1: working_image_1
-    working_image_2:working_image_2
-    working_image_3:working_image_3
-    malfunction_image:malfunction_image
-    delete_image:delete_image
-    rename_image:rename_image
-    battery_image:battery_image
-    battery_percent:battery_percent
     canvas.before:
         Color:
             rgba: (.0, 0.9, .1, .3) if self.selected else (0.1, 0, 0.1, 1)
@@ -69,70 +149,71 @@
         halign: 'center'
         pos_hint: {"x":0, "top":.95}
     Image:
-        id: working_image_1
         size_hint: .125, .125
         pos_hint: {"x":0.05, "top":0.6}
-        source: './Icon2/working.png'
+        source: './icons/working.png'
     Image:
-        id: working_image_2
         size_hint: .125, .125
         pos_hint: {"x":0.2, "top":0.6}
-        source: './Icon2/working.png'
+        source: './icons/working.png'
     Image:
-        id: working_image_3
         size_hint: .125, .125
         pos_hint: {"x":0.35, "top":0.6}
-        source: './Icon2/not_working.png'
+        source: './icons/not_working.png'
     Image:
-        id: malfunction_image
         size_hint: .125, .125
         pos_hint: {"x":0.825, "top":0.6}
-        source: './Icon2/malfunction.png'
+        source: './icons/malfunction.png'
     Image:
-        id: delete_image
         size_hint: .2, .2
         pos_hint: {"x":0.75, "top":0.25}
-        source: './Icon2/delete.png'
+        source: './icons/delete.png'
     Image:
-        id: rename_image
         size_hint: .2, .2
         pos_hint: {"x":0.55, "top":0.25}
-        source: './Icon2/Rename.png'
+        source: './icons/rename.png'
     Image:
-        id: battery_image
         size_hint: .2, .2
         pos_hint: {"x":0.05, "top":0.25}
-        source: './Icon2/battery.png'
+        source: './icons/battery.png'
     Label:
-        id: battery_percent
         size_hint: .2, .2
         pos_hint: {"x":0.275, "top":0.25}
         text: "89%"
 
 
 <HomeButton@Button>
-    font_size: 20
-    color: .1,.5,.6,1
-    size_hint: 0.2, 0.15
-    text: "HOME"
-    pos_hint: {"x":0, "top":1}
-    background_color: 0.1,0.2,0.3,1
+    text: "Home"
+    font_size: 30
+    color: 1,1,1,1
+    size_hint: 1, 0.05
+    pos_hint: {"top":0.9}
+    background_color: .4,.4,.4,1
     on_press:
-        app.root.screen_manager.transition.direction = 'up'
-        app.root.current = 'home'
+        app.root.screen_manager.transition.direction = 'down'
+        app.root.screen_manager.current = 'home'
 
-<AddDevicePopup@Popup>:
-    auto_dismiss: False
-    title: "Add Device"
+<AddDevicePopup>:
+    title: "Bluetooth Discovery"
+    title_size:35
+    title_align:'center'
+    separator_height:0
     ble_rv: ble_rv
-    size_hint: .8,.8
+    size_hint: .45,.73
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
     on_open: root.BluetoothDiscoverLoop()
     FloatLayout:
+        canvas.before:
+            Color:
+                rgb:0.878,0.898,0.933
+            Rectangle:
+                size:self.size
+                pos:self.pos
         RecycleView:
             id: ble_rv
-            size_hint: 1, 0.9
+            size_hint: 1, 0.895
             pos_hint: {"x":0, "top":1}
-            background_color: 0.0,0.50,0,1
             viewclass: 'AddDeviceSelectableLabel'
             SelectableRecycleBoxLayout:
                 default_size: None, dp(56)
@@ -140,76 +221,61 @@
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
-                multiselect: True
-                touch_multiselect: True
-        Button:
-            text: "Add Devices"
+                multiselect: False
+                touch_multiselect: False
+                spacing:dp(2)
+        Label:
             size_hint: 1, 0.1
-            pos_hint: {"x":0, "top":.1}
-            background_color: 0.0,0.50,0,1
+            pos_hint: {"x":0, "y":0}
+            canvas.before:
+                Color:
+                    rgb:0.953,0.9608,0.9765
+                Rectangle:
+                    size:self.size
+                    pos:self.pos
+        Button:
+            text: "Connect"
+            size_hint: 0.3, 0.08
+            pos_hint: {"x":0.65, "top":.09}
+            background_color: 0.420,0.864,1.773,1
             on_press: root.Close()
+        Button:
+            text: "Refresh"
+            size_hint: 0.3, 0.08
+            pos_hint: {"x":0.05, "top":.09}
+            background_color: 1,1,1,1
+            on_press: root.BluetoothDiscoverLoop()
 
 <NewDeviceButton@Button>
-    font_size: 20
-    color: .1,.5,.6,1
-    size_hint: 0.2, 0.15
-    text: "New Device"
-    pos_hint: {"x":0, "bottom":1}
-    background_color: 0.2,0.5,0.3,1
+    font_size: 30
+    color: 1,1,1,1
+    size_hint: 1, 0.06
+    text: "+ New Device"
+    pos_hint: {"bottom":1}
+    background_color: 0.420,0.864,1.773,1
     on_release: Factory.AddDevicePopup().open()
+##################################################0.3451
 
-<BeginnerTutorial@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Beginner Tutorial"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.3, 0.35
-    pos_hint: {"x":0.65, "top":0.95}
 
-<GetHelp@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Get Help"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.12, 0.08
-    font_size: 15
-    pos_hint: {"x":0.65, "top":0.53}
-
-<ReportBug@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Report Bug"
-    font_size: 15
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.12, 0.08
-    pos_hint: {"x":0.83, "top":0.53}
-
-<LatestUpdate@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Latest Update"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.25, 0.5
-    pos_hint: {"x":0.3, "top":0.95}
-
-<SettingsHome@Button>:
-    font_size: 20
-    color: .1,.5,.6,1
-    text: "Settings"
-    background_color: 0.2,0.5,0.3,1
-    size_hint: 0.65, 0.3
-    pos_hint: {"x":0.3, "top":0.375}
-
+###widgets for device screen###
+##################################################
 <CathodicAnodicToggle@BoxLayout>:
     pos_hint: {"x":0.075, "top":.6}
     size_hint: .85,.06
+    cathodic: cathodic
+    anodic: anodic
     ToggleButton:
+        id: cathodic
         text: "Cathodic First"
         font_size: 14
         group: "cathodic_anodic"
+        allow_no_selection: False
+        state: "down"
     ToggleButton:
+        id: anodic
         text: "Anodic First"
         group: "cathodic_anodic"
+        allow_no_selection: False
         font_size: 14
 
 <TerminationTabs>:
@@ -217,6 +283,8 @@
     pos_hint: {"x":0.075, "top":.45}
     size_hint: .85,.25
     do_default_tab: False
+    termination_tabs_time_input:termination_tabs_time_input
+    termination_tabs_duty_cycle_input:termination_tabs_duty_cycle_input
     TabbedPanelItem:
         text: "Time"
         font_size: 14
@@ -230,10 +298,15 @@
                 valign: 'middle'
                 text: " Number of Minutes"
             TextInput:
+                id: termination_tabs_time_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
                 text: "0"
+                hint_text: "0"
                 multiline:False
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
     TabbedPanelItem:
         text: "Duty Cycle"
         group: "termination"
@@ -247,9 +320,13 @@
                 valign: 'middle'
                 text: " Number of Cycles"
             TextInput:
+                id: termination_tabs_duty_cycle_input
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
                 text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
                 multiline: False
     TabbedPanelItem:
         text: "Non-Stop"
@@ -257,10 +334,12 @@
         font_size: 14
 
 <DeviceSettings@BoxLayout>:
+    stimulation_tabs: stimulation_tabs
     size_hint: 1,1
     pos_hint: {"x":0, "top":1}
     orientation: 'vertical'
     ChannelStimulationTabs:
+        id: stimulation_tabs
 
 
 <PhaseTimeFrequencyTabs>:
@@ -270,93 +349,99 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
-    inter_phase_delay_input:inter_phase_delay_input
-    phase_time_input:phase_time_input
+
+    channel_1_inter_phase_delay_input: channel_1_inter_phase_delay_input
+    channel_1_inter_stim_delay_input: channel_1_inter_stim_delay_input
+    channel_1_phase_1_time_input: channel_1_phase_1_time_input
+    channel_1_phase_2_time_input: channel_1_phase_2_time_input
+    channel_1_frequency_input: channel_1_frequency_input
+
     TabbedPanelItem:
         text: "Phase Time"
         FloatLayout:
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":1}
-                text: "Inter-Phase Delay"
+                text: "Inter-Phase Delay(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
             TextInput:
-                id: inter_phase_delay_input
+                id: channel_1_inter_phase_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: ""
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.5}
+                text: "Inter-Stim Delay(us)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                id: channel_1_inter_stim_delay_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.25}
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Phase Time"
+                text: "Phase 1 Time(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
             TextInput:
-                id: phase_time_input
+                id: channel_1_phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: ""
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.5}
+                text: "Phase 2 Time(us)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                id: channel_1_phase_2_time_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.25}
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
     TabbedPanelItem:
         text: "Frequency"
-
-<ChannelPanel@BoxLayout>:
-    orientation: 'vertical'
-    BoxLayout:
-        orientation: 'horizontal'
-        BoxLayout:
-            orientation: 'vertical'
-            PhaseTimeFrequencyTabs:
-            BurstUniformStimulationTabs:
         FloatLayout:
-            Button:
-                size_hint: .25,.06
-                pos_hint: {"x":0.075, "top":.99}
-                text: "Stop"
-            Button:
-                size_hint: .25,.06
-                pos_hint: {"x":0.375, "top":.99}
-                text: "Save"
-            Button:
-                size_hint: .25,.06
-                pos_hint: {"x":0.675, "top":.99}
-                text: "Start"
             Label:
-                size_hint: .4,.05
-                pos_hint: {"x":0.075, "top":.9}
-                text: "Output Current (A)"
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":1}
+                text: "Frequency (pps)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
             TextInput:
-                size_hint: .4,.08
-                pos_hint: {"x":0.075, "top":.85}
+                id: channel_1_frequency_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.75}
                 text: "0"
-            Label:
-                size_hint: .4,.05
-                pos_hint: {"x":0.075, "top":.5}
-                text: "End Stimulation By:"
-            TerminationTabs:
-            CathodicAnodicToggle:
-            ToggleButton:
-                size_hint: .4,.06
-                pos_hint: {"x":0.075, "top":0.7}
-                text: "Ramp Up"
-                group: "ramp_up"
-            ToggleButton:
-                size_hint: .4,.06
-                pos_hint: {"x":0.525, "top":0.7}
-                text: "Short Electrode"
-                group: "electrode"
-            Button:
-                size_hint: .4,.1
-                pos_hint: {"x":0.525, "top":0.15}
-                text: "Generate Graph"
-                group: "electrode"
-    BoxLayout:
-        size_hint: 1,.5
-        pos_hint: {"x":0, "top":1}
-        Button:
-            text:"x"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
 
 <ChannelStimulationTabs>:
     tab_width: (self.parent.width)/2
@@ -365,16 +450,190 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
-    channel_1_panel:channel_1_panel
-    channel_2_panel:channel_2_panel
+
+    channel_1_stop_button:channel_1_stop_button
+    channel_1_save_button:channel_1_save_button
+    channel_1_start_button:channel_1_start_button
+    channel_1_output_current_input:channel_1_output_current_input
+    channel_1_termination_tabs:channel_1_termination_tabs
+    channel_1_cathodic_anodic_toggle:channel_1_cathodic_anodic_toggle
+    channel_1_ramp_up_toggle:channel_1_ramp_up_toggle
+    channel_1_electrode_toggle:channel_1_electrode_toggle
+    # channel_1_electrode_button:channel_1_electrode_button
+
+    channel_2_stop_button:channel_2_stop_button
+    channel_2_save_button:channel_2_save_button
+    channel_2_start_button:channel_2_start_button
+    channel_2_output_current_input:channel_2_output_current_input
+    channel_2_termination_tabs:channel_2_termination_tabs
+    channel_2_cathodic_anodic_toggle:channel_2_cathodic_anodic_toggle
+    channel_2_ramp_up_toggle:channel_2_ramp_up_toggle
+    channel_2_electrode_toggle:channel_2_electrode_toggle
+    # channel_2_electrode_button:channel_2_electrode_button
+
+    channel_1_stimulation_graph_display: channel_1_stimulation_graph_display
+    channel_2_stimulation_graph_display: channel_2_stimulation_graph_display
+
+    channel_1_phase_time_frequency_tab:channel_1_phase_time_frequency_tab
+    channel_1_burst_uniform_stimulation_tab:channel_1_burst_uniform_stimulation_tab
+    channel_2_phase_time_frequency_tab:channel_2_phase_time_frequency_tab
+    channel_2_burst_uniform_stimulation_tab:channel_2_burst_uniform_stimulation_tab
+
     TabbedPanelItem:
         text: "Channel 1"
-        ChannelPanel:
-            id: channel_1_panel
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                orientation: 'horizontal'
+                BoxLayout:
+                    orientation: 'vertical'
+                    PhaseTimeFrequencyTabs:
+                        id: channel_1_phase_time_frequency_tab
+                    BurstUniformStimulationTabs:
+                        id: channel_1_burst_uniform_stimulation_tab
+                FloatLayout:
+                    Button:
+                        id: channel_1_stop_button
+                        size_hint: .25,.06
+                        pos_hint: {"x":0.075, "top":.99}
+                        text: "Stop"
+                    Button:
+                        id:channel_1_save_button
+                        size_hint: .25,.06
+                        pos_hint: {"x":0.375, "top":.99}
+                        text: "Save"
+                    Button:
+                        id:channel_1_start_button
+                        size_hint: .25,.06
+                        pos_hint: {"x":0.675, "top":.99}
+                        text: "Start"
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.9}
+                        text: "Output Current (mA)"
+                    TextInput:
+                        id:channel_1_output_current_input
+                        size_hint: .4,.08
+                        pos_hint: {"x":0.075, "top":.85}
+                        text: "0"
+                        hint_text: "0"
+                        input_type: 'number'
+                        input_filter: 'float'
+                        multiline: False
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "End Stimulation By:"
+                    TerminationTabs:
+                        id: channel_1_termination_tabs
+                    CathodicAnodicToggle:
+                        id: channel_1_cathodic_anodic_toggle
+                    ToggleButton:
+                        id: channel_1_ramp_up_toggle
+                        size_hint: .4,.06
+                        pos_hint: {"x":0.075, "top":0.7}
+                        text: "Ramp Up"
+                        group: "ramp_up"
+                    ToggleButton:
+                        id: channel_1_electrode_toggle
+                        size_hint: .4,.06
+                        pos_hint: {"x":0.525, "top":0.7}
+                        text: "Short Electrode"
+                        group: "electrode"
+                    #Button:
+                    #    id: channel_1_electrode_button
+                    #    size_hint: .4,.1
+                    #    pos_hint: {"x":0.525, "top":0.15}
+                    #    text: "Generate Graph"
+                    #    group: "electrode"
+                    #    on_press: get_squarewave_plot()
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                size_hint: 1,.5
+                pos_hint: {"x":0, "top":1}
+                id: channel_1_stimulation_graph_display
     TabbedPanelItem:
         text: "Channel 2"
-        ChannelPanel:
-            id: channel_2_panel
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                orientation: 'horizontal'
+                BoxLayout:
+                    orientation: 'vertical'
+                    PhaseTimeFrequencyTabs:
+                        id: channel_2_phase_time_frequency_tab
+                    BurstUniformStimulationTabs:
+                        id: channel_2_burst_uniform_stimulation_tab
+                FloatLayout:
+                    Button:
+                        id: channel_2_stop_button
+                        size_hint: .25,.06
+                        pos_hint: {"x":0.075, "top":.99}
+                        text: "Stop"
+                    Button:
+                        id: channel_2_save_button
+                        size_hint: .25,.06
+                        pos_hint: {"x":0.375, "top":.99}
+                        text: "Save"
+                    Button:
+                        id: channel_2_start_button
+                        size_hint: .25,.06
+                        pos_hint: {"x":0.675, "top":.99}
+                        text: "Start"
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.9}
+                        text: "Output Current (A)"
+                    TextInput:
+                        id: channel_2_output_current_input
+                        size_hint: .4,.08
+                        pos_hint: {"x":0.075, "top":.85}
+                        text: "0"
+                        hint_text: "0"
+                        input_type: 'number'
+                        input_filter: 'float'
+                        multiline: False
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "End Stimulation By:"
+                    TerminationTabs:
+                        id: channel_2_termination_tabs
+                    CathodicAnodicToggle:
+                        id: channel_2_cathodic_anodic_toggle
+                    ToggleButton:
+                        id: channel_2_ramp_up_toggle
+                        size_hint: .4,.06
+                        pos_hint: {"x":0.075, "top":0.7}
+                        text: "Ramp Up"
+                        group: "ramp_up"
+                    ToggleButton:
+                        id: channel_2_electrode_toggle
+                        size_hint: .4,.06
+                        pos_hint: {"x":0.525, "top":0.7}
+                        text: "Short Electrode"
+                        group: "electrode"
+                    # Button:
+                    #     id: channel_2_electrode_button
+                    #     size_hint: .4,.1
+                    #     pos_hint: {"x":0.525, "top":0.15}
+                    #     text: "Generate Graph"
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                size_hint: 1,.5
+                pos_hint: {"x":0, "top":1}
+                id: channel_2_stimulation_graph_display
+
 
 <BurstUniformStimulationTabs>:
     tab_width: (self.parent.width*.995)/2
@@ -383,83 +642,128 @@
     do_default_tab: False
     color: .2,.2,.1,1
     background_color: 0.1,0.2,0.3,1
-    burst_duration_input:burst_duration_input
     inter_burst_delay:inter_burst_delay
+    burst_duration:burst_duration
+    # burst_frequency: burst_frequency
     TabbedPanelItem:
         text: "Burst Stimulation"
         FloatLayout:
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":1}
-                text: "Burst Duration"
+                text: "Burst Period(ms)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
             TextInput:
-                id:burst_duration_input
+                id: burst_duration
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: ""
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Inter-Burst Delay"
+                text: "Duty Cycle(%)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
             TextInput:
-                id:inter_burst_delay
+                id: inter_burst_delay
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: ""
+                text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
+            # Label:
+            #     size_hint: .4,.25
+            #     pos_hint: {"x":0.05, "top":0.5}
+            #     text: "Burst Frequency(Hz)"
+            #     text_size: self.size
+            #     halign: 'left'
+            #     valign: 'middle'
+            # TextInput:
+            #     id: burst_frequency
+            #     size_hint: .4,.25
+            #     pos_hint: {"x":0.05, "top":0.25}
+            #     text: "0"
+            #     hint_text: "0"
+            #     input_type: 'number'
+            #     input_filter: 'float'
+            #     multiline: False
     TabbedPanelItem:
-        text: "Uniform Stimulation"
+        text: "Continuous Stimulation"
 
-<DeviceTabs>:
+<DeviceTabs@TabbedPanel+DT_TPS>:
     stimulation_log_tab: stimulation_log_tab
     advanced_settings: advanced_settings
-    size_hint: .8,1
-    pos_hint: {"x":.2, "top":1}
+    device_settings: device_settings
+    size_hint: 1,1
+    pos_hint: {"top":1}
     do_default_tab: False
-    tab_width: (self.parent.width*.8)/4
+    tab_width: (self.parent.width)/4
+    tab_pos : 'top_mid'
     TabbedPanelItem:
         text: "Stimulation Setting"
         DeviceSettings:
+            id: device_settings
     TabbedPanelItem:
         text: "Stimulation Log"
         StimulationLogTab:
             id: stimulation_log_tab
     TabbedPanelItem:
-        text: "EEG recording"
+        text: "Neural recording"
     TabbedPanelItem:
         text: "Advanced Settings"
         DeviceAdvancedSettings:
             id: advanced_settings
 
+<DT_TPS@TabbedPanelStrip>
+    canvas:
+        Color:
+            rgba: 0, 1, 0, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+
 <StimulationLogTab@FloatLayout>:
-    top_graph:top_graph
-    bottom_graph:bottom_graph
     size_hint: 1,1
     pos_hint: {"x":0, "top":1}
-    stop_button:stop_button
-    recording_button:recording_button
+
+    top_graph:top_graph
+    bottom_graph:bottom_graph
+    sample_info:sample_info
+    log_stop_button:log_stop_button
+    log_recording_button:log_recording_button
     save_log_button:save_log_button
+
     Label:
         text: "Sample info (1k)"
         size_hint: .16, .08
         pos_hint: {"x":0.05,"top":0.95}
     TextInput:
+        id: sample_info
         text: "0"
+        hint_text: "0"
         size_hint: .16, .06
         pos_hint: {"x":0.25,"top":0.94}
         multiline:False
+        input_type: 'number'
+        input_filter: 'float'
+        multiline: False
     Button:
-        id: stop_button
+        id: log_stop_button
         size_hint: .16,0.06
         pos_hint: {"x":0.59,"top":0.94}
         text: "Stop"
     Button:
-        id: recording_button
+        id: log_recording_button
         size_hint: .16,0.06
         pos_hint: {"x":0.79,"top":0.94}
         text: "Recording..."
@@ -497,7 +801,7 @@
     firmware_info_button:firmware_info_button
     hardware_info_button:hardware_info_button
     bootloader_access_button:bootloader_access_button
-    ramp_up_button:ramp_up_button
+    #ramp_up_button:ramp_up_button
     ramp_up_input:ramp_up_input
     short_button:short_button
     continuity_check_button:continuity_check_button
@@ -560,13 +864,13 @@
         pos_hint: {"x":0.55,"top":0.7825}
         font_size: 13
         text: "Bootloader Access"
-    StrokeButton:
-        id: ramp_up_button
-        size_hint: 0.16, .08
-        pos_hint: {"x":0.05,"top":0.6}
-        font_size: 13
-        text: "Ramp Up"
-        group: "ramp_up"
+   #StrokeButton:
+   #    id: ramp_up_button
+   #    size_hint: 0.16, .08
+   #    pos_hint: {"x":0.05,"top":0.6}
+   #    font_size: 13
+   #    text: "Ramp Up"
+   #    group: "ramp_up"
     RampUpInput:
         id: ramp_up_input
     StrokeButton:
@@ -644,7 +948,6 @@
         text: "Debug Mode"
 
 <RampUpInput@FloatLayout>:
-    input:input
     size_hint: 0.21, .1
     pos_hint: {"x":0.05,"top":0.5}
     background_color: (0, 0, 0, 0)
@@ -652,6 +955,7 @@
     back_color: 0.16, 0.45, 0.75, 1
     border_radius: 5
     color: 0,0,0,1
+    ramp_up_text_input: ramp_up_text_input
     canvas.before:
         Color:
             rgba: self.back_color
@@ -665,12 +969,16 @@
         pos_hint: {"x":0.05,"top":.95}
         multiline: False
     TextInput:
-        id: input
+        id: ramp_up_text_input
         text: "0"
+        hint_text: "0"
         size_hint: 0.9, 0.45
         font_size: 12
         multiline:False
         pos_hint: {"x":0.05,"top":.55}
+        input_type: 'number'
+        input_filter: 'float'
+        multiline: False
 
 <TriggeredModeToggle@FloatLayout>:
     size_hint: 0.65, .1
@@ -702,6 +1010,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
     StrokeButton:
         id: phase_1_button
         size_hint: 0.15, .8
@@ -722,6 +1031,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
     StrokeButton:
         id: phase_1_and_2_button
         size_hint: 0.15, .8
@@ -732,6 +1042,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
     StrokeButton:
         id: inter_stim_time_button
         size_hint: 0.15, .8
@@ -742,6 +1053,7 @@
         text_size: self.size
         halign: 'center'
         valign: 'middle'
+        allow_no_selection: False
 
 <SmoothButton@Button>:
     background_color: (0.0, 0.96, 1, 1) if self.state=='down' else (0, 0, 0, 0)
@@ -769,7 +1081,7 @@
             pos: self.pos
             radius: self.border_radius
 
-<StrokeButton@Button>:
+<StrokeButton@ToggleButton>:
     background_color: (0.16, 0.45, 0.75, 1) if self.state=='down' else (0, 0, 0, 0)
     background_normal: ''
     back_color: 0.16, 0.45, 0.75, 1
@@ -783,28 +1095,4 @@
             rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
             width: 1.2
 
-<HomeScreen>:
-    name: "home"
-    beginner_tutorial:beginner_tutorial
-    get_help:get_help
-    latest_update:latest_update
-    report_bug:report_bug
-    settings_home:settings_home
-    FloatLayout:
-        BeginnerTutorial:
-            id: beginner_tutorial
-        GetHelp:
-            id: get_help
-        LatestUpdate:
-            id: latest_update
-        ReportBug:
-            id: report_bug
-        SettingsHome:
-            id: settings_home
-
-<DeviceScreen>:
-    name: "device"
-    device_tabs: device_tabs
-    FloatLayout:
-        DeviceTabs:
-            id: device_tabs
+##################################################

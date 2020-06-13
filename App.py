@@ -668,6 +668,6 @@ class NeuroStimApp(App):
         self.search = False
 
 if __name__ == '__main__':
-    kvloader = Builder.load_file("ui2.kv")
+    kvloader = Builder.load_file("ui.kv")
     App = NeuroStimApp(kvloader)
     App.run()
