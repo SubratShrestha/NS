@@ -31,7 +31,11 @@ def BluetoothDiscoverLoop():
     except Exception as e:
         print(e)
     finally:
-        conn.close()
+        try:
+            conn.close()
+        except UnboundLocalError as e:
+            print(e)
+
 
 async def connect(address, loop):
     async with BleakClient(address, loop=loop) as client:

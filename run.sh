@@ -9,19 +9,19 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 python App.py &
 elif [[ "$OSTYPE" == "cygwin" ]]; then
         # POSIX compatibility layer and Linux environment emulation for Windows
-python NeuroStim.py &
+python Windows.py &
 sleep 1;
-python ble.py &
+python ble/ble.py &
 elif [[ "$OSTYPE" == "msys" ]]; then
 # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
 python Windows.py &
 sleep 1;
-python ble.py &
+python ble/ble.py &
 elif [[ "$OSTYPE" == "win32" ]]; then
 # I'm not sure this can happen.
-python NeuroStim.py &
+python Windows.py &
 sleep 1;
-python ble.py &
+python ble/ble.py &
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 python App.py &
 else
