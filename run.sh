@@ -14,7 +14,7 @@ sleep 1;
 python ble.py &
 elif [[ "$OSTYPE" == "msys" ]]; then
 # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
-python NeuroStim.py &
+python Windows.py &
 sleep 1;
 python ble.py &
 elif [[ "$OSTYPE" == "win32" ]]; then
