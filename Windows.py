@@ -32,6 +32,10 @@ import matplotlib
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
 
+"""======================================================================
+Don't change this to match App.py
+These are strictly for Windows.py
+========================================================================="""
 from multiprocessing.connection import Listener, Client
 import threading
 
@@ -385,11 +389,20 @@ class NeuroStimApp(App):
         super(NeuroStimApp, self).__init__()
         self.kvloader = kvloader
         self.device_data = []
+
+        """======================================================================
+        Don't change this to match App.py
+        These are strictly for Windows.py
+        ========================================================================="""
         self.search = True
         self.t = threading.Thread(target=self.discover)
         self.t.start()
 
     def discover(self):
+        """======================================================================
+        Don't change this to match App.py
+        These are strictly for Windows.py
+        ========================================================================="""
         address = ('localhost', 6000)
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
@@ -627,6 +640,6 @@ class NeuroStimApp(App):
         self.search = False
 
 if __name__ == '__main__':
-    kvloader = Builder.load_file("win.kv")
+    kvloader = Builder.load_file("ui.kv")
     App = NeuroStimApp(kvloader)
     App.run()
