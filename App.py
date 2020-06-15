@@ -19,6 +19,8 @@ from bleak.exc import BleakDotNetTaskError, BleakError
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
+from kivy.uix.dropdown import DropDown
+from kivy.base import runTouchApp
 
 import asyncio
 import threading
@@ -121,6 +123,10 @@ ids = [
 
 class custom_test(TextInput):
     pass
+
+class FrequencyDropDown(DropDown):
+    pass
+
 
 def update_graph():
     graph = get_squarewave_plot()
