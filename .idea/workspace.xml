@@ -20,9 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1458dba-22e0-4749-9745-aad5409b37fc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/NS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NS.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/win.kv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,13 +50,36 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../venv" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.ble">
+    <configuration name="Windows" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Windows.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -74,6 +99,59 @@
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ble" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ble" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ble/ble.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="run.sh" type="ShConfigurationType" temporary="true">
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/run.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
@@ -104,6 +182,14 @@
       <option name="USE_PATTERN" value="false" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.ble" />
+        <item itemvalue="Python.Windows" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Shell Script.run.sh" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -131,13 +217,50 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="728" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592064858499">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="319" y="30" key="#Windows" timestamp="1592128330559">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="319" y="30" key="#Windows/0.30.1200.770@0.30.1200.770" timestamp="1592128330559" />
+    <state x="319" y="30" key="#ble" timestamp="1592128323708">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="319" y="30" key="#ble/0.30.1200.770@0.30.1200.770" timestamp="1592128323708" />
+    <state x="455" y="268" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592281707244">
+      <screen x="0" y="30" width="1200" height="770" />
     </state>
     <state x="728" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1592064858499" />
+    <state x="455" y="268" key="#com.intellij.fileTypes.FileTypeChooser/0.30.1200.770@0.30.1200.770" timestamp="1592281707244" />
+    <state x="384" y="170" key="FileChooserDialogImpl" timestamp="1592127739713">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="384" y="170" key="FileChooserDialogImpl/0.30.1200.770@0.30.1200.770" timestamp="1592127739713" />
+    <state width="1179" height="157" key="GridCell.Tab.0.bottom" timestamp="1592287398853">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state width="1179" height="157" key="GridCell.Tab.0.bottom/0.30.1200.770@0.30.1200.770" timestamp="1592287398853" />
+    <state width="1179" height="157" key="GridCell.Tab.0.center" timestamp="1592287398852">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state width="1179" height="157" key="GridCell.Tab.0.center/0.30.1200.770@0.30.1200.770" timestamp="1592287398852" />
+    <state width="1179" height="157" key="GridCell.Tab.0.left" timestamp="1592287398851">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state width="1179" height="157" key="GridCell.Tab.0.left/0.30.1200.770@0.30.1200.770" timestamp="1592287398851" />
+    <state width="1179" height="157" key="GridCell.Tab.0.right" timestamp="1592287398853">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state width="1179" height="157" key="GridCell.Tab.0.right/0.30.1200.770@0.30.1200.770" timestamp="1592287398853" />
+    <state x="111" y="60" key="SettingsEditor" timestamp="1592138040051">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="111" y="60" key="SettingsEditor/0.30.1200.770@0.30.1200.770" timestamp="1592138040051" />
     <state x="684" y="161" width="618" height="783" key="find.popup" timestamp="1592060439505">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="684" y="161" width="618" height="783" key="find.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1592060439505" />
+    <state x="263" y="121" width="672" height="678" key="search.everywhere.popup" timestamp="1592286100392">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="263" y="121" width="672" height="678" key="search.everywhere.popup/0.30.1200.770@0.30.1200.770" timestamp="1592286100392" />
   </component>
 </project>
