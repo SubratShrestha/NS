@@ -59,18 +59,24 @@ ids = [
     'stop_button',
     'save_button',
     'start_button',
-    'output_current_input',
     'termination_tabs',
     'cathodic_anodic_toggle',
     # 'ramp_up_toggle',
     # 'short_electrode_toggle',
-    'inter_phase_delay_input',
+    'stimulation_graph_display',
+    'stimulation_duration',
+    'number_of_burst',
+    'output_current_input',
     'cathodic_toggle',
     'anodic_toggle',
     'duty_cycle_input',
     'burst_peroid_input',
+    'inter_stim_delay_input',
     'inter_phase_delay_input',
-    'stimulation_graph_display',
+    'phase_1_time_input',
+    'phase_2_time_input',
+    'frequency_input',
+    # stimulate_foever
     # 'channel_2_stimulation_graph_display',
     # 'channel_2_cathodic_toggle',
     # 'channel_2_anodic_toggle',
@@ -86,8 +92,6 @@ ids = [
     # 'channel_2_cathodic_anodic_toggle',
     # 'channel_2_ramp_up_toggle',
     # 'channel_2_short_short_electrode_toggle',
-    'stimulation_duration',
-    'number_of_burst',
     'electrode_recording_tab_top_graph',
     'electrode_recording_tab_bottom_graph',
     'electrode_recording_tab_sample_info',
@@ -187,11 +191,11 @@ def get_squarewave_plot():
         T.append(burstduration + interburst)
         I.append(0)
 
-    plt.close("all")
-    plt.plot(T, I)
-
-    plt.xlabel('Time (us)')
-    plt.ylabel('Current (uA)')
+    if burstduration > interstim + phasetime1 + phasetime2 + interphase:
+        plt.close("all")
+        plt.plot(T, I)
+        plt.xlabel('Time (us)')
+        plt.ylabel('Current (uA)')
 
     return FigureCanvasKivyAgg(plt.gcf())
 
@@ -216,6 +220,7 @@ live_update_references = {
         'phase_1_time_input',
         'phase_2_time_input',
         'frequency_input',
+        #stimulate_foever
     ]
 }
 
@@ -406,7 +411,7 @@ class NeuroStimApp(App):
 
     def get_graph_variables(self):
         return {
-            'termination_tabs': self.get_components('termination_tabs').current_tab.text,
+            #'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
             'duty_cycle_input': self.get_components('duty_cycle_input').text,
@@ -416,14 +421,14 @@ class NeuroStimApp(App):
             'phase_1_time_input': self.get_components('phase_1_time_input').text,
             'phase_2_time_input': self.get_components('phase_2_time_input').text,
             'frequency_input': self.get_components('frequency_input').text,
-            'stimulation_duration': self.get_components('stimulation_duration').text,
-            'number_of_burst': self.get_components('number_of_burst').text,
+            # 'stimulation_duration': self.get_components('stimulation_duration').text,
+            # 'number_of_burst': self.get_components('number_of_burst').text,
             'output_current_input': self.get_components('output_current_input').text,
             'cathodic_toggle':self.get_components('cathodic_toggle').state,
             'anodic_toggle':self.get_components('anodic_toggle').state,
             #'ramp_up_toggle':self.get_components('ramp_up_toggle').state,
-            # 'short_electrode_toggle':self.get_components('short_electrode_toggle').state,
-            # 'burst_frequency_input':self.get_components('burst_frequency_input').text
+            #'short_electrode_toggle':self.get_components('short_electrode_toggle').state,
+            #'burst_frequency_input':self.get_components('burst_frequency_input').text
         }
 
     def get_components(self, id):
