@@ -34,6 +34,7 @@ from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
+import sys
 
 devices_dict = {}
 ids = [
@@ -428,7 +429,11 @@ def BluetoothDiscoverLoop():
         loop.set_debug(1)
         r1 = loop.run_until_complete(ble_discover(loop, time))
         devices = r1.result()
-        data = [{'text': str(i.address)} for i in devices if i.address is not None]
+        prune = len(sys.argv) > 1 and "-prune" in sys.argv
+        if prune:
+            data = [{'text': str(i.address)} for i in devices if i.address is not None and "NeuroStimulator" in str(i)]
+        else:
+            data = [{'text': str(i.address)} for i in devices if i.address is not None]
         App.get_running_app().device_data = data
         if time < 10:
             time += 1

@@ -3,6 +3,7 @@ from bleak.exc import BleakDotNetTaskError, BleakError
 import asyncio
 import threading
 from multiprocessing.connection import Listener, Client
+import sys
 
 async def ble_discover(loop, time):
     task1 = loop.create_task(discover(time))
@@ -20,7 +21,12 @@ def BluetoothDiscoverLoop():
             loop.set_debug(1)
             r1 = loop.run_until_complete(ble_discover(loop, time))
             devices = r1.result()
-            data = [{'text': str(i.address)} for i in devices if i.address is not None]
+
+            prune = len(sys.argv) > 1 and "-prune" in sys.argv
+            if prune:
+                data = [{'text': str(i.address)} for i in devices if i.address is not None and "NeuroStimulator" in str(i)]
+            else:
+                data = [{'text': str(i.address)} for i in devices if i.address is not None]
             if time < 10:
                 time += 1
             if conn.closed:
