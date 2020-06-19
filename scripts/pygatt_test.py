@@ -1,17 +1,45 @@
-# !/usr/bin/env python
-from __future__ import print_function
-
-import binascii
 import pygatt
 
-YOUR_DEVICE_ADDRESS = "11:22:33:44:55:66"
-# Many devices, e.g. Fitbit, use random addressing - this is required to
-# connect.
-ADDRESS_TYPE = pygatt.BLEAddressType.random
-
 adapter = pygatt.GATTToolBackend()
-adapter.start()
-device = adapter.connect(YOUR_DEVICE_ADDRESS, address_type=ADDRESS_TYPE)
+CHANNEL_NUM_CHAR                  =  '01000000-0000-0000-0000-000000000006'
+MAX_FREQ_CHAR                     =  '01000000-0000-0000-0000-000000000007'
+OTA_SUPPORT_CHAR                  =  '01000000-0000-0000-0000-000000000008'
+STIMULATION_COMMAND_SERVICE       =  '02000000-0000-0000-0000-000000000001'
+STIM_AMP_READ_CHAR                =  '02000000-0000-0000-0000-000000000002'
+STIM_AMP_WRITE_CHAR               =  '02000000-0000-0000-0000-000000000102'
+PHASE_ONE_READ_CHAR               =  '02000000-0000-0000-0000-000000000003'
+PHASE_ONE_WRITE_CHAR              =  '02000000-0000-0000-0000-000000000103'
+INTER_PHASE_GAP_READ_CHAR         =  '02000000-0000-0000-0000-000000000004'
+INTER_PHASE_GAP_WRITE_CHAR        =  '02000000-0000-0000-0000-000000000104'
+PHASE_TWO_READ_CHAR               =  '02000000-0000-0000-0000-000000000005'
+PHASE_TWO_WRITE_CHAR              =  '02000000-0000-0000-0000-000000000105'
+INTER_STIM_DELAY_READ_CHAR        =  '02000000-0000-0000-0000-000000000006'
+INTER_STIM_DELAY_WRITE_CHAR       =  '02000000-0000-0000-0000-000000000106'
+STIMULATION_DURATION_READ_CHAR    =  '02000000-0000-0000-0000-000000000007'
+STIMULATION_DURATION_WRITE_CHAR   =  '02000000-0000-0000-0000-000000000107'
+ANODIC_CATHODIC_FIRST_READ_CHAR   =  '02000000-0000-0000-0000-000000000008'
+ANODIC_CATHODIC_FIRST_WRITE_CHAR  =  '02000000-0000-0000-0000-000000000108'
+STIM_TYPE_READ_CHAR               =  '02000000-0000-0000-0000-000000000009'
+STIM_TYPE_WRITE_CHAR              =  '02000000-0000-0000-0000-000000000109'
+BURST_TIME_READ_CHAR              =  '02000000-0000-0000-0000-00000000000A'
+BURST_TIME_WRITE_CHAR             =  '02000000-0000-0000-0000-00000000010A'
+INTER_BURST_DELAY_READ_CHAR       =  '02000000-0000-0000-0000-00000000000B'
+INTER_BURST_DELAY_WRITE_CHAR      =  '02000000-0000-0000-0000-00000000010B'
 
-for uuid in device.discover_characteristics().keys():
-    print("Read UUID %s: %s" % (uuid, binascii.hexlify(device.char_read(uuid))))
+try:
+    adapter.start()
+    device = adapter.connect('C8:2B:96:A2:85:F6')
+    print(device)
+    value = device.char_read(STIM_AMP_READ_CHAR)
+    print(value)
+    device.char_write(STIM_AMP_WRITE_CHAR, bytearray(b'5'), wait_for_response=True)
+    value = device.char_read(STIM_AMP_READ_CHAR)
+    print(value)
+    # value = device.char_read(STIM_AMP_READ_CHAR)
+    # print(value)
+    # value = device.char_read(INTER_STIM_DELAY_READ_CHAR)
+    # print(value)
+    # value = device.char_read(BURST_TIME_READ_CHAR)
+    # print(value)
+finally:
+    adapter.stop()
