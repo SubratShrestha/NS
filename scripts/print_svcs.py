@@ -110,16 +110,6 @@ async def connect(address, loop):
                 print(await client.disconnect())
                 return client
 
-async def ble_discover(loop, time):
-    task1 = loop.create_task(discover(time))
-    await asyncio.wait([task1])
-    return task1
-
-async def ble_print_connection(loop,d):
-    task1 = loop.create_task(connect(d, loop))
-    await asyncio.wait([task1])
-    return task1
-
 def BluetoothDiscoverLoop():
     loop = asyncio.get_event_loop()
     client = loop.run_until_complete(connect('C8:2B:96:A2:85:F6', loop))
