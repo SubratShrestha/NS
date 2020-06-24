@@ -334,22 +334,6 @@
         group: "termination"
         font_size: 14
 
-<FrequencyDropDown@DropDown>:
-    id: dropdown
-    on_select:
-        app.root.ids.btn.text = '{}'.format(args[1])
-    Button:
-        id:frequency_button
-        text: "Frequency"
-        size_hint: .4,.25
-        on_release:
-            dropdown.select(frequency.text)
-    Button
-        id:inter_stim_delay_button
-        text: "Inter-Stim Delay"
-        size_hint: .4,.25
-        on_release:
-            dropdown.select(inter_stim_delay_button.text)
 
 <DeviceSettings@BoxLayout>:
     stimulation_tabs: stimulation_tabs
@@ -379,7 +363,7 @@
         FloatLayout:
             Label:
                 size_hint: .4,.25
-                pos_hint: {"x":0.05, "top":1}
+                pos_hint: {"x":0.05, "top":0.5}
                 text: "Inter-Phase Delay(us)"
                 text_size: self.size
                 halign: 'left'
@@ -387,24 +371,23 @@
             TextInput:
                 id: channel_1_inter_phase_delay_input
                 size_hint: .4,.25
-                pos_hint: {"x":0.05, "top":0.75}
+                pos_hint: {"x":0.05, "top":0.25}
                 text: "0"
                 hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
-            Button:
-                size_hint: .4,.25
-                pos_hint: {"x":0.05, "top":0.5}
-                text: "Inter-Stim Delay(us)"
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
-                on_release: root.drop_down.open(self)
+            #Label:
+            #    size_hint: .4,.25
+            #    pos_hint: {"x":0.55, "top":0.5}
+            #    text: "Inter-Stim Delay(us)"
+            #    text_size: self.size
+            #    halign: 'left'
+            #    valign: 'middle'
             #TextInput:
             #    id: channel_1_inter_stim_delay_input
             #    size_hint: .4,.25
-            #    pos_hint: {"x":0.05, "top":0.25}
+            #    pos_hint: {"x":0.55, "top":0.25}
             #    text: "0"
             #    hint_text: "0"
             #    input_type: 'number'
@@ -412,7 +395,7 @@
             #    multiline: False
             Label:
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":1}
+                pos_hint: {"x":0.05, "top":1}
                 text: "Phase 1 Time(us)"
                 text_size: self.size
                 halign: 'left'
@@ -420,7 +403,7 @@
             TextInput:
                 id: channel_1_phase_1_time_input
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.75}
+                pos_hint: {"x":0.05, "top":0.75}
                 text: "0"
                 hint_text: "0"
                 input_type: 'number'
@@ -428,7 +411,7 @@
                 multiline: False
             Label:
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.5}
+                pos_hint: {"x":0.55, "top":1}
                 text: "Phase 2 Time(us)"
                 text_size: self.size
                 halign: 'left'
@@ -436,32 +419,50 @@
             TextInput:
                 id: channel_1_phase_2_time_input
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.25}
+                pos_hint: {"x":0.55, "top":0.75}
                 text: "0"
                 hint_text: "0"
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
 
-    #TabbedPanelItem:
-    #    text: "Frequency"
-    #    FloatLayout:
-    #        Label:
-    #            size_hint: .4,.25
-    #            pos_hint: {"x":0.05, "top":1}
-    #            text: "Frequency (pps)"
-    #            text_size: self.size
-    #            halign: 'left'
-    #            valign: 'middle'
-    #        TextInput:
-    #           id: channel_1_frequency_input
-    #            size_hint: .4,.25
-    #            pos_hint: {"x":0.05, "top":0.75}
-    #            text: "0"
-    #            hint_text: "0"
-    #            input_type: 'number'
-    #            input_filter: 'float'
-    #            multiline: False
+    TabbedPanelItem:
+        text: "Frequency"
+        FloatLayout:
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":1}
+                text: "Frequency (pps)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                id: channel_1_frequency_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.75}
+                #text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
+                disabled: True if channel_1_inter_stim_delay_input.text != "" else False
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":1}
+                text: "Inter-Stim Delay(us)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+            TextInput:
+                id: channel_1_inter_stim_delay_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.75}
+                #text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
+                disabled:True if channel_1_frequency_input.text != "" else False
 
 <ChannelStimulationTabs>:
     tab_width: (self.parent.width)/2
