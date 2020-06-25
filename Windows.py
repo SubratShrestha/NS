@@ -31,6 +31,7 @@ from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
+from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
 
 
 """======================================================================
@@ -224,6 +225,14 @@ live_update_references = {
     ]
 }
 
+# def Errorwindow():
+#         show = Errorpop()
+#         popupwindow = Popup(titel="titel", content=show, size_hint=(None,None), size=(400,400))
+#         popupwindow.open()
+
+class Errorpopup(Popup):
+    pass
+
 class MainWindow(FloatLayout):
     pass
 
@@ -249,8 +258,8 @@ class PhaseTimeFrequencyTabs(TabbedPanel):
 
 
 class ChannelStimulationTabs(TabbedPanel):
-    pass
-
+    def btn(self):
+        Errorwindow()
 
 class BurstcontinousStimulationTabs(TabbedPanel):
     pass

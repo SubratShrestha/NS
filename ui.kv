@@ -498,6 +498,7 @@
                         size_hint: .25,.06
                         pos_hint: {"x":0.675, "top":.99}
                         text: "Start"
+                        on_release: Factory.ErrorPopup().open()
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
@@ -1018,3 +1019,13 @@
             width: 1.2
 
 ##################################################
+
+<ErrorPopup>:
+    title: "Error Popup"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .45,.73
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+    on_open: print("=====================\nMitches Error Popup\n==========================")
