@@ -538,10 +538,9 @@
             canvas:
                 Color:
                     rgba:.925,.925,.925,1
-                RoundedRectangle:
+                Rectangle:
                     size:self.size
                     pos: self.pos
-                    radius: [30,]
             BoxLayout:
                 orientation: 'horizontal'
                 canvas:
@@ -652,34 +651,68 @@
         background_color: 0,0,0,0
         BoxLayout:
             orientation: 'vertical'
+            canvas:
+                Color:
+                    rgba:.925,.925,.925,1
+                Rectangle:
+                    size:self.size
+                    pos: self.pos
             BoxLayout:
                 orientation: 'horizontal'
+                canvas:
+                    Color:
+                        rgba:.925,.925,.925,1
+                    Rectangle:
+                        size:self.size
+                        pos: self.pos
                 BoxLayout:
                     orientation: 'vertical'
+                    canvas:
+                        Color:
+                            rgba:.925,.925,.925,1
+                        Rectangle:
+                            size:self.size
+                            pos: self.pos
                     PhaseTimeFrequencyTabs:
                         id: channel_2_phase_time_frequency_tab
+                        canvas:
+                            Color:
+                                rgba:.925,.925,.925,1
+                            Rectangle:
+                                size:self.size
+                                pos: self.pos
                     BurstUniformStimulationTabs:
                         id: channel_2_burst_uniform_stimulation_tab
+                        canvas:
+                            Color:
+                                rgba:.925,.925,.925,1
+                            Rectangle:
+                                size:self.size
+                                pos: self.pos
                 FloatLayout:
                     Button:
                         id: channel_2_stop_button
                         size_hint: .25,.06
-                        pos_hint: {"x":0.075, "top":.99}
+                        pos_hint: {"x":0.675, "top":.99}
                         text: "Stop"
+                        background_color: 1,0,0,1
                     Button:
                         id: channel_2_save_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.375, "top":.99}
                         text: "Save"
+                        background_color: 0.420,0.864,1.773,1
                     Button:
                         id: channel_2_start_button
                         size_hint: .25,.06
-                        pos_hint: {"x":0.675, "top":.99}
+                        pos_hint: {"x":0.075, "top":.99}
                         text: "Start"
+                        background_color: 0.420,0.864,1.773,1
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (A)"
+                        text: "Output Current (mA)"
+                        color: .1,.1,.1,1
                     TextInput:
                         id: channel_2_output_current_input
                         size_hint: .4,.08
@@ -693,6 +726,7 @@
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.5}
                         text: "End Stimulation By:"
+                        color: .1,.1,.1,1
                     TerminationTabs:
                         id: channel_2_termination_tabs
                     CathodicAnodicToggle:
@@ -703,12 +737,14 @@
                         pos_hint: {"x":0.075, "top":0.7}
                         text: "Ramp Up"
                         group: "ramp_up"
+                        background_color: 0.420,0.864,1.773,1
                     ToggleButton:
                         id: channel_2_electrode_toggle
                         size_hint: .4,.06
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
+                        background_color: 0.420,0.864,1.773,1
                     # Button:
                     #     id: channel_2_electrode_button
                     #     size_hint: .4,.1
