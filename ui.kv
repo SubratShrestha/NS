@@ -272,12 +272,14 @@
         group: "cathodic_anodic"
         allow_no_selection: False
         state: "down"
+        background_color: 0.420,0.864,1.773,1
     ToggleButton:
         id: anodic
         text: "Anodic First"
         group: "cathodic_anodic"
         allow_no_selection: False
         font_size: 18
+        background_color: 0.420,0.864,1.773,1
 
 <TerminationTabs>:
     tab_width: (self.parent.width*.85)/3
@@ -286,10 +288,13 @@
     do_default_tab: False
     termination_tabs_time_input:termination_tabs_time_input
     termination_tabs_duty_cycle_input:termination_tabs_duty_cycle_input
+    background_color: 0,0,0,0
     TabbedPanelItem:
         text: "Time"
-        font_size: 14
+        font_size: 24
         group: "termination"
+        background_color:.69,.77,.87,.3
+        color:.1,.1,.1,1
         FloatLayout:
             Label:
                 pos_hint: {"x":0, "top":.99}
@@ -298,6 +303,7 @@
                 halign: 'left'
                 valign: 'middle'
                 text: " Number of Minutes"
+                color: .1,.1,.1,1
             TextInput:
                 id: termination_tabs_time_input
                 pos_hint: {"x":0, "top":.69}
@@ -309,9 +315,11 @@
                 input_filter: 'float'
                 multiline: False
     TabbedPanelItem:
-        text: "Duty Cycle"
+        text: "Cycle"
         group: "termination"
-        font_size: 14
+        font_size: 24
+        background_color:.69,.77,.87,.3
+        color: .1,.1,.1,1
         FloatLayout:
             Label:
                 pos_hint: {"x":0, "top":.99}
@@ -320,6 +328,7 @@
                 halign: 'left'
                 valign: 'middle'
                 text: " Number of Cycles"
+                color: .1,.1,.1,1
             TextInput:
                 id: termination_tabs_duty_cycle_input
                 pos_hint: {"x":0, "top":.69}
@@ -332,7 +341,9 @@
     TabbedPanelItem:
         text: "Non-Stop"
         group: "termination"
-        font_size: 14
+        font_size: 24
+        background_color:.69,.77,.87,.3
+        color: .1,.1,.1,1
 
 
 <DeviceSettings@BoxLayout>:
@@ -350,7 +361,7 @@
     pos_hint: {"x":0, "top":1}
     do_default_tab: False
     color: .2,.2,.1,1
-    background_color: 0.1,0.2,0.3,1
+    background_color: 0,0,0,0
 
     channel_1_inter_phase_delay_input: channel_1_inter_phase_delay_input
     channel_1_inter_stim_delay_input: channel_1_inter_stim_delay_input
@@ -360,6 +371,8 @@
 
     TabbedPanelItem:
         text: "Phase Time"
+        background_color: .69,.77,.87,.3 #change the colour of the tab panel header
+        color: .1,.1,.1,1 #color of text
         FloatLayout:
             Label:
                 size_hint: .4,.25
@@ -368,6 +381,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: channel_1_inter_phase_delay_input
                 size_hint: .4,.25
@@ -400,6 +414,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: channel_1_phase_1_time_input
                 size_hint: .4,.25
@@ -416,6 +431,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: channel_1_phase_2_time_input
                 size_hint: .4,.25
@@ -428,6 +444,8 @@
 
     TabbedPanelItem:
         text: "Frequency"
+        background_color: .69,.77,.87,.3 #change the color of the tab panel header
+        color: .1,.1,.1,1 #color of text
         FloatLayout:
             Label:
                 size_hint: .4,.25
@@ -436,6 +454,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: channel_1_frequency_input
                 size_hint: .4,.25
@@ -453,6 +472,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: channel_1_inter_stim_delay_input
                 size_hint: .4,.25
@@ -463,6 +483,16 @@
                 input_filter: 'float'
                 multiline: False
                 disabled:True if channel_1_frequency_input.text != "" else False
+
+<ChannelStimulationTabs@TabbedPanelStrip>
+#change the color the strip of channel 1/2
+    canvas.before:
+        Color:
+            rgba: .66,.66,.66,.5
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
 
 <ChannelStimulationTabs>:
     tab_width: (self.parent.width)/2
@@ -502,36 +532,72 @@
 
     TabbedPanelItem:
         text: "Channel 1"
+        background_color: 0,0,0,0
         BoxLayout:
             orientation: 'vertical'
+            canvas:
+                Color:
+                    rgba:.925,.925,.925,1
+                RoundedRectangle:
+                    size:self.size
+                    pos: self.pos
+                    radius: [30,]
             BoxLayout:
                 orientation: 'horizontal'
+                canvas:
+                    Color:
+                        rgba:.925,.925,.925,1
+                    Rectangle:
+                        size:self.size
+                        pos: self.pos
                 BoxLayout:
                     orientation: 'vertical'
+                    canvas:
+                        Color:
+                            rgba: .925,.925,.925,1
+                        Rectangle:
+                            size:self.size
+                            pos: self.pos
                     PhaseTimeFrequencyTabs:
                         id: channel_1_phase_time_frequency_tab
+                        canvas.before:
+                            Color:
+                                rgba: .925,.925,.925,1
+                            Rectangle:
+                                size:self.size
+                                pos: self.pos
                     BurstUniformStimulationTabs:
                         id: channel_1_burst_uniform_stimulation_tab
+                        canvas.before:
+                            Color:
+                                rgba: .925,.925,.925,1
+                            Rectangle:
+                                size:self.size
+                                pos: self.pos
                 FloatLayout:
                     Button:
                         id: channel_1_stop_button
                         size_hint: .25,.06
-                        pos_hint: {"x":0.075, "top":.99}
+                        pos_hint: {"x":.675, "top":.99}
                         text: "Stop"
+                        background_color: 1,0,0,1
                     Button:
                         id:channel_1_save_button
                         size_hint: .25,.06
                         pos_hint: {"x":0.375, "top":.99}
                         text: "Save"
+                        background_color: 0.420,0.864,1.773,1
                     Button:
                         id:channel_1_start_button
                         size_hint: .25,.06
-                        pos_hint: {"x":0.675, "top":.99}
+                        pos_hint: {"x":0.075, "top":.99}
                         text: "Start"
+                        background_color: 0.420,0.864,1.773,1
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
                         text: "Output Current (mA)"
+                        color: .1,.1,.1,1
                     TextInput:
                         id:channel_1_output_current_input
                         size_hint: .4,.08
@@ -545,6 +611,7 @@
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.5}
                         text: "End Stimulation By:"
+                        color: .1,.1,.1,1
                     TerminationTabs:
                         id: channel_1_termination_tabs
                     CathodicAnodicToggle:
@@ -555,12 +622,14 @@
                         pos_hint: {"x":0.075, "top":0.7}
                         text: "Ramp Up"
                         group: "ramp_up"
+                        background_color: 0.420,0.864,1.773,1
                     ToggleButton:
                         id: channel_1_electrode_toggle
                         size_hint: .4,.06
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
+                        background_color: 0.420,0.864,1.773,1
                     #Button:
                     #    id: channel_1_electrode_button
                     #    size_hint: .4,.1
@@ -580,6 +649,7 @@
                 id: channel_1_stimulation_graph_display
     TabbedPanelItem:
         text: "Channel 2"
+        background_color: 0,0,0,0
         BoxLayout:
             orientation: 'vertical'
             BoxLayout:
@@ -655,6 +725,23 @@
                 pos_hint: {"x":0, "top":1}
                 id: channel_2_stimulation_graph_display
 
+<BurstUniformStimulationTabs@TabbedPanelStrip>
+#change the background color of the tab
+    canvas.before:
+        Color:
+            rgba: .18,.19,.19,1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<PhaseTimeFrequencyTabs>
+#change the color the strip of phase time frequency tab
+    canvas.before:
+        Color:
+            rgba: 0,0,0,0
+        Rectangle:
+            size: self.size
+            pos: self.pos
 
 <BurstUniformStimulationTabs>:
     tab_width: (self.parent.width*.995)/2
@@ -662,12 +749,14 @@
     pos_hint: {"x":0, "top":1}
     do_default_tab: False
     color: .2,.2,.1,1
-    background_color: 0.1,0.2,0.3,1
+    background_color: 0,0,0,0
     inter_burst_delay:inter_burst_delay
     burst_duration:burst_duration
     # burst_frequency: burst_frequency
     TabbedPanelItem:
         text: "Burst Stimulation"
+        background_color: .69,.77,.87,.3 #change the color of the header
+        color: .1,.1,.1,1 #color of text
         FloatLayout:
             Label:
                 size_hint: .4,.25
@@ -676,6 +765,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: burst_duration
                 size_hint: .4,.25
@@ -692,6 +782,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
+                color: .1,.1,.1,1
             TextInput:
                 id: inter_burst_delay
                 size_hint: .4,.25
@@ -719,6 +810,8 @@
             #     multiline: False
     TabbedPanelItem:
         text: "Continuous Stimulation"
+        background_color: .69,.77,.87,.3 #change the color of the header
+        color: .1,.1,.1,1 #color of text
 
 <DeviceTabs@TabbedPanel+DT_TPS>:
     stimulation_log_tab: stimulation_log_tab
@@ -731,23 +824,28 @@
     tab_pos : 'top_mid'
     TabbedPanelItem:
         text: "Stimulation Setting"
+        background_color: 0,0,0,0
         DeviceSettings:
             id: device_settings
     TabbedPanelItem:
         text: "Stimulation Log"
+        background_color: 0,0,0,0
         StimulationLogTab:
             id: stimulation_log_tab
     TabbedPanelItem:
         text: "Neural recording"
+        background_color: 0,0,0,0
     TabbedPanelItem:
         text: "Advanced Settings"
+        background_color: 0,0,0,0
         DeviceAdvancedSettings:
             id: advanced_settings
 
 <DT_TPS@TabbedPanelStrip>
-    canvas:
+#change the color of panel strip
+    canvas.before:
         Color:
-            rgba: 0, 1, 0, 1
+            rgba: .18,.19,.19,1
         Rectangle:
             size: self.size
             pos: self.pos
@@ -853,6 +951,7 @@
         text_size:self.size
         halign:'left'
         valign:'middle'
+
     StrokeButton:
         id: auto_shutdown_when_stim_is_finished
         size_hint: 0.425, .08
