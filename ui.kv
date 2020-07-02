@@ -278,20 +278,11 @@
     pos_hint: {"x":0.075, "top":.45}
     size_hint: .85,.25
     do_default_tab: False
-<<<<<<< HEAD
-    termination_tabs_time_input:termination_tabs_time_input
-    termination_tabs_duty_cycle_input:termination_tabs_duty_cycle_input
-    background_color: 0,0,0,0
-    TabbedPanelItem:
-        text: "Time"
-        font_size: 24
-=======
     stimulation_duration:stimulation_duration
     number_of_burst:number_of_burst
     TabbedPanelItem:
         text: "Stimulation duration (s)"
-        font_size: 14
->>>>>>> origin/feature/graph
+        text_size: self.size
         group: "termination"
         background_color:.69,.77,.87,.3
         color:.1,.1,.1,1
@@ -302,12 +293,7 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
-<<<<<<< HEAD
-                text: " Number of Minutes"
-                color: .1,.1,.1,1
-=======
                 text: " Stimulation duration (s)"
->>>>>>> origin/feature/graph
             TextInput:
                 id: stimulation_duration
                 pos_hint: {"x":0, "top":.69}
@@ -315,17 +301,14 @@
                 text: "0"
                 hint_text: "0"
                 multiline:False
+                font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
     TabbedPanelItem:
-<<<<<<< HEAD
-        text: "Cycle"
-=======
-        text: "Number of burst"
->>>>>>> origin/feature/graph
+        text: "Number \nof burst"
         group: "termination"
-        font_size: 24
+        text_size: self.size
         background_color:.69,.77,.87,.3
         color: .1,.1,.1,1
         FloatLayout:
@@ -335,25 +318,21 @@
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
-<<<<<<< HEAD
-                text: " Number of Cycles"
-                color: .1,.1,.1,1
-=======
                 text: " Number of burst"
->>>>>>> origin/feature/graph
             TextInput:
                 id: number_of_burst
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
                 text: "0"
                 hint_text: "0"
+                font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
     TabbedPanelItem:
-        text: "Stimulate forever"
+        text: "Stimulate \nforever"
         group: "termination"
-        font_size: 24
+        text_size: self.size
         background_color:.69,.77,.87,.3
         color: .1,.1,.1,1
 
@@ -380,6 +359,8 @@
     phase_1_time_input: phase_1_time_input
     phase_2_time_input: phase_2_time_input
     frequency_input: frequency_input
+    channel_1_frequency_input:channel_1_frequency_input
+    frequency_input:frequency_input
 
     TabbedPanelItem:
         text: "Phase Time"
@@ -401,24 +382,9 @@
                 text: "0"
                 hint_text: "0"
                 input_type: 'number'
+                font_size: self.height*0.55
                 input_filter: 'float'
                 multiline: False
-            #Label:
-            #    size_hint: .4,.25
-            #    pos_hint: {"x":0.55, "top":0.5}
-            #    text: "Inter-Stim Delay(us)"
-            #    text_size: self.size
-            #    halign: 'left'
-            #    valign: 'middle'
-            #TextInput:
-            #    id: channel_1_inter_stim_delay_input
-            #    size_hint: .4,.25
-            #    pos_hint: {"x":0.55, "top":0.25}
-            #    text: "0"
-            #    hint_text: "0"
-            #    input_type: 'number'
-            #    input_filter: 'float'
-            #    multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":1}
@@ -428,40 +394,51 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-<<<<<<< HEAD
-                id: channel_1_phase_1_time_input
-=======
                 id: inter_stim_delay_input
->>>>>>> origin/feature/graph
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: "0"
                 hint_text: "0"
+                font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
+                text: "Phase 1 Time(us)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                color: .1,.1,.1,1
+            TextInput:
+                id: phase_1_time_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.75}
+                text: "0"
+                hint_text: "0"
+                font_size: self.height*0.55
+                input_type: 'number'
+                input_filter: 'float'
+                multiline: False
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.5}
                 text: "Phase 2 Time(us)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-<<<<<<< HEAD
-                id: channel_1_phase_2_time_input
-=======
-                id: phase_1_time_input
->>>>>>> origin/feature/graph
+                id: phase_2_time_input
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.75}
+                pos_hint: {"x":0.55, "top":0.25}
                 text: "0"
                 hint_text: "0"
+                font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
-
     TabbedPanelItem:
         text: "Frequency"
         background_color: .69,.77,.87,.3 #change the color of the tab panel header
@@ -476,19 +453,16 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-<<<<<<< HEAD
                 id: channel_1_frequency_input
-=======
-                id: phase_2_time_input
->>>>>>> origin/feature/graph
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 #text: "0"
                 hint_text: "0"
+                font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
-                disabled: True if channel_1_inter_stim_delay_input.text != "" else False
+                disabled: True if frequency_input.text != "" else False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
@@ -498,16 +472,13 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-<<<<<<< HEAD
-                id: channel_1_inter_stim_delay_input
-=======
                 id: frequency_input
->>>>>>> origin/feature/graph
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 #text: "0"
                 hint_text: "0"
                 input_type: 'number'
+                font_size: self.height*0.55
                 input_filter: 'float'
                 multiline: False
                 disabled:True if channel_1_frequency_input.text != "" else False
@@ -585,27 +556,21 @@
                             size:self.size
                             pos: self.pos
                     PhaseTimeFrequencyTabs:
-<<<<<<< HEAD
-                        id: channel_1_phase_time_frequency_tab
-                        canvas.before:
-                            Color:
-                                rgba: .925,.925,.925,1
-                            Rectangle:
-                                size:self.size
-                                pos: self.pos
-                    BurstUniformStimulationTabs:
-                        id: channel_1_burst_uniform_stimulation_tab
-                        canvas.before:
-                            Color:
-                                rgba: .925,.925,.925,1
-                            Rectangle:
-                                size:self.size
-                                pos: self.pos
-=======
                         id: phase_time_frequency_tab
-                    BurstcontinousStimulationTabs:
+                        canvas.before:
+                            Color:
+                                rgba: .925,.925,.925,1
+                            Rectangle:
+                                size:self.size
+                                pos: self.pos
+                    BurstContinousStimulationTabs:
                         id: burst_continous_stimulation_tab
->>>>>>> origin/feature/graph
+                        canvas.before:
+                            Color:
+                                rgba: .925,.925,.925,1
+                            Rectangle:
+                                size:self.size
+                                pos: self.pos
                 FloatLayout:
                     Button:
                         id: stop_button
@@ -624,11 +589,7 @@
                         size_hint: .25,.06
                         pos_hint: {"x":0.075, "top":.99}
                         text: "Start"
-<<<<<<< HEAD
-                        background_color: 0.420,0.864,1.773,1
-=======
                         on_release: Factory.ErrorPopup().open()
->>>>>>> origin/feature/graph
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
@@ -642,56 +603,17 @@
                         hint_text: "0"
                         input_type: 'number'
                         input_filter: 'float'
+                        font_size: self.height*0.55
                         multiline: False
-<<<<<<< HEAD
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.5}
                         text: "End Stimulation By:"
                         color: .1,.1,.1,1
-=======
->>>>>>> origin/feature/graph
                     TerminationTabs:
                         id: termination_tabs
                     CathodicAnodicToggle:
-<<<<<<< HEAD
-                        id: channel_1_cathodic_anodic_toggle
-                    ToggleButton:
-                        id: channel_1_ramp_up_toggle
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.075, "top":0.7}
-                        text: "Ramp Up"
-                        group: "ramp_up"
-                        background_color: 0.420,0.864,1.773,1
-                    ToggleButton:
-                        id: channel_1_electrode_toggle
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.525, "top":0.7}
-                        text: "Short Electrode"
-                        group: "electrode"
-                        background_color: 0.420,0.864,1.773,1
-                    #Button:
-                    #    id: channel_1_electrode_button
-                    #    size_hint: .4,.1
-                    #    pos_hint: {"x":0.525, "top":0.15}
-                    #    text: "Generate Graph"
-                    #    group: "electrode"
-                    #    on_press: get_squarewave_plot()
-=======
                         id: cathodic_anodic_toggle
-                   #ToggleButton:
-                   #    id: ramp_up_toggle
-                   #    size_hint: .4,.06
-                   #    pos_hint: {"x":0.075, "top":0.7}
-                   #    text: "Ramp Up"
-                   #    group: "ramp_up"
-                   #ToggleButton:
-                   #    id: short_electrode_toggle
-                   #    size_hint: .4,.06
-                   #    pos_hint: {"x":0.525, "top":0.7}
-                   #    text: "Short Electrode"
-                   #    group: "electrode"
->>>>>>> origin/feature/graph
             BoxLayout:
                 canvas:
                     Color:
@@ -731,25 +653,8 @@
                             pos: self.pos
                     PhaseTimeFrequencyTabs:
                         id: channel_2_phase_time_frequency_tab
-<<<<<<< HEAD
-                        canvas:
-                            Color:
-                                rgba:.925,.925,.925,1
-                            Rectangle:
-                                size:self.size
-                                pos: self.pos
-                    BurstUniformStimulationTabs:
-                        id: channel_2_burst_uniform_stimulation_tab
-                        canvas:
-                            Color:
-                                rgba:.925,.925,.925,1
-                            Rectangle:
-                                size:self.size
-                                pos: self.pos
-=======
-                    BurstcontinousStimulationTabs:
+                    BurstContinousStimulationTabs:
                         id: channel_2_burst_continous_stimulation_tab
->>>>>>> origin/feature/graph
                 FloatLayout:
                     Button:
                         id: channel_2_stop_button
@@ -782,6 +687,7 @@
                         hint_text: "0"
                         input_type: 'number'
                         input_filter: 'float'
+                        font_size: self.height*0.55
                         multiline: False
                     Label:
                         size_hint: .4,.05
@@ -805,15 +711,6 @@
                         pos_hint: {"x":0.525, "top":0.7}
                         text: "Short Electrode"
                         group: "electrode"
-<<<<<<< HEAD
-                        background_color: 0.420,0.864,1.773,1
-                    # Button:
-                    #     id: channel_2_electrode_button
-                    #     size_hint: .4,.1
-                    #     pos_hint: {"x":0.525, "top":0.15}
-                    #     text: "Generate Graph"
-=======
->>>>>>> origin/feature/graph
             BoxLayout:
                 canvas:
                     Color:
@@ -843,22 +740,15 @@
             size: self.size
             pos: self.pos
 
-<BurstcontinousStimulationTabs>:
+<BurstContinousStimulationTabs>:
     tab_width: (self.parent.width*.995)/2
     size_hint: .995,1
     pos_hint: {"x":0, "top":1}
     do_default_tab: False
     color: .2,.2,.1,1
-<<<<<<< HEAD
     background_color: 0,0,0,0
-    inter_burst_delay:inter_burst_delay
-    burst_duration:burst_duration
-    # burst_frequency: burst_frequency
-=======
-    background_color: 0.1,0.2,0.3,1
     duty_cycle:duty_cycle
     burst_peroid:burst_peroid
->>>>>>> origin/feature/graph
     TabbedPanelItem:
         text: "Burst Stimulation"
         background_color: .69,.77,.87,.3 #change the color of the header
@@ -878,6 +768,7 @@
                 pos_hint: {"x":0.05, "top":0.75}
                 text: "0"
                 hint_text: "0"
+                font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
@@ -896,6 +787,7 @@
                 text: "0"
                 hint_text: "0"
                 input_type: 'number'
+                font_size: self.height*0.55
                 input_filter: 'float'
                 multiline: False
     TabbedPanelItem:
@@ -914,24 +806,20 @@
     tab_pos : 'top_mid'
     TabbedPanelItem:
         text: "Stimulation Setting"
-        background_color: 0,0,0,0
+        background_color: (.69,.77,.87,.3) if self.state=='down' else (0, 0, 0, 0)
         DeviceSettings:
             id: device_settings
     TabbedPanelItem:
-<<<<<<< HEAD
-        text: "Stimulation Log"
-        background_color: 0,0,0,0
-=======
         text: "Electrode Recording"
->>>>>>> origin/feature/graph
+        background_color: (.69,.77,.87,.3) if self.state=='down' else (0, 0, 0, 0)
         StimulationLogTab:
             id: electrode_recording_tab
     TabbedPanelItem:
         text: "Neural recording"
-        background_color: 0,0,0,0
+        background_color: (.69,.77,.87,.3) if self.state=='down' else (0, 0, 0, 0)
     TabbedPanelItem:
         text: "Advanced Settings"
-        background_color: 0,0,0,0
+        background_color: (.69,.77,.87,.3) if self.state=='down' else (0, 0, 0, 0)
         DeviceAdvancedSettings:
             id: advanced_settings
 
@@ -966,6 +854,7 @@
         hint_text: "0"
         size_hint: .16, .06
         pos_hint: {"x":0.25,"top":0.94}
+        font_size: self.height*0.55
         multiline:False
         input_type: 'number'
         input_filter: 'float'

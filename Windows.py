@@ -12,7 +12,7 @@ from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip
+from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip, TabbedPanelItem
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
@@ -261,7 +261,7 @@ class ChannelStimulationTabs(TabbedPanel):
     def btn(self):
         Errorwindow()
 
-class BurstcontinousStimulationTabs(TabbedPanel):
+class BurstContinousStimulationTabs(TabbedPanel):
     pass
 
 
