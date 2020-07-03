@@ -13,10 +13,14 @@ import ast
  # = '00002a26-0000-1000-8000-00805f9b34fb'
  # = '00002a27-0000-1000-8000-00805f9b34fb'
  # = '00002a28-0000-1000-8000-00805f9b34fb'
+
+BATTERY_LEVEL_CHAR = '00002a19-0000-1000-8000-00805f9b34fb'
 CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
 MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
 OTA_SUPPORT_CHAR = '01000000-0000-0000-0000-000000000008'
 
+RAMP_UP_WRITE_CHAR = '02000000-0000-0000-0000-00000000010d'
+SHORT_ELECTRODE_WRITE_CHAR = '02000000-0000-0000-0000-00000000010e'
 PHASE_ONE_WRITE_CHAR = '02000000-0000-0000-0000-000000000103'
 PHASE_TWO_WRITE_CHAR = '02000000-0000-0000-0000-000000000105'
 STIM_AMP_WRITE_CHAR = '02000000-0000-0000-0000-000000000102'
@@ -29,6 +33,8 @@ BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
 INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
 SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
 
+RAMP_UP_READ_CHAR = '02000000-0000-0000-0000-00000000000d'
+SHORT_ELECTRODE_READ_CHAR = '02000000-0000-0000-0000-00000000000e'
 INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
 PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
 PHASE_TWO_READ_CHAR = '02000000-0000-0000-0000-000000000005'
@@ -63,7 +69,10 @@ class BluetoothComms():
             INTER_BURST_DELAY_READ_CHAR,
             CHANNEL_NUM_CHAR,
             MAX_FREQ_CHAR,
-            OTA_SUPPORT_CHAR
+            OTA_SUPPORT_CHAR,
+            BATTERY_LEVEL_CHAR,
+            RAMP_UP_READ_CHAR,
+            SHORT_ELECTRODE_READ_CHAR
         ]
 
         self.char_to_string_mapping = {
@@ -79,7 +88,10 @@ class BluetoothComms():
             INTER_BURST_DELAY_READ_CHAR:'INTER_BURST_DELAY_READ_CHAR',
             CHANNEL_NUM_CHAR:'CHANNEL_NUM_CHAR',
             MAX_FREQ_CHAR:'MAX_FREQ_CHAR',
-            OTA_SUPPORT_CHAR:'OTA_SUPPORT_CHAR'
+            OTA_SUPPORT_CHAR:'OTA_SUPPORT_CHAR',
+            BATTERY_LEVEL_CHAR:'BATTERY_LEVEL_CHAR',
+            RAMP_UP_READ_CHAR:'RAMP_UP_READ_CHAR',
+            SHORT_ELECTRODE_READ_CHAR:'SHORT_ELECTRODE_READ_CHAR'
         }
 
         self.writeable_chars = [
@@ -94,6 +106,8 @@ class BluetoothComms():
             BURST_NUM_WRITE_CHAR,
             INTER_BURST_DELAY_WRITE_CHAR,
             SERIAL_COMMAND_INPUT_CHAR,
+            SHORT_ELECTRODE_WRITE_CHAR,
+            RAMP_UP_WRITE_CHAR
         ]
 
 
@@ -122,6 +136,7 @@ class BluetoothComms():
                             result = await client.write_gatt_char(k, str(v).encode('utf-8'))
                             await asyncio.sleep(0.1, loop=loop)
                             print("response from {}".format(k),result)
+                        # await client.disconnect()
                         return client
                     print("NOT CONNECTED")
                     return None
@@ -129,7 +144,7 @@ class BluetoothComms():
             print("BLEAK ERROR", e)
         if depth < 3:
             depth = depth + 1
-            self.send(address, loop, data, depth)
+            await self.send(address, loop, data, depth)
 
     async def read(self, address, loop):
         try:
@@ -150,16 +165,15 @@ class BluetoothComms():
                         data = {}
                         for k, v in services.items():
                             if 'characteristics' in k:
-                                # while True:
                                 for sk, sv in v.items():
                                     sv = str(sv).replace(':', "").replace(' ', "")
                                     if sv in self.readable_chars:
                                         result = await client.read_gatt_char(sv)
                                         await asyncio.sleep(0.1, loop=loop)
-                                        print("response from {}".format(sv), result.decode("utf-8"))
                                         data[self.char_to_string_mapping[sv]] = result.decode("utf-8")
-                                    # await asyncio.sleep(15, loop=loop)
-                        print(data)
+                        data['mac_addr'] = address
+                        self.client_conn.send(data)
+                        # await client.disconnect()
                         return client
                     print("NOT CONNECTED")
                     return None
@@ -174,6 +188,7 @@ class BluetoothComms():
             while self.thread:
                 msg = conn.recv()
                 loop = asyncio.new_event_loop()
+                print(msg)
                 if isinstance(msg, str):
                     loop.run_until_complete(self.read(msg, loop))
                 else:
@@ -191,8 +206,8 @@ class BluetoothComms():
     def ble_discover_loop(self):
         try:
             time = 0.5
-            client_address = ('localhost', 6000)
-            conn = Client(client_address, authkey=b'password')
+            self.client_address = ('localhost', 6000)
+            self.client_conn = Client(self.client_address, authkey=b'password')
             while True:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
@@ -207,15 +222,15 @@ class BluetoothComms():
                     data = [{'text': str(i.address)} for i in devices if i.address is not None]
                 if time < 10:
                     time += 1
-                if conn.closed:
+                if self.client_conn.closed:
                     break
                 else:
-                    conn.send(data)
+                    self.client_conn.send(data)
                     for i in data:
                         print(i)
-                        if i['text'] not in self.connected:
+                        # if i['text'] not in self.connected:
                             # result = loop.run_until_complete(self.connect(i['text'], loop))
-                            self.connected[i['text']] = False
+                            # self.connected[i['text']] = False
                             # loop.run_until_complete(self.write_char(i['text'], loop, SERIAL_COMMAND_INPUT_CHAR, 'start'))
                 # if len(self.connected.keys()) > 0:
                 #     break
@@ -223,7 +238,7 @@ class BluetoothComms():
             print(e)
         finally:
             try:
-                conn.close()
+                self.client_conn.close()
             except UnboundLocalError as e:
                 print(e)
 

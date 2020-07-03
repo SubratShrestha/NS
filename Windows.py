@@ -33,7 +33,12 @@ matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
 from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
 
+RAMP_UP_WRITE_CHAR = '02000000-0000-0000-0000-00000000010d'
+SHORT_ELECTRODE_WRITE_CHAR = '02000000-0000-0000-0000-00000000010e'
+RAMP_UP_READ_CHAR = '02000000-0000-0000-0000-00000000000d'
+SHORT_ELECTRODE_READ_CHAR = '02000000-0000-0000-0000-00000000000e'
 
+BATTERY_LEVEL_CHAR = '00002a19-0000-1000-8000-00805f9b34fb'
 CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
 MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
 OTA_SUPPORT_CHAR = '01000000-0000-0000-0000-000000000008'
@@ -195,7 +200,31 @@ def get_stimulator_input():
 
     return settings, burst, burstperiod, burstduration, \
            dutycycle, interburst, anodic, current, interphase, \
-           phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button']
+           phasetime1, phasetime2, interstim, frequency, \
+            int(settings['ramp_up_button'] == 'down'), int(settings['short_button']=='down')
+
+def set_graph_default_values(mac_addr):
+    device_char_data = App.get_running_app().device_char_data
+    if mac_addr in device_char_data:
+        settings = App.get_running_app().get_graph_variables()
+        data = device_char_data[mac_addr]
+        App.get_running_app().get_components('short_button').state = 'down' if data['SHORT_ELECTRODE_READ_CHAR']==1 else 'normal'
+        App.get_running_app().get_components('ramp_up_button').state = 'down' if data['RAMP_UP_READ_CHAR']==1 else 'normal'
+        App.get_running_app().get_components('anodic_toggle').state = 'down' if data['ANODIC_CATHODIC_FIRST_READ_CHAR']==1 else 'normal'
+        App.get_running_app().get_components('cathodic_toggle').state = 'down' if data['ANODIC_CATHODIC_FIRST_READ_CHAR']==0 else 'normal'
+        App.get_running_app().get_components('output_current_input').text = data['STIM_AMP_READ_CHAR']
+        # settings['frequency_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
+        App.get_running_app().get_components('phase_2_time_input').text = data['PHASE_TWO_READ_CHAR']
+        App.get_running_app().get_components('phase_1_time_input').text = data['PHASE_ONE_READ_CHAR']
+        App.get_running_app().get_components('inter_stim_delay_input').text = data['INTER_STIM_DELAY_READ_CHAR']
+        # settings['burst_peroid_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
+        # settings['duty_cycle_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
+        # settings['burst_continous_stimulation_tab'] = data['SHORT_ELECTRODE_WRITE_CHAR']
+        # settings['phase_time_frequency_tab'] = data['SHORT_ELECTRODE_WRITE_CHAR']
+
+
+
+
 
 def get_squarewave_plot():
     settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, _, _ = get_stimulator_input()
@@ -262,18 +291,14 @@ def send_to_neurostimulator_via_ble(button, state):
             # BURST_NUM_WRITE_CHAR: int(burst/burstperiod) if burstperiod != 0 else 0,
             INTER_STIM_DELAY_WRITE_CHAR:interstim,
             PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
+            RAMP_UP_WRITE_CHAR: ramp_up,
+            SHORT_ELECTRODE_WRITE_CHAR:short
         }
 
         App.get_running_app().send_via_ble(data)
 
-
-
-
-
-
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
-
 
 def update_graph_on_toggle_channel_1(button,state):
     update_graph()
@@ -312,22 +337,17 @@ class MainWindow(FloatLayout):
 class SideBar(FloatLayout):
     pass
 
-
 class ScreenManagement(ScreenManager):
     pass
-
 
 class HomeScreen(Screen, FloatLayout):
     pass
 
-
 class DeviceScreen(Screen):
     pass
 
-
 class PhaseTimeFrequencyTabs(TabbedPanel):
     pass
-
 
 class ChannelStimulationTabs(TabbedPanel):
     def btn(self):
@@ -336,19 +356,20 @@ class ChannelStimulationTabs(TabbedPanel):
 class BurstContinousStimulationTabs(TabbedPanel):
     pass
 
-
 class TerminationTabs(TabbedPanel):
     pass
-
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
-
 class AddDevicePopup(Popup):
 
     def BluetoothDiscoverLoop(self):
-        self.ble_rv.data = App.get_running_app().device_data
+        data = []
+        for i in App.get_running_app().device_data:
+            if i['text'] not in devices_dict:
+                data.append(i)
+        self.ble_rv.data = data
 
     def Close(self):
         data = App.get_running_app().root.side_bar.device_rv.data
@@ -363,16 +384,13 @@ class AddDevicePopup(Popup):
                 App.get_running_app().send_via_ble(j)
         self.dismiss()
 
-
 class DT_TPS(TabbedPanelStrip):
     pass
-
 
 class DeviceTabs(TabbedPanel, DT_TPS):
     def __init__(self, **kargs):
         super(DeviceTabs, self).__init__(**kargs)
         self._tab_layout.padding = '2dp', '-1dp', '2dp', '-2dp'
-
 
 class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
     index = None  # this is the index of the label in the recyclerview
@@ -453,6 +471,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
 
                 print(i,App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
+                set_graph_default_values(self.text)
 
         elif is_selected and self.selected:
             App.get_running_app().root.side_bar.device_rv.selected_count -= 1
@@ -482,6 +501,8 @@ class NeuroStimApp(App):
         self.send_address = None
         self.send_conn = None
 
+        self.device_char_data = {}
+
 
     def send_via_ble(self, data):
         try:
@@ -501,7 +522,15 @@ class NeuroStimApp(App):
         round = 0
         while self.thread:
             msg = conn.recv()
-            self.device_data = msg
+
+            if isinstance(msg, list):
+                self.device_data = msg
+            elif isinstance(msg, dict):
+                print(msg)
+                mac_addr = msg.pop('mac_addr')
+                data = msg
+                self.device_char_data[mac_addr] = data
+
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
@@ -529,8 +558,8 @@ class NeuroStimApp(App):
             'output_current_input': self.get_components('output_current_input').text,
             'cathodic_toggle':self.get_components('cathodic_toggle').state,
             'anodic_toggle':self.get_components('anodic_toggle').state,
-            'ramp_up_button':self.get_components('ramp_up_button').state == 'down',
-            'short_button':self.get_components('short_button').state == 'down',
+            'ramp_up_button':self.get_components('ramp_up_button').state,
+            'short_button':self.get_components('short_button').state,
             #'burst_frequency_input':self.get_components('burst_frequency_input').text
         }
 
