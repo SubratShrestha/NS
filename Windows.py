@@ -208,15 +208,16 @@ def set_graph_default_values(mac_addr):
     if mac_addr in device_char_data:
         settings = App.get_running_app().get_graph_variables()
         data = device_char_data[mac_addr]
-        App.get_running_app().get_components('short_button').state = 'down' if data['SHORT_ELECTRODE_READ_CHAR']==1 else 'normal'
-        App.get_running_app().get_components('ramp_up_button').state = 'down' if data['RAMP_UP_READ_CHAR']==1 else 'normal'
-        App.get_running_app().get_components('anodic_toggle').state = 'down' if data['ANODIC_CATHODIC_FIRST_READ_CHAR']==1 else 'normal'
-        App.get_running_app().get_components('cathodic_toggle').state = 'down' if data['ANODIC_CATHODIC_FIRST_READ_CHAR']==0 else 'normal'
+        App.get_running_app().get_components('short_button').state = 'down' if int(data['SHORT_ELECTRODE_READ_CHAR'])==1 else 'normal'
+        App.get_running_app().get_components('ramp_up_button').state = 'down' if int(data['RAMP_UP_READ_CHAR'])==1 else 'normal'
+        App.get_running_app().get_components('anodic_toggle').state = 'down' if int(data['ANODIC_CATHODIC_FIRST_READ_CHAR'])==1 else 'normal'
+        App.get_running_app().get_components('cathodic_toggle').state = 'down' if int(data['ANODIC_CATHODIC_FIRST_READ_CHAR'])==0 else 'normal'
         App.get_running_app().get_components('output_current_input').text = data['STIM_AMP_READ_CHAR']
         # settings['frequency_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
         App.get_running_app().get_components('phase_2_time_input').text = data['PHASE_TWO_READ_CHAR']
         App.get_running_app().get_components('phase_1_time_input').text = data['PHASE_ONE_READ_CHAR']
         App.get_running_app().get_components('inter_stim_delay_input').text = data['INTER_STIM_DELAY_READ_CHAR']
+        App.get_running_app().get_components('inter_phase_delay_input').text = data['INTER_PHASE_GAP_READ_CHAR']
         # settings['burst_peroid_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
         # settings['duty_cycle_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
         # settings['burst_continous_stimulation_tab'] = data['SHORT_ELECTRODE_WRITE_CHAR']
@@ -471,7 +472,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
 
                 print(i,App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
-                set_graph_default_values(self.text)
+            set_graph_default_values(self.text)
 
         elif is_selected and self.selected:
             App.get_running_app().root.side_bar.device_rv.selected_count -= 1
