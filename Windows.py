@@ -34,6 +34,31 @@ import matplotlib.pyplot as plt
 from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
 
 
+CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
+MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
+OTA_SUPPORT_CHAR = '01000000-0000-0000-0000-000000000008'
+PHASE_ONE_WRITE_CHAR = '02000000-0000-0000-0000-000000000103'
+PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
+PHASE_TWO_WRITE_CHAR = '02000000-0000-0000-0000-000000000105'
+PHASE_TWO_READ_CHAR = '02000000-0000-0000-0000-000000000005'
+STIM_AMP_WRITE_CHAR = '02000000-0000-0000-0000-000000000102'
+STIM_AMP_READ_CHAR = '02000000-0000-0000-0000-000000000002'
+INTER_PHASE_GAP_WRITE_CHAR = '02000000-0000-0000-0000-000000000104'
+INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
+INTER_STIM_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-000000000106'
+INTER_STIM_DELAY_READ_CHAR = '02000000-0000-0000-0000-000000000006'
+PULSE_NUM_WRITE_CHAR = '02000000-0000-0000-0000-000000000107'
+PULSE_NUM_READ_CHAR = '02000000-0000-0000-0000-000000000007'
+ANODIC_CATHOLIC_FIRST_WRITE_CHAR = '02000000-0000-0000-0000-000000000108'
+ANODIC_CATHODIC_FIRST_READ_CHAR = '02000000-0000-0000-0000-000000000008'
+STIM_TYPE_WRITE_CHAR = '02000000-0000-0000-0000-000000000109'
+STIM_TYPE_READ_CHAR = '02000000-0000-0000-0000-000000000009'
+BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
+BURST_NUM_READ_CHAR = '02000000-0000-0000-0000-00000000000a'
+INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
+INTER_BURST_DELAY_READ_CHAR = '02000000-0000-0000-0000-00000000000b'
+SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
+
 """======================================================================
 Don't change this to match App.py
 These are strictly for Windows.py
@@ -132,7 +157,19 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
-def get_squarewave_plot():
+def get_stimulator_input():
+    burst = None
+    burstperiod = None
+    burstduration = None
+    dutycycle = None
+    interburst = None
+    anodic = None
+    current = None
+    phasetime1 = None
+    phasetime2 = None
+    interstim = None
+    frequency = None
+
     settings = App.get_running_app().get_graph_variables()
 
     burst = settings['burst_continous_stimulation_tab'] == 'Burst Stimulation'
@@ -140,10 +177,9 @@ def get_squarewave_plot():
         burstperiod = settings['burst_peroid_input'] if settings['burst_peroid_input'] != "" else 0
         burstperiod = int(burstperiod) * 1000
         dutycycle = settings['duty_cycle_input'] if settings['duty_cycle_input'] != "" else 0
-        dutycycle = int(dutycycle)/100
-        burstduration = dutycycle*burstperiod
+        dutycycle = int(dutycycle) / 100
+        burstduration = dutycycle * burstperiod
         interburst = burstperiod - burstduration
-
     anodic = settings['anodic_toggle'] == 'down'
     current = int(settings['output_current_input']) if settings['output_current_input'] != "" else 0
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
@@ -156,6 +192,13 @@ def get_squarewave_plot():
         frequency = int(settings['frequency_input']) if settings['frequency_input'] != "" else 0
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
+
+    return settings, burst, burstperiod, burstduration, \
+           dutycycle, interburst, anodic, current, interphase, \
+           phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button']
+
+def get_squarewave_plot():
+    settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, _, _ = get_stimulator_input()
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -200,6 +243,34 @@ def get_squarewave_plot():
 
     return FigureCanvasKivyAgg(plt.gcf())
 
+def send_to_neurostimulator_via_ble(button, state):
+    if state == 'down':
+        print("send_to_neurostimulator_via_ble")
+        settings, burst, burstperiod, \
+        burstduration, dutycycle, interburst, \
+        anodic, current, interphase, phasetime1, \
+        phasetime2, interstim, frequency, ramp_up, short = get_stimulator_input()
+
+        data = {
+            'mac_addr': App.get_running_app().connected_device_mac_addr,
+            PHASE_ONE_WRITE_CHAR: phasetime1,
+            PHASE_TWO_WRITE_CHAR:phasetime2,
+            ANODIC_CATHOLIC_FIRST_WRITE_CHAR:anodic,
+            STIM_AMP_WRITE_CHAR:current,
+            INTER_PHASE_GAP_WRITE_CHAR:interphase,
+            INTER_BURST_DELAY_WRITE_CHAR:interburst,
+            # BURST_NUM_WRITE_CHAR: int(burst/burstperiod) if burstperiod != 0 else 0,
+            INTER_STIM_DELAY_WRITE_CHAR:interstim,
+            PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
+        }
+
+        App.get_running_app().send_via_ble(data)
+
+
+
+
+
+
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
 
@@ -221,6 +292,7 @@ live_update_references = {
         'phase_1_time_input',
         'phase_2_time_input',
         'frequency_input',
+        'start_button',
         #stimulate_foever
     ]
 }
@@ -230,7 +302,7 @@ live_update_references = {
 #         popupwindow = Popup(titel="titel", content=show, size_hint=(None,None), size=(400,400))
 #         popupwindow.open()
 
-class Errorpopup(Popup):
+class ErrorPopup(Popup):
     pass
 
 class MainWindow(FloatLayout):
@@ -288,6 +360,7 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
+                App.get_running_app().send_via_ble(j)
         self.dismiss()
 
 
@@ -352,6 +425,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
+        # print("======================================",rv, index)
         # print(index, is_selected, self.selected, self.deselected)
         if not is_selected and self.selected:
             # print("here")
@@ -374,7 +448,11 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                     App.get_running_app().get_components(i).bind(text=update_graph_on_text_channel_1)
                 if 'toggle' in i:
                     App.get_running_app().get_components(i).bind(state=update_graph_on_toggle_channel_1)
+                if 'start_button' == i:
+                    App.get_running_app().get_components(i).bind(state=send_to_neurostimulator_via_ble)
+
                 print(i,App.get_running_app().get_components(i))
+                App.get_running_app().connected_device_mac_addr = self.text
 
         elif is_selected and self.selected:
             App.get_running_app().root.side_bar.device_rv.selected_count -= 1
@@ -397,9 +475,20 @@ class NeuroStimApp(App):
         Don't change this to match App.py
         These are strictly for Windows.py
         ========================================================================="""
-        self.search = True
-        self.t = threading.Thread(target=self.discover)
-        self.t.start()
+        self.thread = True
+        self.discover_thread = threading.Thread(target=self.discover)
+        self.discover_thread.start()
+
+        self.send_address = None
+        self.send_conn = None
+
+
+    def send_via_ble(self, data):
+        try:
+            if self.send_conn is not None and not self.send_conn.closed:
+                self.send_conn.send(data)
+        except Exception as e:
+            print(e)
 
     def discover(self):
         """======================================================================
@@ -409,13 +498,18 @@ class NeuroStimApp(App):
         address = ('localhost', 6000)
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
-        while self.search:
+        round = 0
+        while self.thread:
             msg = conn.recv()
-            if msg == 'close':
-                conn.close()
-                break
-            else:
-                self.device_data = msg
+            self.device_data = msg
+            if self.send_address is None:
+                self.send_address = ('localhost', 6001)
+                self.send_conn = Client(self.send_address, authkey=b'password')
+            if round % 3 == 0:
+                print("Updating reading from chars")
+                for j in devices_dict.keys():
+                    self.send_via_ble(j)
+            round += 1
         listener.close()
 
     def get_graph_variables(self):
@@ -435,8 +529,8 @@ class NeuroStimApp(App):
             'output_current_input': self.get_components('output_current_input').text,
             'cathodic_toggle':self.get_components('cathodic_toggle').state,
             'anodic_toggle':self.get_components('anodic_toggle').state,
-            #'ramp_up_toggle':self.get_components('ramp_up_toggle').state,
-            #'short_electrode_toggle':self.get_components('short_electrode_toggle').state,
+            'ramp_up_button':self.get_components('ramp_up_button').state == 'down',
+            'short_button':self.get_components('short_button').state == 'down',
             #'burst_frequency_input':self.get_components('burst_frequency_input').text
         }
 
@@ -495,6 +589,7 @@ class NeuroStimApp(App):
 
         # if id == 'channel_2_stop_button':
         #     return self.get_components('stimulation_tabs').channel_2_stop_button
+        # if id == 'channel_2_save_button':
         # if id == 'channel_2_save_button':
         #     return self.get_components('stimulation_tabs').channel_2_save_button
         # if id == 'channel_2_start_button':
@@ -627,7 +722,7 @@ class NeuroStimApp(App):
         application has finished running (i.e. the window is about to be
         closed).
         '''
-        self.search = False
+        self.thread = False
 
 if __name__ == '__main__':
     kvloader = Builder.load_file("ui.kv")
