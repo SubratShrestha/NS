@@ -157,6 +157,75 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
+
+# def value_check(self, burstduration, interstim, phasetime1, phasetime2, interphase):
+#     if burstduration % (interstim + phasetime1 + phasetime2 + interphase) != 0:
+#         Factory.BurstLostError.open()
+#
+#     if stimduration % burstperiod != 0:
+#         Factory.peroidLostError.open()
+#
+#     if phasetime1 != phasetime2:
+#         Factory.ChargeImbalanceError.open()
+#
+#     if burstduration > interstim + phasetime1 + phasetime2 + interphase:
+#         Factory.PeroidBiggerError.open()
+#
+# #################################################################################################
+#
+#     if current > 10000:
+#         Factory.ValueError().open()
+#         'output_current_input' = ""
+#
+#     if interburst > 10000:
+#         Factory.ValueError().open()
+#         'inter_phase_delay_input' = ""
+#
+#     if interstim > 10000:
+#         Factory.ValueError().open()
+#         "inter_stim_delay_input" = ""
+#
+#     if interphase > 10000:
+#         Factory.ValueError().open()
+#         inter_phase_delay_input = ""
+#
+#     if phasetime2 > 10000:
+#         Factory.ValueError().open()
+#         phase_1_time_input = ''
+#
+#     if phasetime1 > 10000:
+#         Factory.ValueError().open()
+#         phase_2_time_input = ''
+#
+#     if dutycycle > 10000:
+#         Factory.ValueError().open()
+#         duty_cycle_input = ""
+#
+#     if burstperiod > 1000000:
+#         Factory.ValueError().open()
+#         burst_peroid = ""
+#
+#     if frequency > 10000:
+#         Factory.ValueError().open()
+#         frequency_input = ""
+
+#################################################################################
+#
+# def burst_number_interchange_stimulation_duration ():
+#     if settings['termination_tabs'] == 'Stimulation duration':
+#         return "Burst Number: \n {}".format(burstnumber)
+#
+#     if settings['termination_tabs'] == 'Number of burst':
+#         return "Stimulation Duration: \n {}".format(stimduration)
+#
+# def frequency_interchange_inter_stim_delay:
+#     if settings['phase_time_frequency_tab'] == 'Phase Time':
+#         return "Frequency: \n {}".format(frequency)
+#
+#     if settings['phase_time_frequency_tab'] == 'Frequency':
+#         return "Inter-stim delay: \n {}".format(interstim)
+
+
 def get_stimulator_input():
     burst = None
     burstperiod = None
@@ -169,6 +238,10 @@ def get_stimulator_input():
     phasetime2 = None
     interstim = None
     frequency = None
+    burstfrequency = None
+    pulsenumber = None
+    stimduration = None
+    burstnumber, = None
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -193,9 +266,24 @@ def get_stimulator_input():
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
 
+
+    if  settings['termination_tabs'] == 'Stimulate forever':
+        stimduration = inf
+    if  settings['termination_tabs'] == 'Stimulation duration':
+        stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
+    if  settings['termination_tabs'] == 'Number of burst':
+        burstduration = int(settings['number_of_burst']) if settings['snumber_of_burst'] != "" else 0
+
+    burstnumber = stimduration // burstduration
+
+    pulsenumber = burstduration // peroid
+
+    burstfrequency = 10000000 / burstduraion
+
     return settings, burst, burstperiod, burstduration, \
            dutycycle, interburst, anodic, current, interphase, \
-           phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button']
+           phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button', \
+           burstfrequency, pulsenumber, stimduration, burstnumber
 
 def get_squarewave_plot():
     settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, _, _ = get_stimulator_input()
@@ -278,6 +366,7 @@ def update_graph_on_text_channel_1(instance, value):
 def update_graph_on_toggle_channel_1(button,state):
     update_graph()
 
+
 live_update_references = {
     'stimulation_graph_display': [
         'stimulation_duration',
@@ -297,13 +386,6 @@ live_update_references = {
     ]
 }
 
-# def Errorwindow():
-#         show = Errorpop()
-#         popupwindow = Popup(titel="titel", content=show, size_hint=(None,None), size=(400,400))
-#         popupwindow.open()
-
-class ErrorPopup(Popup):
-    pass
 
 class MainWindow(FloatLayout):
     pass
@@ -330,8 +412,6 @@ class PhaseTimeFrequencyTabs(TabbedPanel):
 
 
 class ChannelStimulationTabs(TabbedPanel):
-    def btn(self):
-        Errorwindow()
 
 class BurstContinousStimulationTabs(TabbedPanel):
     pass
@@ -514,7 +594,7 @@ class NeuroStimApp(App):
 
     def get_graph_variables(self):
         return {
-            #'termination_tabs': self.get_components('termination_tabs').current_tab.text,
+            'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
             'duty_cycle_input': self.get_components('duty_cycle_input').text,
@@ -524,14 +604,13 @@ class NeuroStimApp(App):
             'phase_1_time_input': self.get_components('phase_1_time_input').text,
             'phase_2_time_input': self.get_components('phase_2_time_input').text,
             'frequency_input': self.get_components('frequency_input').text,
-            # 'stimulation_duration': self.get_components('stimulation_duration').text,
-            # 'number_of_burst': self.get_components('number_of_burst').text,
             'output_current_input': self.get_components('output_current_input').text,
-            'cathodic_toggle':self.get_components('cathodic_toggle').state,
-            'anodic_toggle':self.get_components('anodic_toggle').state,
-            'ramp_up_button':self.get_components('ramp_up_button').state == 'down',
-            'short_button':self.get_components('short_button').state == 'down',
-            #'burst_frequency_input':self.get_components('burst_frequency_input').text
+            'stimulation_duration': self.get_components('stimulation_duration').text,
+            'number_of_burst': self.get_components('number_of_burst').text,
+            # 'cathodic_toggle':self.get_components('cathodic_toggle').state,
+            'anodic_toggle': self.get_components('anodic_toggle').state,
+            # 'ramp_up_toggle':self.get_components('ramp_up_toggle').state,
+            # 'short_electrode_toggle':self.get_components('short_electrode_toggle').state,
         }
 
     def get_components(self, id):

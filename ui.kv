@@ -622,7 +622,40 @@
                         pos: self.pos
                 size_hint: 1,.5
                 pos_hint: {"x":0, "top":1}
-                id: stimulation_graph_display
+                    Boxlayout:
+                       Lable:
+                           size_hint: .4,.05
+                           pos_hint: {"x":0.075, "top":.5}
+                           text: "Burst frequency: \n {}".format(burst_frequency)
+                       Lable:
+                           size_hint: .4,.05
+                           pos_hint: {"x":0.075, "top":.5}
+                           text: "Burst Duration: \n {}".format(burst_duration)
+                       Lable:
+                           size_hint: .4,.05
+                           pos_hint: {"x":0.075, "top":.5}
+                           text: "Inter Burst_Delay \n {}".format(inter_burst_delay)                        Lable:
+                           size_hint: .4,.05
+                           pos_hint: {"x":0.075, "top":.5}
+                           text: pulse_number: \n {}".format(pulse_number)
+                       Labal:
+                           size_hint: .4,.05
+                           pos_hint: {"x":0.075, "top":.5}
+                           text: root.burst_number_interchange_stimulation_duration()
+                       Lable:
+                           size_hint: .4,.05
+                           pos_hint: {"x":0.075, "top":.5}
+                           text: "root.frequency_interchange_inter_phase_delay()
+                    BoxLayout:
+                        orientation: "vertical"
+                        size_hint: 1,.5
+                        pos_hint: {"x":0, "top":1}
+                        id: stimulation_graph_display
+                        MatplotNavToolbar:
+                            id: toolbar
+                            size_hint: 1, 0.3
+                            figure_widget: stimulation_graph_display
+
     TabbedPanelItem:
         text: "Channel 2"
         background_color: 0,0,0,0
@@ -1163,12 +1196,50 @@
 
 ##################################################
 
-<ErrorPopup>:
-    title: "Error Popup"
+<ValueError>:
+    title: "The value is too big!"
     title_size:35
     title_align:'center'
     separator_height:0
-    size_hint: .45,.73
+    size_hint: .70,.15
     pos_hint: {"center_x":0.5,"center_y":0.5}
     auto_dismiss : True
-    on_open: print("=====================\nMitches Error Popup\n==========================")
+
+<BurstLostError>:
+    title: "Burst peroid is not dividable by Stimulation duration, one or more burst is reduced!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+
+<PeroidLostError>:
+    title: "puls peroid is not dividable by burst peroid, one or more peroid is reduced!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+
+<ChargeImbalanceError>:
+    title: " Charge is imbalanced, potentially damaging tissue!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+
+<PeroidBiggerError>:
+    title: "One pulse peroid is bigger than a burst!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
