@@ -411,8 +411,7 @@ class PhaseTimeFrequencyTabs(TabbedPanel):
 class ChannelStimulationTabs(TabbedPanel):
     pass
 
-class BurstContinousStimulationTabs(TabbedPanel):
-    pass
+
 
 
 class TerminationTabs(TabbedPanel):
