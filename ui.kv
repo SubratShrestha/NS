@@ -358,9 +358,9 @@
     inter_stim_delay_input: inter_stim_delay_input
     phase_1_time_input: phase_1_time_input
     phase_2_time_input: phase_2_time_input
-    frequency_input: frequency_input
+    #frequency_input: frequency_input
     channel_1_frequency_input:channel_1_frequency_input
-    frequency_input:frequency_input
+    #frequency_input:frequency_input
 
     TabbedPanelItem:
         text: "Phase Time"
@@ -394,7 +394,7 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-                id: inter_stim_delay_input
+                id: phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: "0"
@@ -406,24 +406,6 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Phase 1 Time(us)"
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
-                color: .1,.1,.1,1
-            TextInput:
-                id: phase_1_time_input
-                size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.75}
-                text: "0"
-                hint_text: "0"
-                font_size: self.height*0.55
-                input_type: 'number'
-                input_filter: 'float'
-                multiline: False
-            Label:
-                size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.5}
                 text: "Phase 2 Time(us)"
                 text_size: self.size
                 halign: 'left'
@@ -432,7 +414,7 @@
             TextInput:
                 id: phase_2_time_input
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.25}
+                pos_hint: {"x":0.55, "top":0.75}
                 text: "0"
                 hint_text: "0"
                 font_size: self.height*0.55
@@ -462,7 +444,7 @@
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
-                disabled: True if frequency_input.text != "" else False
+                disabled: True if inter_stim_delay_input.text != "" else False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
@@ -472,7 +454,7 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-                id: frequency_input
+                id: inter_stim_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 #text: "0"

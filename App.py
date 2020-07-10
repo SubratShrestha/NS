@@ -84,7 +84,7 @@ ids = [
     'inter_phase_delay_input',
     'phase_1_time_input',
     'phase_2_time_input',
-    'frequency_input',
+    'channel_1_frequency_input',
     # stimulate_foever
     # 'channel_2_stimulation_graph_display',
     # 'channel_2_cathodic_toggle',
@@ -242,12 +242,13 @@ def get_stimulator_input():
     phasetime2 = int(settings['phase_2_time_input']) if settings['phase_2_time_input'] != "" else 0
     interphase = int(settings['inter_phase_delay_input']) if settings['inter_phase_delay_input'] != "" else 0
     interstim = 0
-    if settings['phase_time_frequency_tab'] == 'Phase Time':
-        interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
+    #if settings['phase_time_frequency_tab'] == 'Phase Time':
+    #    interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
     if settings['phase_time_frequency_tab'] == 'Frequency':
-        frequency = int(settings['frequency_input']) if settings['frequency_input'] != "" else 0
-        if frequency != 0:
-            interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
+        frequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
+        interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
+        #if frequency != 0:
+        #    interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
 
 
     if  settings['termination_tabs'] == 'Stimulate forever':
@@ -360,7 +361,7 @@ live_update_references = {
         'inter_phase_delay_input',
         'phase_1_time_input',
         'phase_2_time_input',
-        'frequency_input',
+        'channel_1_frequency_input',
         'start_button',
         #stimulate_foever
     ]
@@ -602,7 +603,7 @@ class NeuroStimApp(App):
             'inter_stim_delay_input': self.get_components('inter_stim_delay_input').text,
             'phase_1_time_input': self.get_components('phase_1_time_input').text,
             'phase_2_time_input': self.get_components('phase_2_time_input').text,
-            'frequency_input': self.get_components('frequency_input').text,
+            'channel_1_frequency_input': self.get_components('channel_1_frequency_input').text,
             'output_current_input': self.get_components('output_current_input').text,
             'stimulation_duration': self.get_components('stimulation_duration').text,
             'number_of_burst': self.get_components('number_of_burst').text,
@@ -779,8 +780,8 @@ class NeuroStimApp(App):
             return self.get_components('phase_time_frequency_tab').phase_1_time_input
         if id == 'phase_2_time_input':
             return self.get_components('phase_time_frequency_tab').phase_2_time_input
-        if id == 'frequency_input':
-            return self.get_components('phase_time_frequency_tab').frequency_input
+        if id == 'channel_1_frequency_input':
+            return self.get_components('phase_time_frequency_tab').channel_1_frequency_input
         # if id == 'channel_2_inter_phase_delay_input':
         #     return self.get_components('channel_2_phase_time_frequency_tab').inter_phase_delay
         # if id == 'channel_2_phase_time_input':
