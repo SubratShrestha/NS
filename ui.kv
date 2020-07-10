@@ -133,6 +133,8 @@
         Rectangle:
             pos: self.pos
             size: self.size
+    battery_icon:battery_icon
+    battery_percentage:battery_percentage
     Label:
         id: _label
         size_hint: 1, .2
@@ -166,10 +168,12 @@
         pos_hint: {"x":0.55, "top":0.25}
         source: './icons/rename.png'
     Image:
+        id : battery_icon
         size_hint: .2, .2
         pos_hint: {"x":0.05, "top":0.25}
         source: './icons/battery.png'
     Label:
+        id: battery_percentage
         size_hint: .2, .2
         pos_hint: {"x":0.275, "top":0.25}
         text: "89%"

@@ -197,7 +197,11 @@ class BluetoothComms():
                                     if sv in self.readable_chars:
                                         result = await client.read_gatt_char(sv)
                                         await asyncio.sleep(0.1, loop=loop)
-                                        data[self.char_to_string_mapping[sv]] = result.decode("utf-8")
+                                        if sv == BATTERY_LEVEL_CHAR:
+                                            result = str(int(result.hex(), 16))
+                                        else:
+                                            result = result.decode("utf-8")
+                                        data[self.char_to_string_mapping[sv]] = result
                         data['mac_addr'] = address
                         self.client_conn.send(data)
                         # await client.disconnect()
