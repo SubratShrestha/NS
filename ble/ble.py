@@ -110,11 +110,31 @@ class BluetoothComms():
             RAMP_UP_WRITE_CHAR
         ]
 
+        self.write_to_read = {
+            PHASE_ONE_WRITE_CHAR:PHASE_ONE_READ_CHAR,
+            PHASE_TWO_WRITE_CHAR:PHASE_TWO_READ_CHAR,
+            STIM_AMP_WRITE_CHAR:STIM_AMP_READ_CHAR,
+            INTER_PHASE_GAP_WRITE_CHAR:INTER_PHASE_GAP_READ_CHAR,
+            INTER_STIM_DELAY_WRITE_CHAR:INTER_STIM_DELAY_READ_CHAR,
+            PULSE_NUM_WRITE_CHAR:PULSE_NUM_READ_CHAR,
+            ANODIC_CATHOLIC_FIRST_WRITE_CHAR:ANODIC_CATHODIC_FIRST_READ_CHAR,
+            STIM_TYPE_WRITE_CHAR:STIM_TYPE_READ_CHAR,
+            BURST_NUM_WRITE_CHAR:BURST_NUM_READ_CHAR,
+            INTER_BURST_DELAY_WRITE_CHAR:INTER_BURST_DELAY_READ_CHAR,
+            SERIAL_COMMAND_INPUT_CHAR:SERIAL_COMMAND_INPUT_CHAR,
+            SHORT_ELECTRODE_WRITE_CHAR:SHORT_ELECTRODE_READ_CHAR,
+            RAMP_UP_WRITE_CHAR:RAMP_UP_READ_CHAR
+        }
+
 
     async def ble_discover(self, loop, time):
         task1 = loop.create_task(discover(time))
         await asyncio.wait([task1])
         return task1
+
+    def notification_handler(self, sender, data):
+        """Simple notification handler which prints the data received."""
+        print("{0}: {1}".format(sender, data))
 
     async def send(self, address, loop, data, depth=0):
         print("SEND")
@@ -132,10 +152,17 @@ class BluetoothComms():
                 finally:
                     if await client.is_connected():
                         print("CONNECTED", client)
+
                         for k,v in data.items():
-                            result = await client.write_gatt_char(k, str(v).encode('utf-8'))
+                            # await client.start_notify(self.write_to_read[k], self.notification_handler)
+                            # await asyncio.sleep(0.1, loop=loop)
+
+                            await client.write_gatt_char(k, str(v).encode('utf-8'), True)
                             await asyncio.sleep(0.1, loop=loop)
-                            print("response from {}".format(k),result)
+
+                            # await client.stop_notify(k)
+                            # await asyncio.sleep(0.1, loop=loop)
+
                         # await client.disconnect()
                         return client
                     print("NOT CONNECTED")
