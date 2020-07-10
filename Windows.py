@@ -211,14 +211,14 @@ def update_graph():
 
 #################################################################################
 #
-# def burst_number_interchange_stimulation_duration ():
+# def burst_number_interchange_stimulation_duration():
 #     if settings['termination_tabs'] == 'Stimulation duration':
 #         return "Burst Number: \n {}".format(burstnumber)
 #
 #     if settings['termination_tabs'] == 'Number of burst':
 #         return "Stimulation Duration: \n {}".format(stimduration)
 #
-# def frequency_interchange_inter_stim_delay:
+# def frequency_interchange_inter_phase_delay():
 #     if settings['phase_time_frequency_tab'] == 'Phase Time':
 #         return "Frequency: \n {}".format(frequency)
 #
@@ -280,10 +280,7 @@ def get_stimulator_input():
 
     burstfrequency = 10000000 / burstduraion
 
-    return settings, burst, burstperiod, burstduration, \
-           dutycycle, interburst, anodic, current, interphase, \
-           phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button', \
-           burstfrequency, pulsenumber, stimduration, burstnumber
+    return settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button'], burstfrequency, pulsenumber, stimduration, burstnumber
 
 def get_squarewave_plot():
     settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, _, _ = get_stimulator_input()
@@ -412,6 +409,7 @@ class PhaseTimeFrequencyTabs(TabbedPanel):
 
 
 class ChannelStimulationTabs(TabbedPanel):
+    pass
 
 class BurstContinousStimulationTabs(TabbedPanel):
     pass

@@ -622,39 +622,40 @@
                         pos: self.pos
                 size_hint: 1,.5
                 pos_hint: {"x":0, "top":1}
-                    Boxlayout:
-                       Lable:
-                           size_hint: .4,.05
-                           pos_hint: {"x":0.075, "top":.5}
-                           text: "Burst frequency: \n {}".format(burst_frequency)
-                       Lable:
-                           size_hint: .4,.05
-                           pos_hint: {"x":0.075, "top":.5}
-                           text: "Burst Duration: \n {}".format(burst_duration)
-                       Lable:
-                           size_hint: .4,.05
-                           pos_hint: {"x":0.075, "top":.5}
-                           text: "Inter Burst_Delay \n {}".format(inter_burst_delay)                        Lable:
-                           size_hint: .4,.05
-                           pos_hint: {"x":0.075, "top":.5}
-                           text: pulse_number: \n {}".format(pulse_number)
-                       Labal:
-                           size_hint: .4,.05
-                           pos_hint: {"x":0.075, "top":.5}
-                           text: root.burst_number_interchange_stimulation_duration()
-                       Lable:
-                           size_hint: .4,.05
-                           pos_hint: {"x":0.075, "top":.5}
-                           text: "root.frequency_interchange_inter_phase_delay()
-                    BoxLayout:
-                        orientation: "vertical"
-                        size_hint: 1,.5
-                        pos_hint: {"x":0, "top":1}
-                        id: stimulation_graph_display
-                        MatplotNavToolbar:
-                            id: toolbar
-                            size_hint: 1, 0.3
-                            figure_widget: stimulation_graph_display
+                BoxLayout:
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "Burst frequency: \n {}" # .format(burst_frequency)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "Burst Duration: \n {}" # .format(burst_duration)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "Inter Burst_Delay \n {}" # .format(inter_burst_delay)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "pulse_number: \n {}" # .format(pulse_number)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        # text: root.burst_number_interchange_stimulation_duration()
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        # text: root.frequency_interchange_inter_phase_delay()
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint: 1,.5
+                    pos_hint: {"x":0, "top":1}
+                    id: stimulation_graph_display
+                    MatplotNavToolbar:
+                        id: toolbar
+                        size_hint: 1, 0.3
+                        # figure_widget: stimulation_graph_display
 
     TabbedPanelItem:
         text: "Channel 2"
