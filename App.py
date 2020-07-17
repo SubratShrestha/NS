@@ -41,6 +41,7 @@ import matplotlib
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
 from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
+#from matplotlib.backend_bases import NavigationToolbar2
 
 """======================================================================
 Don't change this to match App.py
@@ -210,21 +211,21 @@ def update_graph():
 
 
 def get_stimulator_input():
-    burst = None
-    burstperiod = None
-    burstduration = None
-    dutycycle = None
-    interburst = None
-    anodic = None
-    current = None
-    phasetime1 = None
-    phasetime2 = None
-    interstim = None
-    frequency = None
-    burstfrequency = None
-    pulsenumber = None
-    stimduration = None
-    burstnumber, = None
+    burst = 0
+    burstperiod = 0
+    burstduration = 0
+    dutycycle = 0
+    interburst = 0
+    anodic = 0
+    current = 0
+    phasetime1 = 0
+    phasetime2 = 0
+    interstim = 0
+    frequency = 0
+    burstfrequency = 0
+    pulsenumber = 0
+    stimduration = 0
+    burstnumber = 0
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -258,16 +259,19 @@ def get_stimulator_input():
     if  settings['termination_tabs'] == 'Number of burst':
         burstduration = int(settings['number_of_burst']) if settings['snumber_of_burst'] != "" else 0
 
-    burstnumber = stimduration // burstduration
+    #burstnumber = stimduration // burstduration
 
-    pulsenumber = burstduration // peroid
+    #pulsenumber = burstduration // peroid
 
-    burstfrequency = 10000000 / burstduraion
+    #burstfrequency = 10000000 / burstduraion
 
-    return settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button'], burstfrequency, pulsenumber, stimduration, burstnumber
+    return settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, burstfrequency, pulsenumber, stimduration, burstnumber
 
 def get_squarewave_plot():
-    settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, _, _ = get_stimulator_input()
+    settings, burst, burstperiod, burstduration, \
+    dutycycle, interburst, anodic, current, interphase, \
+    phasetime1, phasetime2, interstim, frequency, burstfrequency, \
+    pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -304,7 +308,7 @@ def get_squarewave_plot():
         T.append(burstduration + interburst)
         I.append(0)
 
-    if burstduration > interstim + phasetime1 + phasetime2 + interphase:
+    #if burstduration > interstim + phasetime1 + phasetime2 + interphase:
         plt.close("all")
         plt.plot(T, I)
         plt.xlabel('Time (us)')
@@ -318,7 +322,8 @@ def send_to_neurostimulator_via_ble(button, state):
         settings, burst, burstperiod, \
         burstduration, dutycycle, interburst, \
         anodic, current, interphase, phasetime1, \
-        phasetime2, interstim, frequency, ramp_up, short = get_stimulator_input()
+        phasetime2, interstim, frequency, burstfrequency, \
+        pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
