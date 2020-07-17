@@ -20,7 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1458dba-22e0-4749-9745-aad5409b37fc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/NS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NS.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,6 +124,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="graph_generator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/graph_generator.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -154,6 +179,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.App" />
+        <item itemvalue="Python.graph_generator" />
         <item itemvalue="Python.Dropdown" />
       </list>
     </recent_temporary>
@@ -171,6 +197,8 @@
       <workItem from="1592211820439" duration="7269000" />
       <workItem from="1592982484204" duration="9685000" />
       <workItem from="1593139161193" duration="8773000" />
+      <workItem from="1594732945323" duration="3309000" />
+      <workItem from="1594904960506" duration="3685000" />
     </task>
     <servers />
   </component>
@@ -202,37 +230,41 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="728" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1592064858499" />
-    <state width="1398" height="11" key="GridCell.Tab.0.bottom" timestamp="1593152268354">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1398" height="2" key="GridCell.Tab.0.bottom" timestamp="1594950224671">
+      <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1398" height="11" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1593152268354" />
+    <state width="1398" height="2" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1594950220553" />
     <state width="847" height="2" key="GridCell.Tab.0.bottom/0.23.1440.827@0.23.1440.827" timestamp="1593151811800" />
     <state width="786" height="161" key="GridCell.Tab.0.bottom/0.23.1440.828@0.23.1440.828" timestamp="1593147553820" />
     <state width="655" height="151" key="GridCell.Tab.0.bottom/0.23.1440.829@0.23.1440.829" timestamp="1592223034333" />
+    <state width="1398" height="2" key="GridCell.Tab.0.bottom/0.23.1440.830@0.23.1440.830" timestamp="1594950224671" />
     <state width="883" height="133" key="GridCell.Tab.0.bottom/0.23.1440.831@0.23.1440.831" timestamp="1592983551019" />
-    <state width="1398" height="11" key="GridCell.Tab.0.center" timestamp="1593152268349">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1398" height="2" key="GridCell.Tab.0.center" timestamp="1594950224670">
+      <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1398" height="11" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1593152268349" />
+    <state width="1398" height="2" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1594950220551" />
     <state width="847" height="2" key="GridCell.Tab.0.center/0.23.1440.827@0.23.1440.827" timestamp="1593151811798" />
     <state width="786" height="161" key="GridCell.Tab.0.center/0.23.1440.828@0.23.1440.828" timestamp="1593147553819" />
     <state width="655" height="151" key="GridCell.Tab.0.center/0.23.1440.829@0.23.1440.829" timestamp="1592223034333" />
+    <state width="1398" height="2" key="GridCell.Tab.0.center/0.23.1440.830@0.23.1440.830" timestamp="1594950224670" />
     <state width="883" height="133" key="GridCell.Tab.0.center/0.23.1440.831@0.23.1440.831" timestamp="1592983551019" />
-    <state width="1398" height="11" key="GridCell.Tab.0.left" timestamp="1593152268348">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1398" height="2" key="GridCell.Tab.0.left" timestamp="1594950224669">
+      <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1398" height="11" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1593152268348" />
+    <state width="1398" height="2" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1594950220551" />
     <state width="847" height="2" key="GridCell.Tab.0.left/0.23.1440.827@0.23.1440.827" timestamp="1593151811798" />
     <state width="786" height="161" key="GridCell.Tab.0.left/0.23.1440.828@0.23.1440.828" timestamp="1593147553819" />
     <state width="655" height="151" key="GridCell.Tab.0.left/0.23.1440.829@0.23.1440.829" timestamp="1592223034332" />
+    <state width="1398" height="2" key="GridCell.Tab.0.left/0.23.1440.830@0.23.1440.830" timestamp="1594950224669" />
     <state width="883" height="133" key="GridCell.Tab.0.left/0.23.1440.831@0.23.1440.831" timestamp="1592983551018" />
-    <state width="1398" height="11" key="GridCell.Tab.0.right" timestamp="1593152268353">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1398" height="2" key="GridCell.Tab.0.right" timestamp="1594950224671">
+      <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1398" height="11" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1593152268353" />
+    <state width="1398" height="2" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1594950220552" />
     <state width="847" height="2" key="GridCell.Tab.0.right/0.23.1440.827@0.23.1440.827" timestamp="1593151811799" />
     <state width="786" height="161" key="GridCell.Tab.0.right/0.23.1440.828@0.23.1440.828" timestamp="1593147553819" />
     <state width="655" height="151" key="GridCell.Tab.0.right/0.23.1440.829@0.23.1440.829" timestamp="1592223034333" />
+    <state width="1398" height="2" key="GridCell.Tab.0.right/0.23.1440.830@0.23.1440.830" timestamp="1594950224671" />
     <state width="883" height="133" key="GridCell.Tab.0.right/0.23.1440.831@0.23.1440.831" timestamp="1592983551019" />
     <state width="1398" height="266" key="GridCell.Tab.1.bottom" timestamp="1593139154707">
       <screen x="0" y="0" width="1440" height="900" />
@@ -264,14 +296,15 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/App.py</url>
-          <line>135</line>
+          <line>136</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/NS$App.coverage" NAME="App Coverage Results" MODIFIED="1593152468945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NS$App.coverage" NAME="App Coverage Results" MODIFIED="1594950224655" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NS$Dropdown.coverage" NAME="Dropdown Coverage Results" MODIFIED="1592227324919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NS$graph_generator.coverage" NAME="graph_generator Coverage Results" MODIFIED="1594903093937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
 </project>

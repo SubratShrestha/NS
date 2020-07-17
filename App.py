@@ -119,6 +119,7 @@ ids = [
     'channel_2_inter_phase_delay_input',
     'channel_2_phase_time_input',
     # 'channel_1_burst_frequency_input'
+    'corresponding_frequency_inter_stim_delay'
 ]
 
 class custom_test(TextInput):
@@ -151,12 +152,18 @@ def get_squarewave_plot():
     phasetime2 = int(settings['channel_1_phase_2_time_input']) if settings['channel_1_phase_2_time_input'] != "" else 0
     interphase = int(settings['channel_1_inter_phase_delay_input']) if settings['channel_1_inter_phase_delay_input'] != "" else 0
     interstim = 0
-    if settings['channel_1_phase_time_frequency_tab'] == 'Phase Time':
-        interstim = int(settings['channel_1_inter_stim_delay_input']) if settings['channel_1_inter_stim_delay_input'] != "" else 0
-    if settings['channel_1_phase_time_frequency_tab'] == 'Frequency':
-        frequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
-        if frequency != 0:
-            interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
+    #if settings['channel_1_phase_time_frequency_tab'] == 'Phase Time':
+    #    interstim = int(settings['channel_1_inter_stim_delay_input']) if settings['channel_1_inter_stim_delay_input'] != "" else 0
+    #if settings['channel_1_phase_time_frequency_tab'] == 'Frequency':
+    frequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
+    interstim = int(settings['channel_1_inter_stim_delay_input']) if settings['channel_1_inter_stim_delay_input'] != "" else 0
+    corresponding_frequency_inter_stim_delay= Label(text='Converting...')
+    if frequency != 0:
+        interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
+        corresponding_frequency_inter_stim_delay.text = 'The corresponding inter-stim delay is: {}'.format(interstim)
+    if interstim != 0:
+        frequency = 1/(phasetime1+phasetime2+interstim+interphase)
+        corresponding_frequency_inter_stim_delay.text = 'The corresponding frequency is: {}'.format(frequency)
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -229,6 +236,7 @@ live_update_references = {
         'channel_1_phase_2_time_input',
         'channel_1_frequency_input',
         # 'channel_1_burst_frequency_input'
+        'corresponding_frequency_inter_stim_delay'
     ]
 }
 
@@ -469,6 +477,8 @@ class NeuroStimApp(App):
             'channel_1_ramp_up_toggle':self.get_components('channel_1_ramp_up_toggle').state,
             'channel_1_electrode_toggle':self.get_components('channel_1_electrode_toggle').state,
             # 'channel_1_burst_frequency_input':self.get_components('channel_1_burst_frequency_input').text
+            #'corresponding_frequency_inter_stim_delay': self.get_components('corresponding_frequency_inter_stim_delay').text,
+
         }
 
     def get_components(self, id):
@@ -525,6 +535,8 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').channel_1_electrode_button
         # if id =='channel_1_burst_frequency_input':
         #     return self.get_components('channel_1_burst_uniform_stimulation_tab').burst_frequency
+        if id == 'corresponding_frequency_inter_stim_delay':
+            return self.get_components('channel_1_phase_time_frequency_tab').corresponding_frequency_inter_stim_delay
 
         if id == 'channel_2_stop_button':
             return self.get_components('stimulation_tabs').channel_2_stop_button
@@ -655,6 +667,8 @@ class NeuroStimApp(App):
             return self.get_components('channel_2_phase_time_frequency_tab').inter_phase_delay
         if id == 'channel_2_phase_time_input':
             return self.get_components('channel_2_phase_time_frequency_tab').phase_time
+        if id == 'corresponding_frequency_inter_stim_delay':
+            return self.get_components('channel_1_phase_time_frequency_tab').corresponding_frequency_inter_stim_delay
 
         if id == 'channel_1_stimulation_graph_display':
             return self.get_components('stimulation_tabs').channel_1_stimulation_graph_display

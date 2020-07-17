@@ -368,6 +368,7 @@
     channel_1_phase_1_time_input: channel_1_phase_1_time_input
     channel_1_phase_2_time_input: channel_1_phase_2_time_input
     channel_1_frequency_input: channel_1_frequency_input
+    corresponding_frequency_inter_stim_delay:corresponding_frequency_inter_stim_delay
 
     TabbedPanelItem:
         text: "Phase Time"
@@ -483,6 +484,15 @@
                 input_filter: 'float'
                 multiline: False
                 disabled:True if channel_1_frequency_input.text != "" else False
+            Label:
+                id: corresponding_frequency_inter_stim_delay
+                size_hint: .4,.25
+                pos_hint: {"x":0.05, "top":0.4}
+                text:''
+                text_size: self.size
+                #halign: 'left'
+                valign: 'middle'
+                color: .1,.1,.1,1
 
 <ChannelStimulationTabs@TabbedPanelStrip>
 #change the color the strip of channel 1/2
