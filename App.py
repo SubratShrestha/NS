@@ -40,8 +40,8 @@ from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
-from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
-#from matplotlib.backend_bases import NavigationToolbar2
+# from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
+# from matplotlib.backend_bases import NavigationToolbar2
 
 """======================================================================
 Don't change this to match App.py
@@ -358,11 +358,6 @@ def send_to_neurostimulator_via_ble(button, state):
         phasetime2, interstim, frequency, burstfrequency, \
         pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
-        BurstLost = BurstLostError()
-        PeriodLost = PeriodLostError()
-        ChargeImbalance = ChargeImbalanceError()
-        PeriodBigger = PeriodBiggerError()
-        Value = ValueError()
         try:
             if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
                 PopupWindow = BurstLostError()
