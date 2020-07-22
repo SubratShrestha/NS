@@ -141,29 +141,55 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
+class ValidityCheck(Widget):
+    def CheckingButton(self):
+        ErrorPopup()
 
-# def value_check(self, burstduration, interstim, phasetime1, phasetime2, interphase):
-#     if burstduration % (interstim + phasetime1 + phasetime2 + interphase) != 0:
-#         Factory.BurstLostError.open()
-#
-#     if stimduration % burstperiod != 0:
-#         Factory.peroidLostError.open()
-#
-#     if phasetime1 != phasetime2:
-#         Factory.ChargeImbalanceError.open()
-#
-#     if burstduration > interstim + phasetime1 + phasetime2 + interphase:
-#         Factory.PeroidBiggerError.open()
-#
-# #################################################################################################
-#
-#     if current > 10000:
-#         Factory.ValueError().open()
-#         'output_current_input' = ""
-#
-#     if interburst > 10000:
-#         Factory.ValueError().open()
-#         'inter_phase_delay_input' = ""
+class BurstLostError(FloatLayout):
+    pass
+
+class PeriodLostError(FloatLayout):
+    pass
+
+class ChargeImbalanceError:
+    pass
+
+class PeriodBiggerError:
+    pass
+
+class ValueError:
+    pass
+
+
+def ErrorPopup(Popup):
+    BurstLost = BurstLostError()
+    PeriodLost =PeriodLostError()
+    ChargeImbalance = ChargeImbalanceError()
+    PeriodBigger = PeriodBiggerError()
+    Value = ValueError()
+
+    if burstduration % (interstim + phasetime1 + phasetime2 + interphase) != 0:
+        PopupWindow = Popup(title = 'error',content = BurstLost, size_hint = (None,None),size= (400,400))
+
+    elif stimduration % burstperiod != 0:
+        PopupWindow = Popup(title='error', content=PeriodLost, size_hint=(None, None), size=(400, 400))
+
+    elif phasetime1 != phasetime2:
+        PopupWindow = Popup(title='error', content=ChargeImbalance, size_hint=(None, None), size=(400, 400))
+
+    elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
+        PopupWindow = Popup(title='error', content=PeriodBigger, size_hint=(None, None), size=(400, 400))
+
+ #################################################################################################
+
+#    if current > 10000:
+#        self.popup.content = 'The current is too big!'
+#        settings['output_current_input'] = ''
+
+
+#    if interburst > 10000:
+#        self.popup.content = 'The inter-phase-delay is too big!'
+
 #
 #     if interstim > 10000:
 #         Factory.ValueError().open()
@@ -208,6 +234,12 @@ def update_graph():
 #
 #     if settings['phase_time_frequency_tab'] == 'Frequency':
 #         return "Inter-stim delay: \n {}".format(interstim)
+    else:
+        PopupWindow = Popup(title='Valid!', content='You are ready to go!', size_hint=(None, None), size=(400, 400))
+
+    PopupWindow.open()
+
+
 
 
 def get_stimulator_input():
