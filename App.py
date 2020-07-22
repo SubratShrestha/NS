@@ -145,10 +145,10 @@ class ValidityCheck(Widget):
     def CheckingButton(self):
         ErrorPopup()
 
-class BurstLostError(FloatLayout):
+class BurstLostError:
     pass
 
-class PeriodLostError(FloatLayout):
+class PeriodLostError:
     pass
 
 class ChargeImbalanceError:
@@ -162,6 +162,11 @@ class ValueError:
 
 
 def ErrorPopup(Popup):
+    settings, burst, burstperiod, burstduration, \
+    dutycycle, interburst, anodic, current, interphase, \
+    phasetime1, phasetime2, interstim, frequency, burstfrequency, \
+    pulsenumber, stimduration, burstnumber = get_stimulator_input()
+
     BurstLost = BurstLostError()
     PeriodLost =PeriodLostError()
     ChargeImbalance = ChargeImbalanceError()
