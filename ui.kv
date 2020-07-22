@@ -596,10 +596,6 @@
                         id: termination_tabs
                     CathodicAnodicToggle:
                         id: cathodic_anodic_toggle
-                    ValidityCheckButton:
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.075, "top":0.7}
-                        text: 'validity check'
             BoxLayout:
                 canvas:
                     Color:
@@ -1183,21 +1179,6 @@
             width: 1.2
 
 ######################################
-<ValidityCheck>
-    Button:
-        size_hint: 1, 0.06
-        text: "Validity Check"
-        pos_hint: {"x":0.075, "top":0.7}
-        background_color: 0.420,0.864,1.773,1
-        on_press: root.CheckingButton()
-
-<ValidityCheckButton@Button>
-    Button:
-        size_hint: 1, 0.06
-        text: "Validity Check"
-        pos_hint: {"x":0.075, "top":0.7}
-        background_color: 0.420,0.864,1.773,1
-        on_press: Factory.ValidityCheck().open()
 
 <ValueError>:
     title: "The value is too big!"

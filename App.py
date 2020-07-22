@@ -141,10 +141,6 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
-class ValidityCheck(Widget):
-    def CheckingButton(self):
-        ErrorPopup()
-
 class BurstLostError:
     pass
 
@@ -362,20 +358,41 @@ def send_to_neurostimulator_via_ble(button, state):
         phasetime2, interstim, frequency, burstfrequency, \
         pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
-        data = {
-            'mac_addr': App.get_running_app().connected_device_mac_addr,
-            PHASE_ONE_WRITE_CHAR: phasetime1,
-            PHASE_TWO_WRITE_CHAR:phasetime2,
-            ANODIC_CATHOLIC_FIRST_WRITE_CHAR:anodic,
-            STIM_AMP_WRITE_CHAR:current,
-            INTER_PHASE_GAP_WRITE_CHAR:interphase,
-            INTER_BURST_DELAY_WRITE_CHAR:interburst,
-            # BURST_NUM_WRITE_CHAR: int(burst/burstperiod) if burstperiod != 0 else 0,
-            INTER_STIM_DELAY_WRITE_CHAR:interstim,
-            PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
-        }
+        BurstLost = BurstLostError()
+        PeriodLost = PeriodLostError()
+        ChargeImbalance = ChargeImbalanceError()
+        PeriodBigger = PeriodBiggerError()
+        Value = ValueError()
+        try:
+            if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
+                PopupWindow = BurstLostError()
+                PopupWindow.open()
+            elif int(stimduration) % int(burstperiod) != 0:
+                PopupWindow = PeriodLostError()
+                PopupWindow.open()
+            elif phasetime1 != phasetime2:
+                PopupWindow = ChargeImbalanceError()
+                PopupWindow.open()
+            elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
+                PopupWindow = PeriodBiggerError()
+                PopupWindow.open()
+        except Exception as e:
+            print(e)
 
-        App.get_running_app().send_via_ble(data)
+        # data = {
+        #     'mac_addr': App.get_running_app().connected_device_mac_addr,
+        #     PHASE_ONE_WRITE_CHAR: phasetime1,
+        #     PHASE_TWO_WRITE_CHAR:phasetime2,
+        #     ANODIC_CATHOLIC_FIRST_WRITE_CHAR:anodic,
+        #     STIM_AMP_WRITE_CHAR:current,
+        #     INTER_PHASE_GAP_WRITE_CHAR:interphase,
+        #     INTER_BURST_DELAY_WRITE_CHAR:interburst,
+        #     # BURST_NUM_WRITE_CHAR: int(burst/burstperiod) if burstperiod != 0 else 0,
+        #     INTER_STIM_DELAY_WRITE_CHAR:interstim,
+        #     PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
+        # }
+        #
+        # App.get_running_app().send_via_ble(data)
 
 
 
@@ -468,6 +485,20 @@ class TerminationTabs(TabbedPanel):
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
+class ValueError(Popup):
+    pass
+
+class BurstLostError(Popup):
+    pass
+
+class PeroidLostError(Popup):
+    pass
+
+class ChargeImbalanceError(Popup):
+    pass
+
+class PeroidBiggerError(Popup):
+    pass
 
 class AddDevicePopup(Popup):
     async def ble_discover(self):
