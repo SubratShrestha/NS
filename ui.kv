@@ -596,6 +596,10 @@
                         id: termination_tabs
                     CathodicAnodicToggle:
                         id: cathodic_anodic_toggle
+                    ValidityCheckButton:
+                        size_hint: .4,.06
+                        pos_hint: {"x":0.075, "top":0.7}
+                        text: 'validity check'
             BoxLayout:
                 canvas:
                     Color:
@@ -630,15 +634,15 @@
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.5}
                         # text: root.frequency_interchange_inter_phase_delay()
-                BoxLayout:
-                    orientation: "vertical"
-                    size_hint: 1,.5
-                    pos_hint: {"x":0, "top":1}
-                    id: stimulation_graph_display
-                    MatplotNavToolbar:
-                        id: toolbar
-                        size_hint: 1, 0.3
-                        # figure_widget: stimulation_graph_display
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: 1,.5
+                pos_hint: {"x":0, "top":1}
+                id: stimulation_graph_display
+                #MatplotNavToolbar:
+                #    id: toolbar
+                #    size_hint: 1, 0.3
+                    # figure_widget: stimulation_graph_display
 
     TabbedPanelItem:
         text: "Channel 2"
@@ -720,7 +724,7 @@
                         pos_hint: {"x":0.075, "top":0.7}
                         text: "Ramp Up"
                         group: "ramp_up"
-                        background_color: 0.420,0.864,1.773,1
+                        background_clor: 0.420,0.864,1.773,1
                     ToggleButton:
                         id: channel_2_short_electrode_toggle
                         size_hint: .4,.06
@@ -1178,12 +1182,27 @@
             rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
             width: 1.2
 
-##################################################
+######################################
+<ValidityCheck>
+    Button:
+        size_hint: 1, 0.06
+        text: "Validity Check"
+        pos_hint: {"x":0.075, "top":0.7}
+        background_color: 0.420,0.864,1.773,1
+        on_press: root.CheckingButton()
+
+<ValidityCheckButton@Button>
+    Button:
+        size_hint: 1, 0.06
+        text: "Validity Check"
+        pos_hint: {"x":0.075, "top":0.7}
+        background_color: 0.420,0.864,1.773,1
+        on_press: Factory.ValidityCheck().open()
 
 <ValueError>:
     title: "The value is too big!"
     title_size:35
-    title_align:'center'
+    title_align:'center'.
     separator_height:0
     size_hint: .70,.15
     pos_hint: {"center_x":0.5,"center_y":0.5}
