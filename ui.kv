@@ -631,14 +631,15 @@
                         pos_hint: {"x":0.075, "top":.5}
                         # text: root.frequency_interchange_inter_phase_delay()
             BoxLayout:
-                orientation: "horizontal"
+                canvas:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
                 size_hint: 1,.5
                 pos_hint: {"x":0, "top":1}
                 id: stimulation_graph_display
-                #MatplotNavToolbar:
-                #    id: toolbar
-                #    size_hint: 1, 0.3
-                    # figure_widget: stimulation_graph_display
 
     TabbedPanelItem:
         text: "Channel 2"
@@ -1219,7 +1220,7 @@
     auto_dismiss : True
 
 
-<PeroidBiggerError>:
+<PeriodBiggerError>:
     title: "One pulse peroid is bigger than a burst!"
     title_size:35
     title_align:'center'

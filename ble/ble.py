@@ -6,17 +6,9 @@ from multiprocessing.connection import Listener, Client
 import sys
 import ast
 
- # = '00002a01-0000-1000-8000-00805f9b34fb'
- # = '00002a05-0000-1000-8000-00805f9b34fb'
- # = '00002a00-0000-1000-8000-00805f9b34fb'
- # = '00002a29-0000-1000-8000-00805f9b34fb'
- # = '00002a26-0000-1000-8000-00805f9b34fb'
- # = '00002a27-0000-1000-8000-00805f9b34fb'
- # = '00002a28-0000-1000-8000-00805f9b34fb'
 CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
 MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
 OTA_SUPPORT_CHAR = '01000000-0000-0000-0000-000000000008'
-
 PHASE_ONE_WRITE_CHAR = '02000000-0000-0000-0000-000000000103'
 PHASE_TWO_WRITE_CHAR = '02000000-0000-0000-0000-000000000105'
 STIM_AMP_WRITE_CHAR = '02000000-0000-0000-0000-000000000102'
@@ -28,7 +20,6 @@ STIM_TYPE_WRITE_CHAR = '02000000-0000-0000-0000-000000000109'
 BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
 INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
 SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
-
 INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
 PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
 PHASE_TWO_READ_CHAR = '02000000-0000-0000-0000-000000000005'
@@ -150,7 +141,6 @@ class BluetoothComms():
                         data = {}
                         for k, v in services.items():
                             if 'characteristics' in k:
-                                # while True:
                                 for sk, sv in v.items():
                                     sv = str(sv).replace(':', "").replace(' ', "")
                                     if sv in self.readable_chars:
@@ -158,7 +148,6 @@ class BluetoothComms():
                                         await asyncio.sleep(0.1, loop=loop)
                                         print("response from {}".format(sv), result.decode("utf-8"))
                                         data[self.char_to_string_mapping[sv]] = result.decode("utf-8")
-                                    # await asyncio.sleep(15, loop=loop)
                         print(data)
                         return client
                     print("NOT CONNECTED")
@@ -214,11 +203,7 @@ class BluetoothComms():
                     for i in data:
                         print(i)
                         if i['text'] not in self.connected:
-                            # result = loop.run_until_complete(self.connect(i['text'], loop))
                             self.connected[i['text']] = False
-                            # loop.run_until_complete(self.write_char(i['text'], loop, SERIAL_COMMAND_INPUT_CHAR, 'start'))
-                # if len(self.connected.keys()) > 0:
-                #     break
         except Exception as e:
             print(e)
         finally:

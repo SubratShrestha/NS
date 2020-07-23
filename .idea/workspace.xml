@@ -28,6 +28,10 @@
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ble/ble.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/ble.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/wifi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -196,11 +200,11 @@
     </configuration>
     <list>
       <item itemvalue="Compound.Unnamed" />
-      <item itemvalue="Python.int" />
-      <item itemvalue="Python.ns" />
       <item itemvalue="Python.App" />
       <item itemvalue="Python.graph_generator" />
+      <item itemvalue="Python.int" />
       <item itemvalue="Python.kivy_matplotlib" />
+      <item itemvalue="Python.ns" />
     </list>
     <recent_temporary>
       <list>
