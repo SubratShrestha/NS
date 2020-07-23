@@ -100,7 +100,7 @@ ids = [
     'cathodic_toggle',
     'anodic_toggle',
     'duty_cycle_input',
-    'burst_peroid_input',
+    'burst_period_input',
     'inter_stim_delay_input',
     'inter_phase_delay_input',
     'phase_1_time_input',
@@ -165,7 +165,7 @@ def get_stimulator_input():
 
     burst = settings['burst_continous_stimulation_tab'] == 'Burst Stimulation'
     if burst:
-        burstperiod = settings['burst_peroid_input'] if settings['burst_peroid_input'] != "" else 0
+        burstperiod = settings['burst_period_input'] if settings['burst_period_input'] != "" else 0
         burstperiod = int(burstperiod) * 1000
         dutycycle = settings['duty_cycle_input'] if settings['duty_cycle_input'] != "" else 0
         dutycycle = int(dutycycle) / 100
@@ -213,13 +213,13 @@ def get_squarewave_plot():
         I = [i * current for i in cathodic]
 
     # points on x-axis
-    # timing of frist cycle
+    # timing of first cycle
     T = [0, 0, phasetime1, phasetime1, phasetime1 + interphase, phasetime1 + interphase,
          phasetime1 + phasetime2 + interphase, phasetime1 + phasetime2 + interphase,
          phasetime1 + phasetime2 + interphase + interstim]
 
-    # if its continous stim, graph stop plotting after one peroid
-    # if its burst stim, graph stop plotting after one burst peroid
+    # if its continuous stim, graph stop plotting after one period
+    # if its burst stim, graph stop plotting after one burst period
     if burst:
         # constantly add last element of previous "T list"to all element in previous T to make the point on y-axis
         b = T.copy()
@@ -285,7 +285,7 @@ live_update_references = {
         'inter_stim_delay_input',
         'anodic_toggle',
         'duty_cycle_input',
-        'burst_peroid_input',
+        'burst_period_input',
         'inter_phase_delay_input',
         'phase_1_time_input',
         'phase_2_time_input',
@@ -335,7 +335,7 @@ class ValueError(Popup):
 class BurstLostError(Popup):
     pass
 
-class PeroidLostError(Popup):
+class periodLostError(Popup):
     pass
 
 class ChargeImbalanceError(Popup):
@@ -539,7 +539,7 @@ class NeuroStimApp(App):
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
             'duty_cycle_input': self.get_components('duty_cycle_input').text,
-            'burst_peroid_input': self.get_components('burst_peroid_input').text,
+            'burst_period_input': self.get_components('burst_period_input').text,
             'inter_phase_delay_input': self.get_components('inter_phase_delay_input').text,
             'inter_stim_delay_input': self.get_components('inter_stim_delay_input').text,
             'phase_1_time_input': self.get_components('phase_1_time_input').text,
@@ -669,8 +669,8 @@ class NeuroStimApp(App):
 
         if id == 'duty_cycle_input':
             return self.get_components('burst_continous_stimulation_tab').duty_cycle
-        if id == 'burst_peroid_input':
-            return self.get_components('burst_continous_stimulation_tab').burst_peroid
+        if id == 'burst_period_input':
+            return self.get_components('burst_continous_stimulation_tab').burst_period
 
         if id == 'inter_phase_delay_input':
             return self.get_components('phase_time_frequency_tab').inter_phase_delay_input
@@ -706,8 +706,8 @@ class NeuroStimApp(App):
 
         if id == 'duty_cycle_input':
             return self.get_components('burst_continous_stimulation_tab').duty_cycle
-        if id == 'burst_peroid_input':
-            return self.get_components('burst_continous_stimulation_tab').burst_peroid
+        if id == 'burst_period_input':
+            return self.get_components('burst_continous_stimulation_tab').burst_period
 
         if id == 'inter_phase_delay_input':
             return self.get_components('phase_time_frequency_tab').inter_phase_delay_input
