@@ -4,7 +4,6 @@ import asyncio
 import threading
 from multiprocessing.connection import Listener, Client
 import sys
-import ast
 
 BATTERY_LEVEL_CHAR = '00002a19-0000-1000-8000-00805f9b34fb'
 CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
