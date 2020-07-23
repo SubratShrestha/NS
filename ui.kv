@@ -362,9 +362,9 @@
     inter_stim_delay_input: inter_stim_delay_input
     phase_1_time_input: phase_1_time_input
     phase_2_time_input: phase_2_time_input
-    frequency_input: frequency_input
+    #frequency_input: frequency_input
     channel_1_frequency_input:channel_1_frequency_input
-    frequency_input:frequency_input
+    #frequency_input:frequency_input
 
     TabbedPanelItem:
         text: "Phase Time"
@@ -398,7 +398,7 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-                id: inter_stim_delay_input
+                id: phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 text: "0"
@@ -410,24 +410,6 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Phase 1 Time(us)"
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
-                color: .1,.1,.1,1
-            TextInput:
-                id: phase_1_time_input
-                size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.75}
-                text: "0"
-                hint_text: "0"
-                font_size: self.height*0.55
-                input_type: 'number'
-                input_filter: 'float'
-                multiline: False
-            Label:
-                size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.5}
                 text: "Phase 2 Time(us)"
                 text_size: self.size
                 halign: 'left'
@@ -436,7 +418,7 @@
             TextInput:
                 id: phase_2_time_input
                 size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.25}
+                pos_hint: {"x":0.55, "top":0.75}
                 text: "0"
                 hint_text: "0"
                 font_size: self.height*0.55
@@ -466,7 +448,7 @@
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
-                disabled: True if frequency_input.text != "" else False
+                disabled: True if inter_stim_delay_input.text != "" else False
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
@@ -476,7 +458,7 @@
                 valign: 'middle'
                 color: .1,.1,.1,1
             TextInput:
-                id: frequency_input
+                id: inter_stim_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 #text: "0"
@@ -593,6 +575,7 @@
                         size_hint: .25,.06
                         pos_hint: {"x":0.075, "top":.99}
                         text: "Start"
+                        background_color: 0.420,0.864,1.773,1
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
@@ -626,7 +609,42 @@
                         pos: self.pos
                 size_hint: 1,.5
                 pos_hint: {"x":0, "top":1}
+                BoxLayout:
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "Burst frequency: \n {}" # .format(burst_frequency)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "Burst Duration: \n {}" # .format(burst_duration)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "Inter Burst_Delay \n {}" # .format(inter_burst_delay)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        text: "pulse_number: \n {}" # .format(pulse_number)
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        # text: root.burst_number_interchange_stimulation_duration()
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.5}
+                        # text: root.frequency_interchange_inter_phase_delay()
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                size_hint: 1,.5
+                pos_hint: {"x":0, "top":1}
                 id: stimulation_graph_display
+
     TabbedPanelItem:
         text: "Channel 2"
         background_color: 0,0,0,0
@@ -707,7 +725,7 @@
                         pos_hint: {"x":0.075, "top":0.7}
                         text: "Ramp Up"
                         group: "ramp_up"
-                        background_color: 0.420,0.864,1.773,1
+                        background_clor: 0.420,0.864,1.773,1
                     ToggleButton:
                         id: channel_2_short_electrode_toggle
                         size_hint: .4,.06
@@ -1165,14 +1183,52 @@
             rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
             width: 1.2
 
-##################################################
+######################################
 
-<ErrorPopup>:
-    title: "Error Popup"
+<ValueError>:
+    title: "The value is too big!"
     title_size:35
     title_align:'center'
     separator_height:0
-    size_hint: .45,.73
+    size_hint: .70,.15
     pos_hint: {"center_x":0.5,"center_y":0.5}
     auto_dismiss : True
-    on_open: print("=====================\nMitches Error Popup\n==========================")
+
+<BurstLostError>:
+    title: "Burst peroid is not dividable by Stimulation duration, one or more burst is reduced!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+
+<PeroidLostError>:
+    title: "puls peroid is not dividable by burst peroid, one or more peroid is reduced!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+
+<ChargeImbalanceError>:
+    title: " Charge is imbalanced, potentially damaging tissue!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+
+<PeriodBiggerError>:
+    title: "One pulse peroid is bigger than a burst!"
+    title_size:35
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.15
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True

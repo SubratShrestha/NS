@@ -42,27 +42,29 @@ BATTERY_LEVEL_CHAR = '00002a19-0000-1000-8000-00805f9b34fb'
 CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
 MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
 OTA_SUPPORT_CHAR = '01000000-0000-0000-0000-000000000008'
+
 PHASE_ONE_WRITE_CHAR = '02000000-0000-0000-0000-000000000103'
-PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
 PHASE_TWO_WRITE_CHAR = '02000000-0000-0000-0000-000000000105'
-PHASE_TWO_READ_CHAR = '02000000-0000-0000-0000-000000000005'
 STIM_AMP_WRITE_CHAR = '02000000-0000-0000-0000-000000000102'
-STIM_AMP_READ_CHAR = '02000000-0000-0000-0000-000000000002'
 INTER_PHASE_GAP_WRITE_CHAR = '02000000-0000-0000-0000-000000000104'
-INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
 INTER_STIM_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-000000000106'
-INTER_STIM_DELAY_READ_CHAR = '02000000-0000-0000-0000-000000000006'
 PULSE_NUM_WRITE_CHAR = '02000000-0000-0000-0000-000000000107'
-PULSE_NUM_READ_CHAR = '02000000-0000-0000-0000-000000000007'
 ANODIC_CATHOLIC_FIRST_WRITE_CHAR = '02000000-0000-0000-0000-000000000108'
-ANODIC_CATHODIC_FIRST_READ_CHAR = '02000000-0000-0000-0000-000000000008'
 STIM_TYPE_WRITE_CHAR = '02000000-0000-0000-0000-000000000109'
-STIM_TYPE_READ_CHAR = '02000000-0000-0000-0000-000000000009'
 BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
-BURST_NUM_READ_CHAR = '02000000-0000-0000-0000-00000000000a'
 INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
-INTER_BURST_DELAY_READ_CHAR = '02000000-0000-0000-0000-00000000000b'
 SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
+
+INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
+PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
+PHASE_TWO_READ_CHAR = '02000000-0000-0000-0000-000000000005'
+STIM_AMP_READ_CHAR = '02000000-0000-0000-0000-000000000002'
+INTER_STIM_DELAY_READ_CHAR = '02000000-0000-0000-0000-000000000006'
+PULSE_NUM_READ_CHAR = '02000000-0000-0000-0000-000000000007'
+ANODIC_CATHODIC_FIRST_READ_CHAR = '02000000-0000-0000-0000-000000000008'
+STIM_TYPE_READ_CHAR = '02000000-0000-0000-0000-000000000009'
+BURST_NUM_READ_CHAR = '02000000-0000-0000-0000-00000000000a'
+INTER_BURST_DELAY_READ_CHAR = '02000000-0000-0000-0000-00000000000b'
 
 """======================================================================
 Don't change this to match App.py
@@ -78,7 +80,6 @@ ids = [
     'device_rv',
     'home_button',
     'new_device_button',
-    # 'side_bar_title',
     'home_screen',
     'device_screen',
     'home_screen_windows',
@@ -92,8 +93,6 @@ ids = [
     'start_button',
     'termination_tabs',
     'cathodic_anodic_toggle',
-    # 'ramp_up_toggle',
-    # 'short_electrode_toggle',
     'stimulation_graph_display',
     'stimulation_duration',
     'number_of_burst',
@@ -106,23 +105,7 @@ ids = [
     'inter_phase_delay_input',
     'phase_1_time_input',
     'phase_2_time_input',
-    'frequency_input',
-    # stimulate_foever
-    # 'channel_2_stimulation_graph_display',
-    # 'channel_2_cathodic_toggle',
-    # 'channel_2_anodic_toggle',
-    # 'channel_2_duty_cycle',
-    # 'channel_2_burst_duration',
-    # 'channel_2_inter_phase_delay_input',
-    # 'channel_2_phase_time_input',
-    # 'channel_2_stop_button',
-    # 'channel_2_save_button',
-    # 'channel_2_start_button',
-    # 'channel_2_output_current_input',
-    # 'channel_2_termination_tabs',
-    # 'channel_2_cathodic_anodic_toggle',
-    # 'channel_2_ramp_up_toggle',
-    # 'channel_2_short_short_electrode_toggle',
+    'channel_1_frequency_input',
     'electrode_recording_tab_top_graph',
     'electrode_recording_tab_bottom_graph',
     'electrode_recording_tab_sample_info',
@@ -151,7 +134,6 @@ ids = [
     'triggered_mode_toggle_phase_2_button',
     'triggered_mode_toggle_phase_1_and_2_button',
     'triggered_mode_toggle_inter_stim_time_button',
-
 ]
 
 class custom_test(TextInput):
@@ -174,6 +156,10 @@ def get_stimulator_input():
     phasetime2 = None
     interstim = None
     frequency = None
+    burstfrequency = None
+    pulsenumber = None
+    stimduration = None
+    burstnumber = None
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -198,37 +184,25 @@ def get_stimulator_input():
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
 
-    return settings, burst, burstperiod, burstduration, \
-           dutycycle, interburst, anodic, current, interphase, \
-           phasetime1, phasetime2, interstim, frequency, \
-            int(settings['ramp_up_button'] == 'down'), int(settings['short_button']=='down')
 
-def set_graph_default_values(mac_addr):
-    device_char_data = App.get_running_app().device_char_data
-    if mac_addr in device_char_data:
-        settings = App.get_running_app().get_graph_variables()
-        data = device_char_data[mac_addr]
-        App.get_running_app().get_components('short_button').state = 'down' if int(data['SHORT_ELECTRODE_READ_CHAR'])==1 else 'normal'
-        App.get_running_app().get_components('ramp_up_button').state = 'down' if int(data['RAMP_UP_READ_CHAR'])==1 else 'normal'
-        App.get_running_app().get_components('anodic_toggle').state = 'down' if int(data['ANODIC_CATHODIC_FIRST_READ_CHAR'])==1 else 'normal'
-        App.get_running_app().get_components('cathodic_toggle').state = 'down' if int(data['ANODIC_CATHODIC_FIRST_READ_CHAR'])==0 else 'normal'
-        App.get_running_app().get_components('output_current_input').text = data['STIM_AMP_READ_CHAR']
-        # settings['frequency_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
-        App.get_running_app().get_components('phase_2_time_input').text = data['PHASE_TWO_READ_CHAR']
-        App.get_running_app().get_components('phase_1_time_input').text = data['PHASE_ONE_READ_CHAR']
-        App.get_running_app().get_components('inter_stim_delay_input').text = data['INTER_STIM_DELAY_READ_CHAR']
-        App.get_running_app().get_components('inter_phase_delay_input').text = data['INTER_PHASE_GAP_READ_CHAR']
-        # settings['burst_peroid_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
-        # settings['duty_cycle_input'] = data['SHORT_ELECTRODE_WRITE_CHAR']
-        # settings['burst_continous_stimulation_tab'] = data['SHORT_ELECTRODE_WRITE_CHAR']
-        # settings['phase_time_frequency_tab'] = data['SHORT_ELECTRODE_WRITE_CHAR']
+    if  settings['termination_tabs'] == 'Stimulate forever':
+        stimduration = int(float("inf"))
+    if  settings['termination_tabs'] == 'Stimulation duration':
+        stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
+    if  settings['termination_tabs'] == 'Number of burst':
+        burstduration = int(settings['number_of_burst']) if settings['snumber_of_burst'] != "" else 0
 
+    if burstduration and stimduration:
+        burstnumber = stimduration // burstduration
+    if burstduration and burstperiod:
+        pulsenumber = burstduration // burstperiod
+    if burstduration != 0:
+        burstfrequency = 10000000 / burstduration
 
-
-
+    return settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button'], burstfrequency, pulsenumber, stimduration, burstnumber
 
 def get_squarewave_plot():
-    settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, _, _ = get_stimulator_input()
+    settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -276,10 +250,7 @@ def get_squarewave_plot():
 def send_to_neurostimulator_via_ble(button, state):
     if state == 'down':
         print("send_to_neurostimulator_via_ble")
-        settings, burst, burstperiod, \
-        burstduration, dutycycle, interburst, \
-        anodic, current, interphase, phasetime1, \
-        phasetime2, interstim, frequency, ramp_up, short = get_stimulator_input()
+        settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
@@ -304,6 +275,7 @@ def update_graph_on_text_channel_1(instance, value):
 def update_graph_on_toggle_channel_1(button,state):
     update_graph()
 
+
 live_update_references = {
     'stimulation_graph_display': [
         'stimulation_duration',
@@ -317,23 +289,15 @@ live_update_references = {
         'inter_phase_delay_input',
         'phase_1_time_input',
         'phase_2_time_input',
-        'frequency_input',
-        'start_button',
-        #stimulate_foever
+        'channel_1_frequency_input',
+        'start_button'
     ]
 }
 
-# def Errorwindow():
-#         show = Errorpop()
-#         popupwindow = Popup(titel="titel", content=show, size_hint=(None,None), size=(400,400))
-#         popupwindow.open()
 
-class ErrorPopup(Popup):
-    pass
 
 class MainWindow(FloatLayout):
     pass
-
 
 class SideBar(FloatLayout):
     pass
@@ -351,16 +315,33 @@ class PhaseTimeFrequencyTabs(TabbedPanel):
     pass
 
 class ChannelStimulationTabs(TabbedPanel):
-    def btn(self):
-        Errorwindow()
+    pass
 
 class BurstContinousStimulationTabs(TabbedPanel):
+    pass
+
+class BurstUniformStimulationTabs(TabbedPanel):
     pass
 
 class TerminationTabs(TabbedPanel):
     pass
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
+    pass
+
+class ValueError(Popup):
+    pass
+
+class BurstLostError(Popup):
+    pass
+
+class PeroidLostError(Popup):
+    pass
+
+class ChargeImbalanceError(Popup):
+    pass
+
+class PeriodBiggerError(Popup):
     pass
 
 class AddDevicePopup(Popup):
@@ -444,10 +425,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
-        # print("======================================",rv, index)
-        # print(index, is_selected, self.selected, self.deselected)
         if not is_selected and self.selected:
-            # print("here")
             self.selected = False
             App.get_running_app().root.screen_manager.transition.direction = 'down'
             App.get_running_app().root.screen_manager.current = 'home'
@@ -472,7 +450,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
 
                 print(i,App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
-            set_graph_default_values(self.text)
+            # set_graph_default_values(self.text)
             device_char_data = App.get_running_app().device_char_data
             print(device_char_data)
             if self.text in device_char_data:
@@ -557,7 +535,7 @@ class NeuroStimApp(App):
 
     def get_graph_variables(self):
         return {
-            #'termination_tabs': self.get_components('termination_tabs').current_tab.text,
+            'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
             'duty_cycle_input': self.get_components('duty_cycle_input').text,
@@ -566,15 +544,13 @@ class NeuroStimApp(App):
             'inter_stim_delay_input': self.get_components('inter_stim_delay_input').text,
             'phase_1_time_input': self.get_components('phase_1_time_input').text,
             'phase_2_time_input': self.get_components('phase_2_time_input').text,
-            'frequency_input': self.get_components('frequency_input').text,
-            # 'stimulation_duration': self.get_components('stimulation_duration').text,
-            # 'number_of_burst': self.get_components('number_of_burst').text,
+            'channel_1_frequency_input': self.get_components('channel_1_frequency_input').text,
             'output_current_input': self.get_components('output_current_input').text,
-            'cathodic_toggle':self.get_components('cathodic_toggle').state,
-            'anodic_toggle':self.get_components('anodic_toggle').state,
+            'stimulation_duration': self.get_components('stimulation_duration').text,
+            'number_of_burst': self.get_components('number_of_burst').text,
+            'anodic_toggle': self.get_components('anodic_toggle').state,
             'ramp_up_button':self.get_components('ramp_up_button').state,
             'short_button':self.get_components('short_button').state,
-            #'burst_frequency_input':self.get_components('burst_frequency_input').text
         }
 
     def get_components(self, id):
@@ -588,8 +564,6 @@ class NeuroStimApp(App):
             return self.root.side_bar.home_button
         if id == 'new_device_button':
             return self.root.side_bar.new_device_button
-        # if id == 'side_bar_title':
-        #     return self.root.side_bar.side_bar_title
         if id == 'home_screen':
             return self.root.screen_manager.home_screen
         if id == 'device_screen':
@@ -623,34 +597,6 @@ class NeuroStimApp(App):
             return self.get_components('cathodic_anodic_toggle').cathodic
         if id == 'anodic_toggle':
             return self.get_components('cathodic_anodic_toggle').anodic
-        # if id == 'ramp_up_toggle':
-        #     return self.get_components('stimulation_tabs').ramp_up_toggle
-        # if id == 'short_electrode_toggle':
-        #     return self.get_components('stimulation_tabs').short_electrode_toggle
-        # if id =='burst_frequency_input':
-        #     return self.get_components('burst_continous_stimulation_tab').burst_frequency
-
-        # if id == 'channel_2_stop_button':
-        #     return self.get_components('stimulation_tabs').channel_2_stop_button
-        # if id == 'channel_2_save_button':
-        # if id == 'channel_2_save_button':
-        #     return self.get_components('stimulation_tabs').channel_2_save_button
-        # if id == 'channel_2_start_button':
-        #     return self.get_components('stimulation_tabs').channel_2_start_button
-        # if id == 'channel_2_output_current_input':
-        #     return self.get_components('stimulation_tabs').channel_2_output_current_input
-        # if id == 'channel_2_termination_tabs':
-        #     return self.get_components('stimulation_tabs').channel_2_termination_tabs
-        # if id == 'channel_2_cathodic_anodic_toggle':
-        #     return self.get_components('stimulation_tabs').channel_2_cathodic_anodic_toggle
-        # if id == 'channel_2_cathodic_toggle':
-        #     return self.get_components('channel_2_cathodic_anodic_toggle').cathodic
-        # if id == 'channel_2_anodic_toggle':
-        #     return self.get_components('channel_2_cathodic_anodic_toggle').anodic
-        # if id == 'channel_2_ramp_up_toggle':
-        #     return self.get_components('stimulation_tabs').channel_2_ramp_up_toggle
-        # if id == 'channel_2_short_short_electrode_toggle':
-        #     return self.get_components('stimulation_tabs').channel_2_short_short_electrode_toggle
 
         if id == 'stimulation_duration':
             return self.get_components('termination_tabs').stimulation_duration
@@ -705,6 +651,42 @@ class NeuroStimApp(App):
         if id == 'phase_1_button':
             return self.get_components('device_advanced_settings').phase_1_button
 
+        if id == 'triggered_mode_toggle_none_button':
+            return self.get_components('triggered_mode_toggle').none_button
+        if id == 'triggered_mode_toggle_phase_1_button':
+            return self.get_components('triggered_mode_toggle').phase_1_button
+        if id == 'triggered_mode_toggle_phase_2_button':
+            return self.get_components('triggered_mode_toggle').phase_2_button
+        if id == 'triggered_mode_toggle_phase_1_and_2_button':
+            return self.get_components('triggered_mode_toggle').phase_1_and_2_button
+        if id == 'triggered_mode_toggle_inter_stim_time_button':
+            return self.get_components('triggered_mode_toggle').inter_stim_time_button
+
+        if id == 'phase_time_frequency_tab':
+            return self.get_components('stimulation_tabs').phase_time_frequency_tab
+        if id == 'burst_continous_stimulation_tab':
+            return self.get_components('stimulation_tabs').burst_continous_stimulation_tab
+
+        if id == 'duty_cycle_input':
+            return self.get_components('burst_continous_stimulation_tab').duty_cycle
+        if id == 'burst_peroid_input':
+            return self.get_components('burst_continous_stimulation_tab').burst_peroid
+
+        if id == 'inter_phase_delay_input':
+            return self.get_components('phase_time_frequency_tab').inter_phase_delay_input
+        if id == 'inter_stim_delay_input':
+            return self.get_components('phase_time_frequency_tab').inter_stim_delay_input
+        if id == 'phase_1_time_input':
+            return self.get_components('phase_time_frequency_tab').phase_1_time_input
+        if id == 'phase_2_time_input':
+            return self.get_components('phase_time_frequency_tab').phase_2_time_input
+        if id == 'channel_1_frequency_input':
+            return self.get_components('phase_time_frequency_tab').channel_1_frequency_input
+
+        if id == 'stimulation_graph_display':
+            return self.get_components('stimulation_tabs').stimulation_graph_display
+        return None
+
 
         if id == 'triggered_mode_toggle_none_button':
             return self.get_components('triggered_mode_toggle').none_button
@@ -721,19 +703,11 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').phase_time_frequency_tab
         if id == 'burst_continous_stimulation_tab':
             return self.get_components('stimulation_tabs').burst_continous_stimulation_tab
-        # if id == 'channel_2_phase_time_frequency_tab':
-        #     return self.get_components('stimulation_tabs').channel_2_phase_time_frequency_tab
-        # if id == 'channel_2_burst_continous_stimulation_tab':
-        #     return self.get_components('stimulation_tabs').channel_2_burst_continous_stimulation_tab
 
         if id == 'duty_cycle_input':
             return self.get_components('burst_continous_stimulation_tab').duty_cycle
         if id == 'burst_peroid_input':
             return self.get_components('burst_continous_stimulation_tab').burst_peroid
-        # if id == 'channel_2_duty_cycle':
-        #     return self.get_components('channel_2_burst_continous_stimulation_tab').duty_cycle
-        # if id == 'channel_2_burst_peroid':
-        #     return self.get_components('channel_2_burst_continous_stimulation_tab').burst_peroid
 
         if id == 'inter_phase_delay_input':
             return self.get_components('phase_time_frequency_tab').inter_phase_delay_input
@@ -745,15 +719,9 @@ class NeuroStimApp(App):
             return self.get_components('phase_time_frequency_tab').phase_2_time_input
         if id == 'frequency_input':
             return self.get_components('phase_time_frequency_tab').frequency_input
-        # if id == 'channel_2_inter_phase_delay_input':
-        #     return self.get_components('channel_2_phase_time_frequency_tab').inter_phase_delay
-        # if id == 'channel_2_phase_time_input':
-        #     return self.get_components('channel_2_phase_time_frequency_tab').phase_time
 
         if id == 'stimulation_graph_display':
             return self.get_components('stimulation_tabs').stimulation_graph_display
-        # if id == 'channel_2_stimulation_graph_display':
-        #     return self.get_components('stimulation_tabs').channel_2_stimulation_graph_display
         print("missing id: ",id)
         return None
 
