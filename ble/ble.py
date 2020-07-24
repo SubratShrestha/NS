@@ -42,10 +42,10 @@ class BluetoothComms():
     def __init__(self):
         self.prune = len(sys.argv) > 1 and "-prune" in sys.argv
         self.thread = True
-        self.receive_thread = threading.Thread(target=self.receive_loop)
-        self.receive_thread.start()
         self.discover_thread = threading.Thread(target=self.ble_discover_loop)
         self.discover_thread.start()
+        self.receive_thread = threading.Thread(target=self.receive_loop)
+        self.receive_thread.start()
         self.connected = {}
 
         self.readable_chars = [
@@ -164,7 +164,10 @@ class BluetoothComms():
             depth = depth + 1
             await self.send(address, loop, data, depth)
 
-    async def read(self, address, loop):
+    async def read(self, address, loop=None):
+        if loop is None:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
         try:
             async with BleakClient(address, loop=loop) as client:
                 try:
@@ -201,29 +204,45 @@ class BluetoothComms():
         except BleakError as e:
             print("BLEAK ERROR", e)
 
+    def r(self, msg):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.set_debug(1)
+        loop.run_until_complete(self.read(msg, loop))
+
+    def s(self, address, data):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.set_debug(1)
+        loop.run_until_complete(self.read(address, loop, data))
+
     def receive_loop(self):
         try:
             address = ('localhost', 6001)
             listener = Listener(address, authkey=b'password')
             conn = listener.accept()
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.set_debug(1)
+            # loop = asyncio.new_event_loop()
+            # asyncio.set_event_loop(loop)
+            # loop.set_debug(1)
             while self.thread:
                 msg = conn.recv()
-                print("receive_loop->", msg)
+                # print("receive_loop->", msg)
                 if isinstance(msg, str):
-                    print("run read until complete")
-                    loop.run_until_complete(self.read(msg, loop))
-                    print("completed running read")
+                    # print("run read until complete")
+                    # loop.run_until_complete(self.read(msg, loop))
+                    t = threading.Thread(target=self.r, args=(msg,))
+                    t.start()
+                    # print("completed running read")
                 else:
                     address = msg.pop('mac_addr')
-                    print("sending to: ", address)
+                    # print("sending to: ", address)
                     data = msg
-                    loop.run_until_complete(self.send(address, loop, data))
-                    print("finished self.send")
-                loop.close()
-                asyncio.set_event_loop(None)
+                    t = threading.Thread(target=self.s, args=(address, data))
+                    t.start()
+                    # loop.run_until_complete(self.send(address, loop, data))
+                    # print("finished self.send")
+                # loop.close()
+                # asyncio.set_event_loop(None)
             listener.close()
         except Exception as e:
             print(e)

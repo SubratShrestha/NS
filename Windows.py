@@ -479,12 +479,13 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             if self.text in device_char_data:
                 print("updating device battery level")
                 device_char_data = device_char_data[self.text]
-                battery_level = int(device_char_data['BATTERY_LEVEL_CHAR'])
-                self.battery_percentage.text = str(battery_level)+'%'
-                if battery_level <= 33:
-                    self.battery_icon.source = './icons/battery.png'
-                else:
-                    self.battery_icon.source = './icons/full_battery.png'
+                if 'BATTERY_LEVEL_CHAR' in device_char_data:
+                    battery_level = int(device_char_data['BATTERY_LEVEL_CHAR'])
+                    self.battery_percentage.text = str(battery_level)+'%'
+                    if battery_level <= 33:
+                        self.battery_icon.source = './icons/battery.png'
+                    else:
+                        self.battery_icon.source = './icons/full_battery.png'
 
 
 
