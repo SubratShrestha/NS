@@ -214,35 +214,26 @@ class BluetoothComms():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.set_debug(1)
-        loop.run_until_complete(self.read(address, loop, data))
+        loop.run_until_complete(self.send(address, loop, data))
 
     def receive_loop(self):
         try:
             address = ('localhost', 6001)
             listener = Listener(address, authkey=b'password')
             conn = listener.accept()
-            # loop = asyncio.new_event_loop()
-            # asyncio.set_event_loop(loop)
-            # loop.set_debug(1)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.set_debug(1)
             while self.thread:
                 msg = conn.recv()
-                # print("receive_loop->", msg)
                 if isinstance(msg, str):
-                    # print("run read until complete")
-                    # loop.run_until_complete(self.read(msg, loop))
                     t = threading.Thread(target=self.r, args=(msg,))
                     t.start()
-                    # print("completed running read")
                 else:
                     address = msg.pop('mac_addr')
-                    # print("sending to: ", address)
                     data = msg
                     t = threading.Thread(target=self.s, args=(address, data))
                     t.start()
-                    # loop.run_until_complete(self.send(address, loop, data))
-                    # print("finished self.send")
-                # loop.close()
-                # asyncio.set_event_loop(None)
             listener.close()
         except Exception as e:
             print(e)

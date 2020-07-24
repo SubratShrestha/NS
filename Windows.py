@@ -551,7 +551,7 @@ class NeuroStimApp(App):
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
-            if round % 1 == 0:
+            if round % 5 == 0:
                 print("Updating reading from chars")
                 for j in devices_dict.keys():
                     self.send_via_ble(j)

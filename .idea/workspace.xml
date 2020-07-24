@@ -127,8 +127,8 @@
     </configuration>
     <list>
       <item itemvalue="Compound.Unnamed" />
-      <item itemvalue="Python.ns" />
       <item itemvalue="Python.int" />
+      <item itemvalue="Python.ns" />
     </list>
   </component>
   <component name="SvnConfiguration">
