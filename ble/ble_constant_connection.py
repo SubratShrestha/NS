@@ -213,10 +213,6 @@ class BluetoothComms():
         except Exception as e:
             print(e)
 
-    async def write_char(self, mac_addr: str, loop: asyncio.AbstractEventLoop, uuid: str, value: str):
-        data = {str(uuid): str(value)}
-        await self.send(mac_addr, loop, data)
-
     def ble_discover_loop(self):
         try:
             time = 0.5

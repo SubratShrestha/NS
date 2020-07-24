@@ -1,7 +1,7 @@
 #!/bin/bash
-
+# optional arguments: -prune -uuid_format
 echo "Running Application for $OSTYPE"
-echo $1
+echo $1 $2
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 python Windows.py &
 sleep 1;

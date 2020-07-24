@@ -1,3 +1,4 @@
+uuid_format = False # True
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.label import Label
@@ -190,7 +191,7 @@ def get_stimulator_input():
     if  settings['termination_tabs'] == 'Stimulation duration':
         stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
     if  settings['termination_tabs'] == 'Number of burst':
-        burstduration = int(settings['number_of_burst']) if settings['snumber_of_burst'] != "" else 0
+        burstduration = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
     if burstduration and stimduration:
         burstnumber = stimduration // burstduration
@@ -252,22 +253,44 @@ def send_to_neurostimulator_via_ble(button, state):
         print("send_to_neurostimulator_via_ble")
         settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber = get_stimulator_input()
 
-        data = {
-            'mac_addr': App.get_running_app().connected_device_mac_addr,
-            PHASE_ONE_WRITE_CHAR: phasetime1,
-            PHASE_TWO_WRITE_CHAR:phasetime2,
-            ANODIC_CATHOLIC_FIRST_WRITE_CHAR:anodic,
-            STIM_AMP_WRITE_CHAR:current,
-            INTER_PHASE_GAP_WRITE_CHAR:interphase,
-            INTER_BURST_DELAY_WRITE_CHAR:interburst,
-            # BURST_NUM_WRITE_CHAR: int(burst/burstperiod) if burstperiod != 0 else 0,
-            INTER_STIM_DELAY_WRITE_CHAR:interstim,
-            PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
-            RAMP_UP_WRITE_CHAR: ramp_up,
-            SHORT_ELECTRODE_WRITE_CHAR:short
-        }
-
-        App.get_running_app().send_via_ble(data)
+        if uuid_format:
+            data = {
+                'mac_addr': App.get_running_app().connected_device_mac_addr,
+                PHASE_ONE_WRITE_CHAR: phasetime1,
+                PHASE_TWO_WRITE_CHAR:phasetime2,
+                ANODIC_CATHOLIC_FIRST_WRITE_CHAR:anodic,
+                STIM_AMP_WRITE_CHAR:current,
+                INTER_PHASE_GAP_WRITE_CHAR:interphase,
+                INTER_BURST_DELAY_WRITE_CHAR:interburst,
+                # BURST_NUM_WRITE_CHAR: int(burst/burstperiod) if burstperiod != 0 else 0,
+                INTER_STIM_DELAY_WRITE_CHAR:interstim,
+                PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
+                RAMP_UP_WRITE_CHAR: ramp_up,
+                SHORT_ELECTRODE_WRITE_CHAR:short
+            }
+            print("send_to_neurostimulator_via_ble->send_via_ble", data)
+            App.get_running_app().send_via_ble(data)
+        else:
+            data = {
+                'mac_addr': App.get_running_app().connected_device_mac_addr,
+                SERIAL_COMMAND_INPUT_CHAR: [
+                    'stim_amp:{}'.format(current),
+                    # 'stim_type:{}'.format(),
+                    'anodic_cathodic:{}'.format(anodic),
+                    'phase_one_time:{}'.format(phasetime1),
+                    'inter_phase_gap:{}'.format(interphase),
+                    'phase_two_time:{}'.format(phasetime2),
+                    'inter_stim_delay:{}'.format(interstim),
+                    'pulse_num:{}'.format(pulsenumber),
+                    # 'pulse_num_in_one_burst:{}'.format(),
+                    'burst_num:{}'.format(burstnumber),
+                    'inter_burst_delay:{}'.format(interburst),
+                    'ramp_up:{}'.format(ramp_up),
+                    'short_electrode:{}'.format(short)
+                ]
+            }
+            print("send_to_neurostimulator_via_ble->send_via_ble", data)
+            App.get_running_app().send_via_ble(data)
 
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
@@ -500,6 +523,7 @@ class NeuroStimApp(App):
         try:
             if self.send_conn is not None and not self.send_conn.closed:
                 self.send_conn.send(data)
+                print("send_via_ble->ble.py: ", data)
         except Exception as e:
             print(e)
 
@@ -685,43 +709,7 @@ class NeuroStimApp(App):
 
         if id == 'stimulation_graph_display':
             return self.get_components('stimulation_tabs').stimulation_graph_display
-        return None
 
-
-        if id == 'triggered_mode_toggle_none_button':
-            return self.get_components('triggered_mode_toggle').none_button
-        if id == 'triggered_mode_toggle_phase_1_button':
-            return self.get_components('triggered_mode_toggle').phase_1_button
-        if id == 'triggered_mode_toggle_phase_2_button':
-            return self.get_components('triggered_mode_toggle').phase_2_button
-        if id == 'triggered_mode_toggle_phase_1_and_2_button':
-            return self.get_components('triggered_mode_toggle').phase_1_and_2_button
-        if id == 'triggered_mode_toggle_inter_stim_time_button':
-            return self.get_components('triggered_mode_toggle').inter_stim_time_button
-
-        if id == 'phase_time_frequency_tab':
-            return self.get_components('stimulation_tabs').phase_time_frequency_tab
-        if id == 'burst_continous_stimulation_tab':
-            return self.get_components('stimulation_tabs').burst_continous_stimulation_tab
-
-        if id == 'duty_cycle_input':
-            return self.get_components('burst_continous_stimulation_tab').duty_cycle
-        if id == 'burst_period_input':
-            return self.get_components('burst_continous_stimulation_tab').burst_period
-
-        if id == 'inter_phase_delay_input':
-            return self.get_components('phase_time_frequency_tab').inter_phase_delay_input
-        if id == 'inter_stim_delay_input':
-            return self.get_components('phase_time_frequency_tab').inter_stim_delay_input
-        if id == 'phase_1_time_input':
-            return self.get_components('phase_time_frequency_tab').phase_1_time_input
-        if id == 'phase_2_time_input':
-            return self.get_components('phase_time_frequency_tab').phase_2_time_input
-        if id == 'frequency_input':
-            return self.get_components('phase_time_frequency_tab').frequency_input
-
-        if id == 'stimulation_graph_display':
-            return self.get_components('stimulation_tabs').stimulation_graph_display
         print("missing id: ",id)
         return None
 

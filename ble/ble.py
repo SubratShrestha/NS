@@ -144,11 +144,17 @@ class BluetoothComms():
                 finally:
                     if await client.is_connected():
                         print("CONNECTED", client)
-
-                        for k,v in data.items():
-                            await client.write_gatt_char(k, str(v).encode('utf-8'), True)
-                            await asyncio.sleep(0.1, loop=loop)
-
+                        if SERIAL_COMMAND_INPUT_CHAR in data:
+                            k = SERIAL_COMMAND_INPUT_CHAR
+                            for v in data[k]:
+                                print(v)
+                                await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                await asyncio.sleep(0.1, loop=loop)
+                        else:
+                            for k,v in data.items():
+                                print(v)
+                                await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                await asyncio.sleep(0.1, loop=loop)
                         return client
                     print("NOT CONNECTED")
                     return None
@@ -200,16 +206,24 @@ class BluetoothComms():
             address = ('localhost', 6001)
             listener = Listener(address, authkey=b'password')
             conn = listener.accept()
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.set_debug(1)
             while self.thread:
                 msg = conn.recv()
-                loop = asyncio.new_event_loop()
-                print(msg)
+                print("receive_loop->", msg)
                 if isinstance(msg, str):
+                    print("run read until complete")
                     loop.run_until_complete(self.read(msg, loop))
+                    print("completed running read")
                 else:
                     address = msg.pop('mac_addr')
+                    print("sending to: ", address)
                     data = msg
                     loop.run_until_complete(self.send(address, loop, data))
+                    print("finished self.send")
+                loop.close()
+                asyncio.set_event_loop(None)
             listener.close()
         except Exception as e:
             print(e)
@@ -243,6 +257,8 @@ class BluetoothComms():
                     self.client_conn.send(data)
                     for i in data:
                         print(i)
+                loop.close()
+                asyncio.set_event_loop(None)
         except Exception as e:
             print(e)
         finally:
