@@ -475,7 +475,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                 App.get_running_app().connected_device_mac_addr = self.text
             # set_graph_default_values(self.text)
             device_char_data = App.get_running_app().device_char_data
-            print(device_char_data)
+            print("device_char_data:\t", device_char_data)
             if self.text in device_char_data:
                 print("updating device battery level")
                 device_char_data = device_char_data[self.text]
@@ -551,7 +551,7 @@ class NeuroStimApp(App):
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
-            if round % 5 == 0:
+            if round % 2 == 0:
                 print("Updating reading from chars")
                 for j in devices_dict.keys():
                     self.send_via_ble(j)

@@ -6,6 +6,14 @@ from multiprocessing.connection import Listener, Client
 import sys
 import ast
 
+ # = '00002a01-0000-1000-8000-00805f9b34fb'
+ # = '00002a05-0000-1000-8000-00805f9b34fb'
+ # = '00002a00-0000-1000-8000-00805f9b34fb'
+ # = '00002a29-0000-1000-8000-00805f9b34fb'
+ # = '00002a26-0000-1000-8000-00805f9b34fb'
+ # = '00002a27-0000-1000-8000-00805f9b34fb'
+ # = '00002a28-0000-1000-8000-00805f9b34fb'
+
 BATTERY_LEVEL_CHAR = '00002a19-0000-1000-8000-00805f9b34fb'
 CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
 MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
@@ -42,10 +50,10 @@ class BluetoothComms():
     def __init__(self):
         self.prune = len(sys.argv) > 1 and "-prune" in sys.argv
         self.thread = True
-        self.discover_thread = threading.Thread(target=self.ble_discover_loop)
-        self.discover_thread.start()
         self.receive_thread = threading.Thread(target=self.receive_loop)
         self.receive_thread.start()
+        self.discover_thread = threading.Thread(target=self.ble_discover_loop)
+        self.discover_thread.start()
         self.connected = {}
 
         self.readable_chars = [
@@ -81,7 +89,7 @@ class BluetoothComms():
             CHANNEL_NUM_CHAR:'CHANNEL_NUM_CHAR',
             MAX_FREQ_CHAR:'MAX_FREQ_CHAR',
             OTA_SUPPORT_CHAR:'OTA_SUPPORT_CHAR',
-            BATTERY_LEVEL_CHAR:'BATTERY_LEVEL_CHAR',
+            # BATTERY_LEVEL_CHAR:'BATTERY_LEVEL_CHAR',
             RAMP_UP_READ_CHAR:'RAMP_UP_READ_CHAR',
             SHORT_ELECTRODE_READ_CHAR:'SHORT_ELECTRODE_READ_CHAR'
         }
@@ -117,7 +125,6 @@ class BluetoothComms():
             SHORT_ELECTRODE_WRITE_CHAR:SHORT_ELECTRODE_READ_CHAR,
             RAMP_UP_WRITE_CHAR:RAMP_UP_READ_CHAR
         }
-
 
     async def ble_discover(self, loop, time):
         task1 = loop.create_task(discover(time))
@@ -164,10 +171,7 @@ class BluetoothComms():
             depth = depth + 1
             await self.send(address, loop, data, depth)
 
-    async def read(self, address, loop=None):
-        if loop is None:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+    async def read(self, address, loop):
         try:
             async with BleakClient(address, loop=loop) as client:
                 try:
@@ -186,7 +190,9 @@ class BluetoothComms():
                         data = {}
                         for k, v in services.items():
                             if 'characteristics' in k:
+                                print(len(v.keys()))
                                 for sk, sv in v.items():
+                                    print(sk, sv)
                                     sv = str(sv).replace(':', "").replace(' ', "")
                                     if sv in self.readable_chars:
                                         result = await client.read_gatt_char(sv)
@@ -198,6 +204,7 @@ class BluetoothComms():
                                         data[self.char_to_string_mapping[sv]] = result
                         data['mac_addr'] = address
                         self.client_conn.send(data)
+                        # await client.disconnect()
                         return client
                     print("NOT CONNECTED")
                     return None
@@ -221,9 +228,9 @@ class BluetoothComms():
             address = ('localhost', 6001)
             listener = Listener(address, authkey=b'password')
             conn = listener.accept()
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.set_debug(1)
+            # loop = asyncio.new_event_loop()
+            # asyncio.set_event_loop(loop)
+            # loop.set_debug(1)
             while self.thread:
                 msg = conn.recv()
                 if isinstance(msg, str):
