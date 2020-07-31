@@ -189,6 +189,7 @@ class BluetoothComms():
                         services = vars(services)
                         data = {}
                         for k, v in services.items():
+                            print("services",k,v)
                             if 'characteristics' in k:
                                 print(len(v.keys()))
                                 for sk, sv in v.items():
