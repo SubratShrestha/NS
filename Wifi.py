@@ -23,7 +23,7 @@ from scipy import signal
 import numpy as np
 import pprint
 from kivy.config import Config
-HOST = '192.168.43.34'
+HOST = '192.168.137.238'
 PORT = 8888
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
@@ -227,22 +227,22 @@ def send_to_neurostimulator_via_ble(button, state):
         port = PORT
         data = [
             'stim_amp:{}'.format(str(current)),
-            # 'stim_type:{}'.format(),
+            # 'stim_type:{}'.format(), #True or false, 1 or 0
             'anodic_cathodic:{}'.format(str(anodic)),
             'phase_one_time:{}'.format(str(phasetime1)),
             'inter_phase_gap:{}'.format(str(interphase)),
             'phase_two_time:{}'.format(str(phasetime2)),
             'inter_stim_delay:{}'.format(str(interstim)),
             'pulse_num:{}'.format(str(pulsenumber)),
-            # 'pulse_num_in_one_burst:{}'.format(),
+            # 'pulse_num_in_one_burst:{}'.format(), # how many pulses are there in one burst
             'burst_num:{}'.format(str(burstnumber)),
             'inter_burst_delay:{}'.format(str(interburst)),
             'ramp_up:{}'.format(str(ramp_up)),
             'short_electrode:{}'.format(str(short))
         ]
 
-        print("send_to_neurostimulator_via_ble->send_via_ble", host, port, data)
-        App.get_running_app().send_via_ble(host, port, data)
+        print("send_to_neurostimulator_via_ble->start_via_wifi", host, port, data)
+        App.get_running_app().start_via_wifi(host, port, data)
 
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
@@ -338,7 +338,7 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
-                # App.get_running_app().send_via_ble(j)
+                # App.get_running_app().start_via_wifi(j)
         self.dismiss()
 
 class DT_TPS(TabbedPanelStrip):
@@ -472,7 +472,7 @@ class NeuroStimApp(App):
         self.device_char_data = {}
 
 
-    def send_via_ble(self, host, port, data):
+    def start_via_wifi(self, host, port, data):
         try:
             for i in data:
                 send_single_characteristic(host, port, i)

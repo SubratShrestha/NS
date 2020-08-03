@@ -146,21 +146,21 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
 def get_stimulator_input():
-    burst = None
-    burstperiod = None
-    burstduration = None
-    dutycycle = None
-    interburst = None
-    anodic = None
-    current = None
-    phasetime1 = None
-    phasetime2 = None
-    interstim = None
-    frequency = None
-    burstfrequency = None
-    pulsenumber = None
-    stimduration = None
-    burstnumber = None
+    burst = False
+    burstperiod = False
+    burstduration = False
+    dutycycle = False
+    interburst = False
+    anodic = False
+    current = False
+    phasetime1 = False
+    phasetime2 = False
+    interstim = False
+    frequency = False
+    burstfrequency = False
+    pulsenumber = False
+    stimduration = False
+    burstnumber = False
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -200,7 +200,7 @@ def get_stimulator_input():
     if burstduration != 0:
         burstfrequency = 10000000 / burstduration
 
-    return settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button'], burstfrequency, pulsenumber, stimduration, burstnumber
+    return settings, int(burst), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber)
 
 def get_squarewave_plot():
     settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber = get_stimulator_input()

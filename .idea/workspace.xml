@@ -26,9 +26,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Wifi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wifi/wifi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/Wifi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/wifi.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
