@@ -26,10 +26,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Wifi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wifi/wifi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/wifi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,10 +54,31 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Language Defaults" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.ns">
+  <component name="RunManager" selected="Python.Wifi">
     <configuration name="Unnamed" type="CompoundRunConfigurationType">
+      <method v="2" />
+    </configuration>
+    <configuration name="Wifi" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Program Files (x86)\Microsoft Visual Studio\Shared\Anaconda3_64\envs\ns\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Wifi.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -128,11 +146,17 @@
     </configuration>
     <list>
       <item itemvalue="Compound.Unnamed" />
+      <item itemvalue="Python.Wifi" />
       <item itemvalue="Python.int" />
       <item itemvalue="Python.ns" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Wifi" />
+      </list>
+    </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -159,14 +183,19 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="319" y="30" key="#Wifi" timestamp="1596182336999">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="319" y="30" key="#Wifi/0.30.1200.770@0.30.1200.770" timestamp="1596182336999" />
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1593708259471">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1593708259471" />
-    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1593708238146">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="463" y="234" key="FileChooserDialogImpl" timestamp="1596182424481">
+      <screen x="0" y="30" width="1200" height="770" />
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1593708238146" />
+    <state x="463" y="234" key="FileChooserDialogImpl/0.30.1200.770@0.30.1200.770" timestamp="1596182424481" />
     <state width="938" height="279" key="GridCell.Tab.0.bottom" timestamp="1593708400535">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -183,9 +212,14 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="938" height="279" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1593708400534" />
-    <state x="922" y="165" key="SettingsEditor" timestamp="1593709192199">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="221" y="91" key="SettingsEditor" timestamp="1596182462743">
+      <screen x="0" y="30" width="1200" height="770" />
     </state>
     <state x="922" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1593709192199" />
+    <state x="221" y="91" key="SettingsEditor/0.30.1200.770@0.30.1200.770" timestamp="1596182462743" />
+    <state x="411" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1596429680428">
+      <screen x="0" y="30" width="1200" height="770" />
+    </state>
+    <state x="411" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.30.1200.770@0.30.1200.770" timestamp="1596429680428" />
   </component>
 </project>
