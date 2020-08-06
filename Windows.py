@@ -17,6 +17,7 @@ from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip, TabbedPanelItem
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
+import re
 import asyncio
 import threading
 from scipy import signal
@@ -209,9 +210,7 @@ def get_stimulator_input():
     else:
         if stimduration:
             pulsenumber = stimduration // pulseperoid
-    return settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button'], burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid
-
-    # return settings, int(burst), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber)
+    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperoid)
 
 def get_squarewave_plot():
     settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
@@ -580,23 +579,27 @@ class NeuroStimApp(App):
         listener.close()
 
     def get_graph_variables(self):
+        def digit_clean(input):
+            # Enforce the digit cleaning on the UI components as well
+            input.text = re.sub("[^0-9]", "",input.text)
+            return input.text
         return {
             'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
-            'duty_cycle_input': self.get_components('duty_cycle_input').text,
-            'burst_period_input': self.get_components('burst_period_input').text,
-            'inter_phase_delay_input': self.get_components('inter_phase_delay_input').text,
-            'inter_stim_delay_input': self.get_components('inter_stim_delay_input').text,
-            'phase_1_time_input': self.get_components('phase_1_time_input').text,
-            'phase_2_time_input': self.get_components('phase_2_time_input').text,
-            'channel_1_frequency_input': self.get_components('channel_1_frequency_input').text,
-            'output_current_input': self.get_components('output_current_input').text,
-            'stimulation_duration': self.get_components('stimulation_duration').text,
-            'number_of_burst': self.get_components('number_of_burst').text,
+            'duty_cycle_input': digit_clean( self.get_components('duty_cycle_input')),
+            'burst_period_input': digit_clean( self.get_components('burst_period_input')),
+            'inter_phase_delay_input': digit_clean( self.get_components('inter_phase_delay_input')),
+            'inter_stim_delay_input': digit_clean( self.get_components('inter_stim_delay_input')),
+            'phase_1_time_input': digit_clean( self.get_components('phase_1_time_input')),
+            'phase_2_time_input': digit_clean( self.get_components('phase_2_time_input')),
+            'channel_1_frequency_input': digit_clean( self.get_components('channel_1_frequency_input')),
+            'output_current_input': digit_clean( self.get_components('output_current_input')),
+            'stimulation_duration': digit_clean( self.get_components('stimulation_duration')),
+            'number_of_burst': digit_clean( self.get_components('number_of_burst')),
             'anodic_toggle': self.get_components('anodic_toggle').state,
-            'ramp_up_button':self.get_components('ramp_up_button').state,
-            'short_button':self.get_components('short_button').state,
+            'ramp_up_button': self.get_components('ramp_up_button').state,
+            'short_button': self.get_components('short_button').state
         }
 
     def get_components(self, id):

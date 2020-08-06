@@ -27,7 +27,6 @@ import numpy as np
 import pprint
 import math
 from kivy.config import Config
-HOST = '192.168.137.238'
 PORT = 8888
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
@@ -47,7 +46,7 @@ These are strictly for Windows.py
 ========================================================================="""
 from multiprocessing.connection import Listener, Client
 import threading
-from wifi.wifi import send_single_characteristic
+from wifi.wifi import send_single_characteristic, wifi_scan
 
 devices_dict = {}
 ids = [
@@ -232,7 +231,7 @@ def get_squarewave_plot():
 
 def stop_stimulation(button, state):
     if state == 'down':
-        host = HOST
+        host = App.get_running_app().connected_device_mac_addr
         port = PORT
         data = [
             'stop'
@@ -301,7 +300,7 @@ def start_stimulation(button, state):
 
         if len(error_messages) > 0:
             print("ERROR_MESSAGES:", error_messages)
-            ERR_POPUP = ErrorMessagePopup()
+            ERR_POPUP = MessagePopup()
             title = "Invalid Input Error: "
             for n, m in enumerate(error_messages):
                 title = title + '\n' + str(n+1) + ". " + str(m)
@@ -309,7 +308,7 @@ def start_stimulation(button, state):
             ERR_POPUP.open()
         else:
 
-            host = HOST
+            host = App.get_running_app().connected_device_mac_addr
             port = PORT
             data = [
                 'stim_amp:{}'.format(current),
@@ -329,7 +328,15 @@ def start_stimulation(button, state):
             ]
 
             print("start_stimulation->send_via_wifi", host, port, data)
-            App.get_running_app().send_via_wifi(host, port, data)
+            result = App.get_running_app().send_via_wifi(host, port, data)
+            if result:
+                SUCCESS_POPUP = MessagePopup()
+                title = "Success! Neurostimulator has received your input:"
+                for i in result:
+                    title = title + '\n' + str(i)
+                SUCCESS_POPUP.title = title
+                SUCCESS_POPUP.open()
+                
 
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
@@ -392,7 +399,7 @@ class TerminationTabs(TabbedPanel):
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
-class ErrorMessagePopup(Popup):
+class MessagePopup(Popup):
     pass
 
 class ValueError(Popup):
@@ -569,21 +576,25 @@ class NeuroStimApp(App):
         def failed_to_send_so_stop():
             result = send_single_characteristic(host, port, 'stop')
             if result is None:
-                ERR_MSG = ErrorMessagePopup()
+                ERR_MSG = MessagePopup()
                 ERR_MSG.title = "Failed to send to " + str(host) + " via port ".format(str(port)) + '\n' + 'Could not connect'
                 ERR_MSG.open()
             else:
-                ERR_MSG = ErrorMessagePopup()
+                ERR_MSG = MessagePopup()
                 ERR_MSG.title = "Failed to send to " + str(host) + " via port ".format(
                     str(port)) + '\n' + 'Stopped Neurostimulator'
                 ERR_MSG.open()
 
         try:
+            received = []
             for i in data:
                 result = send_single_characteristic(host, port, i)
                 if result is None:
                     failed_to_send_so_stop()
-                    break
+                    return False
+                else:
+                    received.append(result)
+            return received
         except Exception as e:
             failed_to_send_so_stop()
             print("send_via_wifi Exception:", e)
@@ -594,7 +605,8 @@ class NeuroStimApp(App):
         Don't change this to match App.py
         These are strictly for Windows.py
         ========================================================================="""
-        self.device_data = [{'text': str(HOST)}]
+        while self.thread:
+            self.device_data = wifi_scan()
 
     def get_graph_variables(self):
         def digit_clean(input):
