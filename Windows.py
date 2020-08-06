@@ -22,6 +22,7 @@ import threading
 from scipy import signal
 import numpy as np
 import pprint
+import math
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
@@ -55,7 +56,7 @@ STIM_TYPE_WRITE_CHAR = '02000000-0000-0000-0000-000000000109'
 BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
 INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
 SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
-PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR = 
+# PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR = # Mitchell
 
 INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
 PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
@@ -147,8 +148,7 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
 def get_stimulator_input():
-<<<<<<< HEAD
-    burst = False
+    burstmode = False
     burstperiod = False
     burstduration = False
     dutycycle = False
@@ -163,24 +163,7 @@ def get_stimulator_input():
     pulsenumber = False
     stimduration = False
     burstnumber = False
-=======
-    burstmode = None
-    burstperiod = None
-    burstduration = None
-    dutycycle = None
-    interburst = None
-    anodic = None
-    current = None
-    phasetime1 = None
-    phasetime2 = None
-    interstim = None
-    frequency = None
-    burstfrequency = None
-    pulsenumber = None
-    stimduration = None
-    burstnumber = None
-    pulseperoid = None
->>>>>>> 33958ae15b46d81bd4ce7283cd44295abc8a1640
+    pulseperoid = False
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -225,13 +208,10 @@ def get_stimulator_input():
             burstfrequency = 10000000 / burstduration
     else:
         if stimduration:
-        pulsenumber = stimduration // pulseperoid
-
-<<<<<<< HEAD
-    return settings, int(burst), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber)
-=======
+            pulsenumber = stimduration // pulseperoid
     return settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, settings['ramp_up_button'], settings['short_button'], burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid
->>>>>>> 33958ae15b46d81bd4ce7283cd44295abc8a1640
+
+    # return settings, int(burst), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber)
 
 def get_squarewave_plot():
     settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
@@ -284,11 +264,11 @@ def send_to_neurostimulator_via_ble(button, state):
         print("send_to_neurostimulator_via_ble")
         settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
 
-        if stimduration == int(float("inf")):
+        if stimduration is not None and math.isinf(stimduration):
             if burstmode:
                 burstnumber = 0
             else:
-            pulsenumber  = 0
+                pulsenumber = 0
 
         if uuid_format:
             data = {
@@ -305,17 +285,17 @@ def send_to_neurostimulator_via_ble(button, state):
                 INTER_STIM_DELAY_WRITE_CHAR:interstim,
                 # PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
                 PULSE_NUM_WRITE_CHAR:pulsenumber,
-                PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR:pulsenumber,
+                # PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR:pulsenumber, # Mitchell
                 RAMP_UP_WRITE_CHAR:ramp_up,
                 SHORT_ELECTRODE_WRITE_CHAR:short
             }
-            print("send_to_neurostimulator_via_ble->send_via_ble", data)                                                                                                             b
+            print("send_to_neurostimulator_via_ble->send_via_ble", data)
             App.get_running_app().send_via_ble(data)
         else:
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 SERIAL_COMMAND_INPUT_CHAR: [
-                    'stim_amp:{}'.format(  ),
+                    'stim_amp:{}'.format(current),
                     'stim_type:{}'.format(burstmode),
                     'anodic_cathodic:{}'.format(anodic),
                     'phase_one_time:{}'.format(phasetime1),

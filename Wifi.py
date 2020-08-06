@@ -17,17 +17,22 @@ from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip, TabbedPanelItem
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
+import re
 import asyncio
+
 import threading
+import ctypes
 from scipy import signal
 import numpy as np
 import pprint
+import math
 from kivy.config import Config
 HOST = '192.168.137.238'
 PORT = 8888
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
 Config.set('graphics', 'resizable', 'False')
+UINT32_MAX =  math.pow(2, 32) - 1
 
 """Must be below config setting, otherwise it's reset"""
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
@@ -116,7 +121,7 @@ def update_graph():
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
 
 def get_stimulator_input():
-    burst = False
+    burstmode = False
     burstperiod = False
     burstduration = False
     dutycycle = False
@@ -131,17 +136,20 @@ def get_stimulator_input():
     pulsenumber = False
     stimduration = False
     burstnumber = False
+    pulseperoid = False
 
     settings = App.get_running_app().get_graph_variables()
 
-    burst = settings['burst_continous_stimulation_tab'] == 'Burst Stimulation'
-    if burst:
+    burstmode = settings['burst_continous_stimulation_tab'] == 'Burst Stimulation'
+    if burstmode:
         burstperiod = settings['burst_period_input'] if settings['burst_period_input'] != "" else 0
         burstperiod = int(burstperiod) * 1000
         dutycycle = settings['duty_cycle_input'] if settings['duty_cycle_input'] != "" else 0
         dutycycle = int(dutycycle) / 100
         burstduration = dutycycle * burstperiod
         interburst = burstperiod - burstduration
+
+
     anodic = settings['anodic_toggle'] == 'down'
     current = int(settings['output_current_input']) if settings['output_current_input'] != "" else 0
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
@@ -154,6 +162,7 @@ def get_stimulator_input():
         frequency = int(settings['frequency_input']) if settings['frequency_input'] != "" else 0
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
+    pulseperoid = phasetime1 + phasetime2 + interphase + interstim
 
 
     if  settings['termination_tabs'] == 'Stimulate forever':
@@ -163,17 +172,20 @@ def get_stimulator_input():
     if  settings['termination_tabs'] == 'Number of burst':
         burstduration = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
-    if burstduration and stimduration:
-        burstnumber = stimduration // burstduration
-    if burstduration and burstperiod:
-        pulsenumber = burstduration // burstperiod
-    if burstduration != 0:
-        burstfrequency = 10000000 / burstduration
-
-    return settings, int(burst), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber)
+    if burstmode:
+        if burstduration and stimduration:
+            burstnumber = stimduration // burstduration
+        if burstduration and burstperiod:
+            pulsenumber = burstduration // burstperiod
+        if burstduration != 0:
+            burstfrequency = 10000000 / burstduration
+    else:
+        if stimduration:
+            pulsenumber = stimduration // pulseperoid
+    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperoid)
 
 def get_squarewave_plot():
-    settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber = get_stimulator_input()
+    settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -191,10 +203,10 @@ def get_squarewave_plot():
 
     # if its continuous stim, graph stop plotting after one period
     # if its burst stim, graph stop plotting after one burst period
-    if burst:
+    if burstmode:
         # constantly add last element of previous "T list"to all element in previous T to make the point on y-axis
         b = T.copy()
-        while (b[len(b) - 1] + phasetime1 + phasetime2 + interphase + interstim < (burstduration)):
+        while (b[len(b) - 1] + pulseperoid < (burstduration)):
             for i in range(len(b)):
                 b[i] = T[i] + b[len(b) - 1]
             T = T + b
@@ -210,7 +222,7 @@ def get_squarewave_plot():
         T.append(burstduration + interburst)
         I.append(0)
 
-    if burstduration > interstim + phasetime1 + phasetime2 + interphase:
+    if burstduration > pulseperoid:
         plt.close("all")
         plt.plot(T, I)
         plt.xlabel('Time (us)')
@@ -218,31 +230,106 @@ def get_squarewave_plot():
 
     return FigureCanvasKivyAgg(plt.gcf())
 
-def send_to_neurostimulator_via_ble(button, state):
+def stop_stimulation(button, state):
     if state == 'down':
-        print("send_to_neurostimulator_via_ble")
-        settings, burst, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber = get_stimulator_input()
-
         host = HOST
         port = PORT
         data = [
-            'stim_amp:{}'.format(str(current)),
-            # 'stim_type:{}'.format(), #True or false, 1 or 0
-            'anodic_cathodic:{}'.format(str(anodic)),
-            'phase_one_time:{}'.format(str(phasetime1)),
-            'inter_phase_gap:{}'.format(str(interphase)),
-            'phase_two_time:{}'.format(str(phasetime2)),
-            'inter_stim_delay:{}'.format(str(interstim)),
-            'pulse_num:{}'.format(str(pulsenumber)),
-            # 'pulse_num_in_one_burst:{}'.format(), # how many pulses are there in one burst
-            'burst_num:{}'.format(str(burstnumber)),
-            'inter_burst_delay:{}'.format(str(interburst)),
-            'ramp_up:{}'.format(str(ramp_up)),
-            'short_electrode:{}'.format(str(short))
+            'stop'
         ]
 
-        print("send_to_neurostimulator_via_ble->start_via_wifi", host, port, data)
-        App.get_running_app().start_via_wifi(host, port, data)
+        print("stop_stimulation->send_via_wifi", host, port, data)
+        App.get_running_app().send_via_wifi(host, port, data)
+
+
+def start_stimulation(button, state):
+    if state == 'down':
+        print("start_stimulation")
+        settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
+        if stimduration and math.isinf(stimduration):
+            if burstmode:
+                burstnumber = 0
+            else:
+                pulsenumber = 0
+
+
+        error_messages = []
+
+        if phasetime1 < 10 or phasetime1 > 5000:
+            error_messages.append("Phase Time 1 Invalid Value: Range 10 to 5000")
+        if phasetime2 < 10 or phasetime2 > 5000:
+            error_messages.append("Phase Time 2 Invalid Value: Range 10 to 5000")
+        if current < 0 or current > 3000:
+            error_messages.append("Current/Stim Amplitude Invalid Value: Range 0 to 3000")
+        if interphase < 0 or interphase > UINT32_MAX:
+            error_messages.append("Inter-Phase Gap Invalid Value: Range 0 to max_uint32")
+        if interstim < 0 or interstim > UINT32_MAX:
+            error_messages.append("Inter-Stim Delay Invalid Value: Range 0 to max_uint32")
+        if anodic < 0 or anodic > 1:
+            error_messages.append("Anodic Cathodic Invalid Value: Range True or False")
+        if burstmode < 0 or burstmode > 1:
+            error_messages.append("Stim-Type Invalid Value: Range True or False")
+        if pulsenumber < 0 or pulsenumber > UINT32_MAX:
+            error_messages.append("Pulse Number Invalid Value: Range 0 to max_uint32")
+        if burstnumber < 0 or burstnumber > UINT32_MAX:
+            error_messages.append("Burst Number Invalid Value: Range 0 to max_uint32")
+        if interburst < 0 or interburst > UINT32_MAX:
+            error_messages.append("Inter-Burst Delay Invalid Value: Range 0 to max_uint32")
+        if ramp_up < 0 or ramp_up > 1:
+            error_messages.append("Ramp Up Invalid Value: Range True or False")
+        if short < 0 or short > 1:
+            error_messages.append("Short Electrode Invalid Value: Range True or False")
+
+        if (phasetime1+phasetime2+interphase+interstim) > UINT32_MAX:
+            error_messages.append("Sum of phase one, phase two, inter-phase gap, and stimulation delay are too large")
+
+        # if pulsenumber < 0 or pulsenumber.bit_length() > 32:
+        #     error_messages.append("Pulse Number Invalid Value: Range 0 to max_uint32")
+
+        # if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
+        #     PopupWindow = BurstLostError()
+        #     PopupWindow.open()
+        # elif int(stimduration) % int(burstperiod) != 0:
+        #     PopupWindow = PeriodBiggerError()
+        #     PopupWindow.open()
+        # elif phasetime1 != phasetime2:
+        #     PopupWindow = ChargeImbalanceError()
+        #     PopupWindow.open()
+        # elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
+        #     PopupWindow = PeriodBiggerError()
+        #     PopupWindow.open()
+
+        if len(error_messages) > 0:
+            print("ERROR_MESSAGES:", error_messages)
+            ERR_POPUP = ErrorMessagePopup()
+            title = "Invalid Input Error: "
+            for n, m in enumerate(error_messages):
+                title = title + '\n' + str(n+1) + ". " + str(m)
+            ERR_POPUP.title = title
+            ERR_POPUP.open()
+        else:
+
+            host = HOST
+            port = PORT
+            data = [
+                'stim_amp:{}'.format(current),
+                'stim_type:{}'.format(burstmode),
+                'anodic_cathodic:{}'.format(anodic),
+                'phase_one_time:{}'.format(phasetime1),
+                'inter_phase_gap:{}'.format(interphase),
+                'phase_two_time:{}'.format(phasetime2),
+                'inter_stim_delay:{}'.format(interstim),
+                'pulse_num:{}'.format(pulsenumber),
+                'pulse_num_in_one_burst:{}'.format(pulsenumber),
+                'burst_num:{}'.format(burstnumber),
+                'inter_burst_delay:{}'.format(interburst),
+                'ramp_up:{}'.format(ramp_up),
+                'short_electrode:{}'.format(short),
+                'start'
+            ]
+
+            print("start_stimulation->send_via_wifi", host, port, data)
+            App.get_running_app().send_via_wifi(host, port, data)
 
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
@@ -265,7 +352,8 @@ live_update_references = {
         'phase_1_time_input',
         'phase_2_time_input',
         'channel_1_frequency_input',
-        'start_button'
+        'start_button',
+        'stop_button'
     ]
 }
 
@@ -304,6 +392,9 @@ class TerminationTabs(TabbedPanel):
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
+class ErrorMessagePopup(Popup):
+    pass
+
 class ValueError(Popup):
     pass
 
@@ -338,7 +429,7 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
-                # App.get_running_app().start_via_wifi(j)
+                # App.get_running_app().send_via_wifi(j)
         self.dismiss()
 
 class DT_TPS(TabbedPanelStrip):
@@ -421,7 +512,9 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                 if 'toggle' in i:
                     App.get_running_app().get_components(i).bind(state=update_graph_on_toggle_channel_1)
                 if 'start_button' == i:
-                    App.get_running_app().get_components(i).bind(state=send_to_neurostimulator_via_ble)
+                    App.get_running_app().get_components(i).bind(state=start_stimulation)
+                if 'stop_button' == i:
+                    App.get_running_app().get_components(i).bind(state=stop_stimulation)
 
                 print(i,App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
@@ -472,12 +565,29 @@ class NeuroStimApp(App):
         self.device_char_data = {}
 
 
-    def start_via_wifi(self, host, port, data):
+    def send_via_wifi(self, host, port, data):
+        def failed_to_send_so_stop():
+            result = send_single_characteristic(host, port, 'stop')
+            if result is None:
+                ERR_MSG = ErrorMessagePopup()
+                ERR_MSG.title = "Failed to send to " + str(host) + " via port ".format(str(port)) + '\n' + 'Could not connect'
+                ERR_MSG.open()
+            else:
+                ERR_MSG = ErrorMessagePopup()
+                ERR_MSG.title = "Failed to send to " + str(host) + " via port ".format(
+                    str(port)) + '\n' + 'Stopped Neurostimulator'
+                ERR_MSG.open()
+
         try:
             for i in data:
-                send_single_characteristic(host, port, i)
+                result = send_single_characteristic(host, port, i)
+                if result is None:
+                    failed_to_send_so_stop()
+                    break
         except Exception as e:
-            print(e)
+            failed_to_send_so_stop()
+            print("send_via_wifi Exception:", e)
+            
 
     def discover(self):
         """======================================================================
@@ -487,23 +597,27 @@ class NeuroStimApp(App):
         self.device_data = [{'text': str(HOST)}]
 
     def get_graph_variables(self):
+        def digit_clean(input):
+            # Enforce the digit cleaning on the UI components as well
+            input.text = re.sub("[^0-9]", "",input.text)
+            return input.text
         return {
             'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
-            'duty_cycle_input': self.get_components('duty_cycle_input').text,
-            'burst_period_input': self.get_components('burst_period_input').text,
-            'inter_phase_delay_input': self.get_components('inter_phase_delay_input').text,
-            'inter_stim_delay_input': self.get_components('inter_stim_delay_input').text,
-            'phase_1_time_input': self.get_components('phase_1_time_input').text,
-            'phase_2_time_input': self.get_components('phase_2_time_input').text,
-            'channel_1_frequency_input': self.get_components('channel_1_frequency_input').text,
-            'output_current_input': self.get_components('output_current_input').text,
-            'stimulation_duration': self.get_components('stimulation_duration').text,
-            'number_of_burst': self.get_components('number_of_burst').text,
+            'duty_cycle_input': digit_clean( self.get_components('duty_cycle_input')),
+            'burst_period_input': digit_clean( self.get_components('burst_period_input')),
+            'inter_phase_delay_input': digit_clean( self.get_components('inter_phase_delay_input')),
+            'inter_stim_delay_input': digit_clean( self.get_components('inter_stim_delay_input')),
+            'phase_1_time_input': digit_clean( self.get_components('phase_1_time_input')),
+            'phase_2_time_input': digit_clean( self.get_components('phase_2_time_input')),
+            'channel_1_frequency_input': digit_clean( self.get_components('channel_1_frequency_input')),
+            'output_current_input': digit_clean( self.get_components('output_current_input')),
+            'stimulation_duration': digit_clean( self.get_components('stimulation_duration')),
+            'number_of_burst': digit_clean( self.get_components('number_of_burst')),
             'anodic_toggle': self.get_components('anodic_toggle').state,
-            'ramp_up_button':self.get_components('ramp_up_button').state,
-            'short_button':self.get_components('short_button').state,
+            'ramp_up_button': self.get_components('ramp_up_button').state,
+            'short_button': self.get_components('short_button').state
         }
 
     def get_components(self, id):

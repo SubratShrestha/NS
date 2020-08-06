@@ -1185,12 +1185,21 @@
 
 ######################################
 
-<ValueError>:
+<ErrorMessagePopup>:
     title: "The value is too big!"
+    title_size:'20sp'
+    title_align:'center'
+    separator_height:0
+    size_hint: .70,.70
+    pos_hint: {"center_x":0.5,"center_y":0.5}
+    auto_dismiss : True
+
+<InvalidInputError>:
+    title: "InvalidInputError: "
     title_size:35
     title_align:'center'
     separator_height:0
-    size_hint: .70,.15
+    size_hint: .70,.85
     pos_hint: {"center_x":0.5,"center_y":0.5}
     auto_dismiss : True
 
