@@ -135,7 +135,7 @@ def get_stimulator_input():
     pulsenumber = False
     stimduration = False
     burstnumber = False
-    pulseperoid = False
+    pulseperiod = False
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -154,37 +154,40 @@ def get_stimulator_input():
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
     phasetime2 = int(settings['phase_2_time_input']) if settings['phase_2_time_input'] != "" else 0
     interphase = int(settings['inter_phase_delay_input']) if settings['inter_phase_delay_input'] != "" else 0
-    interstim = 0
+    #interstim = 0
     if settings['phase_time_frequency_tab'] == 'Phase Time':
         interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
     if settings['phase_time_frequency_tab'] == 'Frequency':
         frequency = int(settings['frequency_input']) if settings['frequency_input'] != "" else 0
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
-    pulseperoid = phasetime1 + phasetime2 + interphase + interstim
+    pulseperiod = phasetime1 + phasetime2 + interphase + interstim
 
 
-    if  settings['termination_tabs'] == 'Stimulate forever':
-        stimduration = int(float("inf"))
-    if  settings['termination_tabs'] == 'Stimulation duration':
+    if 'Stimulate' in settings['termination_tabs'] and 'forever' in settings['termination_tabs']:
+        # stimduration = int(float("inf"))
+        if burstmode:
+            burstnumber = 0
+        else:
+            pulsenumber = 0
+    if  'Stimulation' in settings['termination_tabs'] and 'duration' in settings['termination_tabs']:
         stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
-    if  settings['termination_tabs'] == 'Number of burst':
-        burstduration = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
+        burstnumber = stimduration // burstduration
+    if  'Number' in settings['termination_tabs'] and 'burst' in settings['termination_tabs']:
+        burstnumber = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
     if burstmode:
-        if burstduration and stimduration:
-            burstnumber = stimduration // burstduration
         if burstduration and burstperiod:
-            pulsenumber = burstduration // burstperiod
+            pulsenumber = burstduration // pulseperiod
         if burstduration != 0:
             burstfrequency = 10000000 / burstduration
     else:
         if stimduration:
-            pulsenumber = stimduration // pulseperoid
-    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperoid)
+            pulsenumber = stimduration // pulseperiod
+    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod)
 
 def get_squarewave_plot():
-    settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
+    settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -205,7 +208,7 @@ def get_squarewave_plot():
     if burstmode:
         # constantly add last element of previous "T list"to all element in previous T to make the point on y-axis
         b = T.copy()
-        while (b[len(b) - 1] + pulseperoid < (burstduration)):
+        while (b[len(b) - 1] + pulseperiod < (burstduration)):
             for i in range(len(b)):
                 b[i] = T[i] + b[len(b) - 1]
             T = T + b
@@ -221,7 +224,7 @@ def get_squarewave_plot():
         T.append(burstduration + interburst)
         I.append(0)
 
-    if burstduration > pulseperoid:
+    if burstduration > pulseperiod:
         plt.close("all")
         plt.plot(T, I)
         plt.xlabel('Time (us)')
@@ -244,19 +247,14 @@ def stop_stimulation(button, state):
 def start_stimulation(button, state):
     if state == 'down':
         print("start_stimulation")
-        settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
-        if stimduration and math.isinf(stimduration):
-            if burstmode:
-                burstnumber = 0
-            else:
-                pulsenumber = 0
+        settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
 
 
         error_messages = []
 
-        if phasetime1 < 10 or phasetime1 > 5000:
+        if phasetime1 < 10 or phasetime1 > UINT32_MAX:
             error_messages.append("Phase Time 1 Invalid Value: Range 10 to 5000")
-        if phasetime2 < 10 or phasetime2 > 5000:
+        if phasetime2 < 10 or phasetime2 > UINT32_MAX:
             error_messages.append("Phase Time 2 Invalid Value: Range 10 to 5000")
         if current < 0 or current > 3000:
             error_messages.append("Current/Stim Amplitude Invalid Value: Range 0 to 3000")

@@ -425,6 +425,25 @@
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
+            Label:
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.5}
+                text: "Inter-Stim Delay(us)"
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                color: .1,.1,.1,1
+            TextInput:
+                id: inter_stim_delay_input
+                size_hint: .4,.25
+                pos_hint: {"x":0.55, "top":0.25}
+                #text: "0"
+                hint_text: "0"
+                input_type: 'number'
+                font_size: self.height*0.55
+                input_filter: 'float'
+                multiline: False
+                disabled:True if channel_1_frequency_input.text != "" else False
     TabbedPanelItem:
         text: "Frequency"
         background_color: .69,.77,.87,.3 #change the color of the tab panel header
@@ -449,25 +468,7 @@
                 input_filter: 'float'
                 multiline: False
                 disabled: True if inter_stim_delay_input.text != "" else False
-            Label:
-                size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":1}
-                text: "Inter-Stim Delay(us)"
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
-                color: .1,.1,.1,1
-            TextInput:
-                id: inter_stim_delay_input
-                size_hint: .4,.25
-                pos_hint: {"x":0.55, "top":0.75}
-                #text: "0"
-                hint_text: "0"
-                input_type: 'number'
-                font_size: self.height*0.55
-                input_filter: 'float'
-                multiline: False
-                disabled:True if channel_1_frequency_input.text != "" else False
+
 
 <ChannelStimulationTabs@TabbedPanelStrip>
 #change the color the strip of channel 1/2

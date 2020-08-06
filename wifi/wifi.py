@@ -24,7 +24,7 @@ def send_single_characteristic(host, port, data):
 def checkPort(ip, port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.01)
+        s.settimeout(0.05)
         result = s.connect((ip, port))
         s.shutdown(1)
         return True
@@ -34,6 +34,7 @@ def checkPort(ip, port):
 # Reverse Lookup
 def lookup(addr):
     try:
+        # socket.settimeout(0.1)
         data = socket.gethostbyaddr(str(addr))
         host = repr(data[0])
         host = str(host)
