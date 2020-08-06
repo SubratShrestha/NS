@@ -21,15 +21,17 @@ def send_single_characteristic(host, port, data):
         return None
 
 # Portscan
+
 def checkPort(ip, port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.05)
+        s.settimeout(0.01)
         result = s.connect((ip, port))
         s.shutdown(1)
         return True
     except:
         return False
+
 
 # Reverse Lookup
 def lookup(addr):
@@ -50,11 +52,12 @@ def wifi_scan():
     s.close()
     HOST = HOST.split('.')
     HOST = '.'.join(HOST[:-1])
-
+    # print(HOST)
     result = []
 
     for i in range(256):
         addy = "{}.{}".format(HOST,str(i))
+        # print(addy)
         port = 8888
         host = lookup(addy)
         listening = checkPort(addy, port)

@@ -27,8 +27,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/Wifi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wifi/wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/wifi/wifi.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -188,5 +186,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="922" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1593709192199" />
+    <state x="1119" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1596698153259">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="1119" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1596698153259" />
   </component>
 </project>
