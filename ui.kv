@@ -298,7 +298,7 @@
                 halign: 'left'
                 valign: 'middle'
                 text: " Stimulation duration (s)"
-            TextInput:
+            NumericInput:
                 id: stimulation_duration
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
@@ -323,7 +323,7 @@
                 halign: 'left'
                 valign: 'middle'
                 text: " Number of burst"
-            TextInput:
+            NumericInput:
                 id: number_of_burst
                 pos_hint: {"x":0, "top":.69}
                 size_hint: 1,.69
@@ -374,12 +374,12 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.5}
-                text: "Inter-Phase Delay(us)"
+                text: "Inter-Phase Delay(\u03BCs)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: inter_phase_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.25}
@@ -392,17 +392,17 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":1}
-                text: "Phase 1 Time(us)"
+                text: "Phase 1 Time(\u03BCs)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: "0"
-                hint_text: "0"
+                text: "10"
+                hint_text: "10"
                 font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
@@ -410,17 +410,17 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":1}
-                text: "Phase 2 Time(us)"
+                text: "Phase 2 Time(\u03BCs)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: phase_2_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: "0"
-                hint_text: "0"
+                text: "10"
+                hint_text: "10"
                 font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
@@ -428,16 +428,16 @@
             Label:
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.5}
-                text: "Inter-Stim Delay(us)"
+                text: "Inter-Stim Delay(\u03BCs)"
                 text_size: self.size
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: inter_stim_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.25}
-                #text: "0"
+                text: "0"
                 hint_text: "0"
                 input_type: 'number'
                 font_size: self.height*0.55
@@ -457,7 +457,7 @@
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: channel_1_frequency_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
@@ -580,14 +580,15 @@
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (mA)"
+                        text: "Output Current (\u03BCA)"
                         color: .1,.1,.1,1
-                    TextInput:
+                    NumericInput:
                         id:output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
                         text: "0"
                         hint_text: "0"
+                        max: 3000
                         input_type: 'number'
                         input_filter: 'float'
                         font_size: self.height*0.55
@@ -701,7 +702,7 @@
                         pos_hint: {"x":0.075, "top":.9}
                         text: "Output Current (mA)"
                         color: .1,.1,.1,1
-                    TextInput:
+                    NumericInput:
                         id: channel_2_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
@@ -784,7 +785,7 @@
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: burst_period
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
@@ -802,12 +803,13 @@
                 halign: 'left'
                 valign: 'middle'
                 color: .1,.1,.1,1
-            TextInput:
+            NumericInput:
                 id: duty_cycle
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
                 text: "0"
                 hint_text: "0"
+                max: 100
                 input_type: 'number'
                 font_size: self.height*0.55
                 input_filter: 'float'
@@ -870,7 +872,7 @@
         text: "Sample info (1k)"
         size_hint: .16, .08
         pos_hint: {"x":0.05,"top":0.95}
-    TextInput:
+    NumericInput:
         id: sample_info
         text: "0"
         hint_text: "0"

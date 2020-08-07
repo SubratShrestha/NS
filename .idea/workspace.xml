@@ -27,7 +27,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wifi/wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/wifi/wifi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wifi.py" beforeDir="false" afterPath="$PROJECT_DIR$/Wifi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +55,7 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../math" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Language Defaults" />
   </component>
   <component name="RunManager" selected="Python.ns">
@@ -161,11 +162,11 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1593708259471" />
-    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl" timestamp="1596627260118">
+    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl" timestamp="1596699710177">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1593708238146" />
-    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1596627260118" />
+    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1596699710177" />
     <state width="938" height="279" key="GridCell.Tab.0.bottom" timestamp="1593708400535">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

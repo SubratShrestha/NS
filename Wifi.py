@@ -15,6 +15,7 @@ from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip, TabbedPanelItem
 from kivy.uix.popup import Popup
+from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
 import re
@@ -172,7 +173,7 @@ def get_stimulator_input():
             pulsenumber = 0
     if  'Stimulation' in settings['termination_tabs'] and 'duration' in settings['termination_tabs']:
         stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
-        burstnumber = stimduration // burstduration
+        burstnumber = stimduration // burstduration if burstduration != 0 else 0
     if  'Number' in settings['termination_tabs'] and 'burst' in settings['termination_tabs']:
         burstnumber = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
@@ -241,7 +242,14 @@ def stop_stimulation(button, state):
         ]
 
         print("stop_stimulation->send_via_wifi", host, port, data)
-        App.get_running_app().send_via_wifi(host, port, data)
+        result = App.get_running_app().send_via_wifi(host, port, data)
+        if result:
+            SUCCESS_POPUP = MessagePopup()
+            title = "Success! Neurostimulator has received your input:"
+            for i in result:
+                title = title + '\n' + str(i)
+            SUCCESS_POPUP.title = title
+            SUCCESS_POPUP.open()
 
 
 def start_stimulation(button, state):
@@ -253,9 +261,9 @@ def start_stimulation(button, state):
         error_messages = []
 
         if phasetime1 < 10 or phasetime1 > UINT32_MAX:
-            error_messages.append("Phase Time 1 Invalid Value: Range 10 to 5000")
+            error_messages.append("Phase Time 1 Invalid Value: Range 10 to max_uint32")
         if phasetime2 < 10 or phasetime2 > UINT32_MAX:
-            error_messages.append("Phase Time 2 Invalid Value: Range 10 to 5000")
+            error_messages.append("Phase Time 2 Invalid Value: Range 10 to max_uint32")
         if current < 0 or current > 3000:
             error_messages.append("Current/Stim Amplitude Invalid Value: Range 0 to 3000")
         if interphase < 0 or interphase > UINT32_MAX:
@@ -276,25 +284,17 @@ def start_stimulation(button, state):
             error_messages.append("Ramp Up Invalid Value: Range True or False")
         if short < 0 or short > 1:
             error_messages.append("Short Electrode Invalid Value: Range True or False")
-
         if (phasetime1+phasetime2+interphase+interstim) > UINT32_MAX:
             error_messages.append("Sum of phase one, phase two, inter-phase gap, and stimulation delay are too large")
 
-        # if pulsenumber < 0 or pulsenumber.bit_length() > 32:
-        #     error_messages.append("Pulse Number Invalid Value: Range 0 to max_uint32")
-
         # if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
-        #     PopupWindow = BurstLostError()
-        #     PopupWindow.open()
-        # elif int(stimduration) % int(burstperiod) != 0:
-        #     PopupWindow = PeriodBiggerError()
-        #     PopupWindow.open()
+        #     error_messages.append("Burst period is not dividable by Stimulation duration, one or more bursts are reduced!")
+        # elif burstperiod != 0 and int(stimduration) % int(burstperiod) != 0:
+        #     error_messages.append("One pulse period is bigger than a burst!")
         # elif phasetime1 != phasetime2:
-        #     PopupWindow = ChargeImbalanceError()
-        #     PopupWindow.open()
+        #     error_messages.append("Charge is imbalanced, potentially damaging tissue!")
         # elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
-        #     PopupWindow = PeriodBiggerError()
-        #     PopupWindow.open()
+        #     error_messages.append("One pulse period is bigger than a burst!")
 
         if len(error_messages) > 0:
             print("ERROR_MESSAGES:", error_messages)
@@ -469,6 +469,18 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
         if is_selected and rv.data[index]['text'] not in devices_dict:
             devices_dict[rv.data[index]['text']] = True
 
+class NumericInput(TextInput):
+    def __init__(self, *args, **kwargs):
+        super(NumericInput, self).__init__(*args, **kwargs)
+        self.min = 0
+        self.max = UINT32_MAX
+
+    def insert_text(self, string, from_undo=False):
+        new_text = self.text + string
+        new_text = re.sub("[^0-9]", "", new_text)
+        if new_text != "":
+            if self.min <= float(new_text) <= self.max:
+                super(NumericInput, self).insert_text(string, from_undo=from_undo)
 
 class DeviceRV(RecycleView):
     def __init__(self, **kwargs):
@@ -609,8 +621,9 @@ class NeuroStimApp(App):
     def get_graph_variables(self):
         def digit_clean(input):
             # Enforce the digit cleaning on the UI components as well
-            input.text = re.sub("[^0-9]", "",input.text)
+            # input.text = re.sub("[^0-9]", "",input.text)
             return input.text
+
         return {
             'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
