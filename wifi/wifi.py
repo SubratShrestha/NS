@@ -36,7 +36,7 @@ def checkPort(ip, port):
 # Reverse Lookup
 def lookup(addr):
     try:
-        # socket.settimeout(0.1)
+        socket.setdefaulttimeout(0.1)
         data = socket.gethostbyaddr(str(addr))
         host = repr(data[0])
         host = str(host)
