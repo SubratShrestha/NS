@@ -24,6 +24,7 @@ def send_single_characteristic(host, port, data):
 
 def checkPort(ip, port):
     try:
+        print(ip)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(0.01)
         result = s.connect((ip, port))
@@ -36,10 +37,9 @@ def checkPort(ip, port):
 # Reverse Lookup
 def lookup(addr):
     try:
-        print("start lookup")
+
         socket.setdefaulttimeout(0.1)
         data = socket.gethostbyaddr(str(addr))
-        print(data)
         host = repr(data[0])
         host = str(host)
         host = host.strip("'")
@@ -57,13 +57,17 @@ def wifi_scan():
     # print(HOST)
     result = []
 
+    should_lookup = []
     for i in range(256):
         addy = "{}.{}".format(HOST,str(i))
-        # print(addy)
         port = 8888
-        host = lookup(addy)
         listening = checkPort(addy, port)
-        if "NeuroStim" in host and listening:
+        if listening:
+            should_lookup.append(addy)
+
+    for addy in should_lookup:
+        host = lookup(addy)
+        if "NeuroStim" in host:
             if host not in result:
                 result.append({'text': addy})
 
