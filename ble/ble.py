@@ -174,21 +174,19 @@ class BluetoothComms():
                                                 print("SERIAL INPUT COMMAND FOUND")
                                             await asyncio.sleep(0.1, loop=loop)
 
-                            print("CONNECTED", client)
-                            if SERIAL_COMMAND_INPUT_CHAR in data:
-                                print("SERIAL COMMAND INPUT")
-                                k = SERIAL_COMMAND_INPUT_CHAR
-                                for v in data[k]:
-                                    print("sending", v)
-                                    await client.write_gatt_char(k, str(v).encode('utf-8'), True)
-                                    await asyncio.sleep(0.1, loop=loop)
-                            else:
-                                for k,v in data.items():
-                                    print(v)
-                                    await client.write_gatt_char(k, str(v).encode('utf-8'), True)
-                                    await asyncio.sleep(0.1, loop=loop)
-
-                            await client.disconnect()
+                                print("CONNECTED", client)
+                                if SERIAL_COMMAND_INPUT_CHAR in data:
+                                    print("SERIAL COMMAND INPUT")
+                                    k = SERIAL_COMMAND_INPUT_CHAR
+                                    for v in data[k]:
+                                        print("sending", v)
+                                        await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                        await asyncio.sleep(0.1, loop=loop)
+                                else:
+                                    for k,v in data.items():
+                                        print(v)
+                                        await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                        await asyncio.sleep(0.1, loop=loop)
                             return client
                     print("NOT CONNECTED")
                     return None

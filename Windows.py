@@ -1,4 +1,4 @@
-uuid_format = False # True
+uuid_format = False  # True
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.label import Label
@@ -24,8 +24,10 @@ from scipy import signal
 import numpy as np
 import pprint
 import math
-UINT32_MAX =  math.pow(2, 32) - 1
+
+UINT32_MAX = math.pow(2, 32) - 1
 from kivy.config import Config
+
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
 Config.set('graphics', 'resizable', 'False')
@@ -33,6 +35,7 @@ Config.set('graphics', 'resizable', 'False')
 """Must be below config setting, otherwise it's reset"""
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib
+
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
 from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
@@ -141,13 +144,16 @@ ids = [
     'triggered_mode_toggle_inter_stim_time_button',
 ]
 
+
 class custom_test(TextInput):
     pass
+
 
 def update_graph():
     graph = get_squarewave_plot()
     App.get_running_app().get_components('stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
+
 
 def get_stimulator_input():
     burstmode = False
@@ -178,13 +184,12 @@ def get_stimulator_input():
         burstduration = dutycycle * burstperiod
         interburst = burstperiod - burstduration
 
-
     anodic = settings['anodic_toggle'] != 'down'
     current = int(settings['output_current_input']) if settings['output_current_input'] != "" else 0
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
     phasetime2 = int(settings['phase_2_time_input']) if settings['phase_2_time_input'] != "" else 0
     interphase = int(settings['inter_phase_delay_input']) if settings['inter_phase_delay_input'] != "" else 0
-    #interstim = 0
+    # interstim = 0
     if settings['phase_time_frequency_tab'] == 'Phase Time':
         interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
     if settings['phase_time_frequency_tab'] == 'Frequency':
@@ -193,17 +198,16 @@ def get_stimulator_input():
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
     pulseperiod = phasetime1 + phasetime2 + interphase + interstim
 
-
     if 'Stimulate' in settings['termination_tabs'] and 'forever' in settings['termination_tabs']:
         # stimduration = int(float("inf"))
         if burstmode:
             burstnumber = 0
         else:
             pulsenumber = 0
-    if  'Stimulation' in settings['termination_tabs'] and 'duration' in settings['termination_tabs']:
+    if 'Stimulation' in settings['termination_tabs'] and 'duration' in settings['termination_tabs']:
         stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
         burstnumber = stimduration // burstduration if burstduration != 0 else 0
-    if  'Number' in settings['termination_tabs'] and 'burst' in settings['termination_tabs']:
+    if 'Number' in settings['termination_tabs'] and 'burst' in settings['termination_tabs']:
         burstnumber = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
     if burstmode:
@@ -214,7 +218,10 @@ def get_stimulator_input():
     else:
         if stimduration:
             pulsenumber = stimduration // pulseperiod
-    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod)
+    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(
+        anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if \
+           settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(
+        burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod)
 
 
 def get_squarewave_plot():
@@ -263,30 +270,33 @@ def get_squarewave_plot():
 
     return FigureCanvasKivyAgg(plt.gcf())
 
+
 def stop_stimulation(button, state):
     if state == 'down':
         host = App.get_running_app().connected_device_mac_addr
-        port = 1 # PORT
-        data = [
-            'stop'
-        ]
+        data = {
+            'mac_addr': App.get_running_app().connected_device_mac_addr,
+            SERIAL_COMMAND_INPUT_CHAR: [
+                'stop'
+            ]
+        }
 
-        print("stop_stimulation->send_via_wifi", host, port, data)
-        result = App.get_running_app().send_via_wifi(host, port, data)
-        if result:
-            SUCCESS_POPUP = MessagePopup()
-            title = "Success! Neurostimulator has received your input:"
-            for i in result:
-                title = title + '\n' + str(i)
-            SUCCESS_POPUP.title = title
-            SUCCESS_POPUP.open()
+        print("stop_stimulation->send_via_ble", data)
+        App.get_running_app().send_via_ble(data)
+        # result = App.get_running_app().send_via_ble(data)
+        # if result:
+        #     SUCCESS_POPUP = MessagePopup()
+        #     title = "Success! Neurostimulator has received your input:"
+        #     for i in result:
+        #         title = title + '\n' + str(i)
+        #     SUCCESS_POPUP.title = title
+        #     SUCCESS_POPUP.open()
 
 
 def start_stimulation(button, state):
     if state == 'down':
         print("start_stimulation")
         settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
-
 
         error_messages = []
 
@@ -314,7 +324,7 @@ def start_stimulation(button, state):
             error_messages.append("Ramp Up Invalid Value: Range True or False")
         if short < 0 or short > 1:
             error_messages.append("Short Electrode Invalid Value: Range True or False")
-        if (phasetime1+phasetime2+interphase+interstim) > UINT32_MAX:
+        if (phasetime1 + phasetime2 + interphase + interstim) > UINT32_MAX:
             error_messages.append("Sum of phase one, phase two, inter-phase gap, and stimulation delay are too large")
 
         # if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
@@ -331,7 +341,7 @@ def start_stimulation(button, state):
             ERR_POPUP = MessagePopup()
             title = "Invalid Input Error: "
             for n, m in enumerate(error_messages):
-                title = title + '\n' + str(n+1) + ". " + str(m)
+                title = title + '\n' + str(n + 1) + ". " + str(m)
             ERR_POPUP.title = title
             ERR_POPUP.open()
         else:
@@ -360,7 +370,7 @@ def start_stimulation(button, state):
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 SERIAL_COMMAND_INPUT_CHAR: [
-                    # 'stop',
+                    'stop',
                     'stim_amp:{}'.format(current),
                     'stim_type:{}'.format(burstmode),
                     'anodic_cathodic:{}'.format(anodic),
@@ -380,8 +390,8 @@ def start_stimulation(button, state):
             print("start_stimulation->send_via_ble", data)
             App.get_running_app().send_via_ble(data)
 
-            # print("start_stimulation->send_via_wifi", host, port, data)
-            # result = App.get_running_app().send_via_wifi(host, port, data)
+            # print("start_stimulation->send_via_ble", host, port, data)
+            # result = App.get_running_app().send_via_ble(host, port, data)
             # if result:
             #     SUCCESS_POPUP = MessagePopup()
             #     title = "Success! Neurostimulator has received your input:"
@@ -390,10 +400,12 @@ def start_stimulation(button, state):
             #     SUCCESS_POPUP.title = title
             #     SUCCESS_POPUP.open()
 
+
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
 
-def update_graph_on_toggle_channel_1(button,state):
+
+def update_graph_on_toggle_channel_1(button, state):
     update_graph()
 
 
@@ -416,56 +428,74 @@ live_update_references = {
     ]
 }
 
+
 class MainWindow(FloatLayout):
     pass
+
 
 class SideBar(FloatLayout):
     pass
 
+
 class ScreenManagement(ScreenManager):
     pass
+
 
 class HomeScreen(Screen, FloatLayout):
     pass
 
+
 class DeviceScreen(Screen):
     pass
+
 
 class PhaseTimeFrequencyTabs(TabbedPanel):
     pass
 
+
 class ChannelStimulationTabs(TabbedPanel):
     pass
+
 
 class BurstContinousStimulationTabs(TabbedPanel):
     pass
 
+
 class BurstUniformStimulationTabs(TabbedPanel):
     pass
+
 
 class TerminationTabs(TabbedPanel):
     pass
 
+
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
+
 
 class MessagePopup(Popup):
     pass
 
+
 class ValueError(Popup):
     pass
+
 
 class BurstLostError(Popup):
     pass
 
+
 class periodLostError(Popup):
     pass
+
 
 class ChargeImbalanceError(Popup):
     pass
 
+
 class PeriodBiggerError(Popup):
     pass
+
 
 class AddDevicePopup(Popup):
 
@@ -486,18 +516,21 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
-                App.get_running_app().send_via_ble(j)
+                # App.get_running_app().send_via_ble(j)
         self.dismiss()
+
 
 class DT_TPS(TabbedPanelStrip):
     pass
+
 
 class DeviceTabs(TabbedPanel, DT_TPS):
     def __init__(self, **kargs):
         super(DeviceTabs, self).__init__(**kargs)
         self._tab_layout.padding = '2dp', '-1dp', '2dp', '-2dp'
 
-class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
+
+class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
     selectable = BooleanProperty(True)  # permissions as to whether it is selectable
@@ -521,6 +554,7 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
         if is_selected and rv.data[index]['text'] not in devices_dict:
             devices_dict[rv.data[index]['text']] = True
 
+
 class NumericInput(TextInput):
     def __init__(self, *args, **kwargs):
         super(NumericInput, self).__init__(*args, **kwargs)
@@ -533,6 +567,7 @@ class NumericInput(TextInput):
         if new_text != "":
             if self.min <= float(new_text) <= self.max:
                 super(NumericInput, self).insert_text(string, from_undo=from_undo)
+
 
 class DeviceRV(RecycleView):
     def __init__(self, **kwargs):
@@ -568,12 +603,13 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             self.deselected = True
             App.get_running_app().root.side_bar.device_rv.deselected_clock[rv.data[index]['text']] = 0
             return None
-        elif is_selected and not self.selected and (not self.deselected or App.get_running_app().root.side_bar.device_rv.deselected_clock[rv.data[index]['text']] > 0):
+        elif is_selected and not self.selected and (
+                not self.deselected or App.get_running_app().root.side_bar.device_rv.deselected_clock[
+            rv.data[index]['text']] > 0):
             self.selected = True
             App.get_running_app().root.screen_manager.transition.direction = 'up'
             App.get_running_app().root.screen_manager.current = 'device'
             App.get_running_app().root.side_bar.device_rv.selected_count += 1
-
 
             for i in live_update_references['stimulation_graph_display']:
                 if 'input' in i:
@@ -585,7 +621,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                 if 'stop_button' == i:
                     App.get_running_app().get_components(i).bind(state=stop_stimulation)
 
-                print(i,App.get_running_app().get_components(i))
+                print(i, App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
             # set_graph_default_values(self.text)
             device_char_data = App.get_running_app().device_char_data
@@ -595,7 +631,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                 device_char_data = device_char_data[self.text]
                 if 'BATTERY_LEVEL_CHAR' in device_char_data:
                     battery_level = int(device_char_data['BATTERY_LEVEL_CHAR'])
-                    self.battery_percentage.text = str(battery_level)+'%'
+                    self.battery_percentage.text = str(battery_level) + '%'
                     if battery_level <= 33:
                         self.battery_icon.source = './icons/battery.png'
                     else:
@@ -613,6 +649,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         keys = App.get_running_app().root.side_bar.device_rv.deselected_clock.keys()
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
+
 
 class NeuroStimApp(App):
     def __init__(self, kvloader):
@@ -632,7 +669,6 @@ class NeuroStimApp(App):
         self.send_conn = None
 
         self.device_char_data = {}
-
 
     def send_via_ble(self, data):
         try:
@@ -682,16 +718,16 @@ class NeuroStimApp(App):
             'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
             'burst_continous_stimulation_tab': self.get_components('burst_continous_stimulation_tab').current_tab.text,
-            'duty_cycle_input': digit_clean( self.get_components('duty_cycle_input')),
-            'burst_period_input': digit_clean( self.get_components('burst_period_input')),
-            'inter_phase_delay_input': digit_clean( self.get_components('inter_phase_delay_input')),
-            'inter_stim_delay_input': digit_clean( self.get_components('inter_stim_delay_input')),
-            'phase_1_time_input': digit_clean( self.get_components('phase_1_time_input')),
-            'phase_2_time_input': digit_clean( self.get_components('phase_2_time_input')),
-            'channel_1_frequency_input': digit_clean( self.get_components('channel_1_frequency_input')),
-            'output_current_input': digit_clean( self.get_components('output_current_input')),
-            'stimulation_duration': digit_clean( self.get_components('stimulation_duration')),
-            'number_of_burst': digit_clean( self.get_components('number_of_burst')),
+            'duty_cycle_input': digit_clean(self.get_components('duty_cycle_input')),
+            'burst_period_input': digit_clean(self.get_components('burst_period_input')),
+            'inter_phase_delay_input': digit_clean(self.get_components('inter_phase_delay_input')),
+            'inter_stim_delay_input': digit_clean(self.get_components('inter_stim_delay_input')),
+            'phase_1_time_input': digit_clean(self.get_components('phase_1_time_input')),
+            'phase_2_time_input': digit_clean(self.get_components('phase_2_time_input')),
+            'channel_1_frequency_input': digit_clean(self.get_components('channel_1_frequency_input')),
+            'output_current_input': digit_clean(self.get_components('output_current_input')),
+            'stimulation_duration': digit_clean(self.get_components('stimulation_duration')),
+            'number_of_burst': digit_clean(self.get_components('number_of_burst')),
             'anodic_toggle': self.get_components('anodic_toggle').state,
             'ramp_up_button': self.get_components('ramp_up_button').state,
             'short_button': self.get_components('short_button').state
@@ -830,7 +866,7 @@ class NeuroStimApp(App):
         if id == 'stimulation_graph_display':
             return self.get_components('stimulation_tabs').stimulation_graph_display
 
-        print("missing id: ",id)
+        print("missing id: ", id)
         return None
 
     def build(self):
@@ -842,6 +878,7 @@ class NeuroStimApp(App):
         closed).
         '''
         self.thread = False
+
 
 if __name__ == '__main__':
     kvloader = Builder.load_file("ui.kv")
