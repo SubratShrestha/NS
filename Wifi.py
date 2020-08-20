@@ -150,7 +150,7 @@ def get_stimulator_input():
         interburst = burstperiod - burstduration
 
 
-    anodic = settings['anodic_toggle'] == 'down'
+    anodic = settings['anodic_toggle'] != 'down'
     current = int(settings['output_current_input']) if settings['output_current_input'] != "" else 0
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
     phasetime2 = int(settings['phase_2_time_input']) if settings['phase_2_time_input'] != "" else 0
@@ -361,8 +361,6 @@ live_update_references = {
         'stop_button'
     ]
 }
-
-
 
 class MainWindow(FloatLayout):
     pass

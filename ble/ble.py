@@ -150,26 +150,55 @@ class BluetoothComms():
                     print("BleakError", e)
                 finally:
                     if await client.is_connected():
-                        print("CONNECTED", client)
-                        if SERIAL_COMMAND_INPUT_CHAR in data:
-                            k = SERIAL_COMMAND_INPUT_CHAR
-                            for v in data[k]:
-                                print(v)
-                                await client.write_gatt_char(k, str(v).encode('utf-8'), True)
-                                await asyncio.sleep(0.1, loop=loop)
-                        else:
-                            for k,v in data.items():
-                                print(v)
-                                await client.write_gatt_char(k, str(v).encode('utf-8'), True)
-                                await asyncio.sleep(0.1, loop=loop)
-                        return client
+
+                        try:
+                            print("TRY TO CONNECT")
+                            await client.connect(timeout=10)
+                        except Exception as e:
+                            print("Exception", e)
+                        except BleakDotNetTaskError as e:
+                            print("BleakDotNetTaskError", e)
+                        except BleakError as e:
+                            print("BleakError", e)
+                        finally:
+                            if await client.is_connected():
+                                services = await client.get_services()
+                                services = vars(services)
+                                for k, v in services.items():
+                                    # print("services",k,v)
+                                    if 'characteristics' in k:
+                                        # print(len(v.keys()))
+                                        for sk, sv in v.items():
+                                            print(sv)
+                                            if sv == SERIAL_COMMAND_INPUT_CHAR:
+                                                print("SERIAL INPUT COMMAND FOUND")
+                                            await asyncio.sleep(0.1, loop=loop)
+
+                            print("CONNECTED", client)
+                            if SERIAL_COMMAND_INPUT_CHAR in data:
+                                print("SERIAL COMMAND INPUT")
+                                k = SERIAL_COMMAND_INPUT_CHAR
+                                for v in data[k]:
+                                    print("sending", v)
+                                    await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                    await asyncio.sleep(0.1, loop=loop)
+                            else:
+                                for k,v in data.items():
+                                    print(v)
+                                    await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                    await asyncio.sleep(0.1, loop=loop)
+
+                            await client.disconnect()
+                            return client
                     print("NOT CONNECTED")
                     return None
         except BleakError as e:
             print("BLEAK ERROR", e)
         if depth < 3:
             depth = depth + 1
-            await self.send(address, loop, data, depth)
+            print("SEND AGAIN")
+            return await self.send(address, loop, data, depth)
+        return None
 
     async def read(self, address, loop):
         try:
@@ -189,11 +218,11 @@ class BluetoothComms():
                         services = vars(services)
                         data = {}
                         for k, v in services.items():
-                            print("services",k,v)
+                            # print("services",k,v)
                             if 'characteristics' in k:
-                                print(len(v.keys()))
+                                # print(len(v.keys()))
                                 for sk, sv in v.items():
-                                    print(sk, sv)
+                                    # print(sk, sv)
                                     sv = str(sv).replace(':', "").replace(' ', "")
                                     if sv in self.readable_chars:
                                         result = await client.read_gatt_char(sv)
@@ -222,7 +251,8 @@ class BluetoothComms():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.set_debug(1)
-        loop.run_until_complete(self.send(address, loop, data))
+        result = loop.run_until_complete(self.send(address, loop, data))
+        print("s result",result)
 
     def receive_loop(self):
         try:
@@ -273,10 +303,9 @@ class BluetoothComms():
                     break
                 else:
                     self.client_conn.send(data)
-                    for i in data:
-                        print(i)
+                    # for i in data:
+                    #     print(i)
                 loop.close()
-                asyncio.set_event_loop(None)
         except Exception as e:
             print(e)
         finally:

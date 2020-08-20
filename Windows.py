@@ -24,6 +24,7 @@ from scipy import signal
 import numpy as np
 import pprint
 import math
+UINT32_MAX =  math.pow(2, 32) - 1
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 768)
@@ -164,7 +165,7 @@ def get_stimulator_input():
     pulsenumber = False
     stimduration = False
     burstnumber = False
-    pulseperoid = False
+    pulseperiod = False
 
     settings = App.get_running_app().get_graph_variables()
 
@@ -178,42 +179,46 @@ def get_stimulator_input():
         interburst = burstperiod - burstduration
 
 
-    anodic = settings['anodic_toggle'] == 'down'
+    anodic = settings['anodic_toggle'] != 'down'
     current = int(settings['output_current_input']) if settings['output_current_input'] != "" else 0
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
     phasetime2 = int(settings['phase_2_time_input']) if settings['phase_2_time_input'] != "" else 0
     interphase = int(settings['inter_phase_delay_input']) if settings['inter_phase_delay_input'] != "" else 0
-    interstim = 0
+    #interstim = 0
     if settings['phase_time_frequency_tab'] == 'Phase Time':
         interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
     if settings['phase_time_frequency_tab'] == 'Frequency':
         frequency = int(settings['frequency_input']) if settings['frequency_input'] != "" else 0
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
-    pulseperoid = phasetime1 + phasetime2 + interphase + interstim
+    pulseperiod = phasetime1 + phasetime2 + interphase + interstim
 
 
-    if  settings['termination_tabs'] == 'Stimulate forever':
-        stimduration = int(float("inf"))
-    if  settings['termination_tabs'] == 'Stimulation duration':
+    if 'Stimulate' in settings['termination_tabs'] and 'forever' in settings['termination_tabs']:
+        # stimduration = int(float("inf"))
+        if burstmode:
+            burstnumber = 0
+        else:
+            pulsenumber = 0
+    if  'Stimulation' in settings['termination_tabs'] and 'duration' in settings['termination_tabs']:
         stimduration = int(settings['stimulation_duration']) if settings['stimulation_duration'] != "" else 0
-    if  settings['termination_tabs'] == 'Number of burst':
-        burstduration = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
+        burstnumber = stimduration // burstduration if burstduration != 0 else 0
+    if  'Number' in settings['termination_tabs'] and 'burst' in settings['termination_tabs']:
+        burstnumber = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
     if burstmode:
-        if burstduration and stimduration:
-            burstnumber = stimduration // burstduration
         if burstduration and burstperiod:
-            pulsenumber = burstduration // burstperiod
+            pulsenumber = burstduration // pulseperiod
         if burstduration != 0:
             burstfrequency = 10000000 / burstduration
     else:
         if stimduration:
-            pulsenumber = stimduration // pulseperoid
-    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperoid)
+            pulsenumber = stimduration // pulseperiod
+    return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(anodic), int(current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod)
+
 
 def get_squarewave_plot():
-    settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
+    settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
 
     # points on y-axis
     andoic = [0, 1, 1, 0, 0, -1, -1, 0, 0]
@@ -234,7 +239,7 @@ def get_squarewave_plot():
     if burstmode:
         # constantly add last element of previous "T list"to all element in previous T to make the point on y-axis
         b = T.copy()
-        while (b[len(b) - 1] + pulseperoid < (burstduration)):
+        while (b[len(b) - 1] + pulseperiod < (burstduration)):
             for i in range(len(b)):
                 b[i] = T[i] + b[len(b) - 1]
             T = T + b
@@ -250,7 +255,7 @@ def get_squarewave_plot():
         T.append(burstduration + interburst)
         I.append(0)
 
-    if burstduration > pulseperoid:
+    if burstduration > pulseperiod:
         plt.close("all")
         plt.plot(T, I)
         plt.xlabel('Time (us)')
@@ -258,42 +263,104 @@ def get_squarewave_plot():
 
     return FigureCanvasKivyAgg(plt.gcf())
 
-def send_to_neurostimulator_via_ble(button, state):
+def stop_stimulation(button, state):
     if state == 'down':
-        print("send_to_neurostimulator_via_ble")
-        settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperoid = get_stimulator_input()
+        host = App.get_running_app().connected_device_mac_addr
+        port = 1 # PORT
+        data = [
+            'stop'
+        ]
 
-        if stimduration is not None and math.isinf(stimduration):
-            if burstmode:
-                burstnumber = 0
-            else:
-                pulsenumber = 0
+        print("stop_stimulation->send_via_wifi", host, port, data)
+        result = App.get_running_app().send_via_wifi(host, port, data)
+        if result:
+            SUCCESS_POPUP = MessagePopup()
+            title = "Success! Neurostimulator has received your input:"
+            for i in result:
+                title = title + '\n' + str(i)
+            SUCCESS_POPUP.title = title
+            SUCCESS_POPUP.open()
 
-        if uuid_format:
-            data = {
-                'mac_addr': App.get_running_app().connected_device_mac_addr,
-                PHASE_ONE_WRITE_CHAR: phasetime1,
-                PHASE_TWO_WRITE_CHAR:phasetime2,
-                ANODIC_CATHOLIC_FIRST_WRITE_CHAR:anodic,
-                STIM_AMP_WRITE_CHAR:current,
-                STIM_TYPE_WRITE_CHAR:burstmode,
-                INTER_PHASE_GAP_WRITE_CHAR:interphase,
-                INTER_BURST_DELAY_WRITE_CHAR:interburst,
-                # BURST_NUM_WRITE_CHAR: int(burstmode/burstperiod) if burstperiod != 0 else 0,
-                BURST_NUM_WRITE_CHAR:burstnumber,
-                INTER_STIM_DELAY_WRITE_CHAR:interstim,
-                # PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
-                PULSE_NUM_WRITE_CHAR:pulsenumber,
-                # PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR:pulsenumber, # Mitchell
-                RAMP_UP_WRITE_CHAR:ramp_up,
-                SHORT_ELECTRODE_WRITE_CHAR:short
-            }
-            print("send_to_neurostimulator_via_ble->send_via_ble", data)
-            App.get_running_app().send_via_ble(data)
+
+def start_stimulation(button, state):
+    if state == 'down':
+        print("start_stimulation")
+        settings, burstmode, burstperiod, burstduration, dutycycle, interburst, anodic, current, interphase, phasetime1, phasetime2, interstim, frequency, ramp_up, short, burstfrequency, pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
+
+
+        error_messages = []
+
+        if phasetime1 < 10 or phasetime1 > UINT32_MAX:
+            error_messages.append("Phase Time 1 Invalid Value: Range 10 to max_uint32")
+        if phasetime2 < 10 or phasetime2 > UINT32_MAX:
+            error_messages.append("Phase Time 2 Invalid Value: Range 10 to max_uint32")
+        if current < 0 or current > 3000:
+            error_messages.append("Current/Stim Amplitude Invalid Value: Range 0 to 3000")
+        if interphase < 0 or interphase > UINT32_MAX:
+            error_messages.append("Inter-Phase Gap Invalid Value: Range 0 to max_uint32")
+        if interstim < 0 or interstim > UINT32_MAX:
+            error_messages.append("Inter-Stim Delay Invalid Value: Range 0 to max_uint32")
+        if anodic < 0 or anodic > 1:
+            error_messages.append("Anodic Cathodic Invalid Value: Range True or False")
+        if burstmode < 0 or burstmode > 1:
+            error_messages.append("Stim-Type Invalid Value: Range True or False")
+        if pulsenumber < 0 or pulsenumber > UINT32_MAX:
+            error_messages.append("Pulse Number Invalid Value: Range 0 to max_uint32")
+        if burstnumber < 0 or burstnumber > UINT32_MAX:
+            error_messages.append("Burst Number Invalid Value: Range 0 to max_uint32")
+        if interburst < 0 or interburst > UINT32_MAX:
+            error_messages.append("Inter-Burst Delay Invalid Value: Range 0 to max_uint32")
+        if ramp_up < 0 or ramp_up > 1:
+            error_messages.append("Ramp Up Invalid Value: Range True or False")
+        if short < 0 or short > 1:
+            error_messages.append("Short Electrode Invalid Value: Range True or False")
+        if (phasetime1+phasetime2+interphase+interstim) > UINT32_MAX:
+            error_messages.append("Sum of phase one, phase two, inter-phase gap, and stimulation delay are too large")
+
+        # if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
+        #     error_messages.append("Burst period is not dividable by Stimulation duration, one or more bursts are reduced!")
+        # elif burstperiod != 0 and int(stimduration) % int(burstperiod) != 0:
+        #     error_messages.append("One pulse period is bigger than a burst!")
+        # elif phasetime1 != phasetime2:
+        #     error_messages.append("Charge is imbalanced, potentially damaging tissue!")
+        # elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
+        #     error_messages.append("One pulse period is bigger than a burst!")
+
+        if len(error_messages) > 0:
+            print("ERROR_MESSAGES:", error_messages)
+            ERR_POPUP = MessagePopup()
+            title = "Invalid Input Error: "
+            for n, m in enumerate(error_messages):
+                title = title + '\n' + str(n+1) + ". " + str(m)
+            ERR_POPUP.title = title
+            ERR_POPUP.open()
         else:
+            # if uuid_format:
+            #     data = {
+            #         'mac_addr': App.get_running_app().connected_device_mac_addr,
+            #         PHASE_ONE_WRITE_CHAR: phasetime1,
+            #         PHASE_TWO_WRITE_CHAR: phasetime2,
+            #         ANODIC_CATHOLIC_FIRST_WRITE_CHAR: anodic,
+            #         STIM_AMP_WRITE_CHAR: current,
+            #         STIM_TYPE_WRITE_CHAR: burstmode,
+            #         INTER_PHASE_GAP_WRITE_CHAR: interphase,
+            #         INTER_BURST_DELAY_WRITE_CHAR: interburst,
+            #         # BURST_NUM_WRITE_CHAR: int(burstmode/burstperiod) if burstperiod != 0 else 0,
+            #         BURST_NUM_WRITE_CHAR: burstnumber,
+            #         INTER_STIM_DELAY_WRITE_CHAR: interstim,
+            #         # PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
+            #         PULSE_NUM_WRITE_CHAR: pulsenumber,
+            #         # PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR:pulsenumber, # Mitchell
+            #         RAMP_UP_WRITE_CHAR: ramp_up,
+            #         SHORT_ELECTRODE_WRITE_CHAR: short
+            #     }
+            #     print("send_to_neurostimulator_via_ble->send_via_ble", data)
+            #     App.get_running_app().send_via_ble(data)
+            # else:
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 SERIAL_COMMAND_INPUT_CHAR: [
+                    # 'stop',
                     'stim_amp:{}'.format(current),
                     'stim_type:{}'.format(burstmode),
                     'anodic_cathodic:{}'.format(anodic),
@@ -306,11 +373,22 @@ def send_to_neurostimulator_via_ble(button, state):
                     'burst_num:{}'.format(burstnumber),
                     'inter_burst_delay:{}'.format(interburst),
                     'ramp_up:{}'.format(ramp_up),
-                    'short_electrode:{}'.format(short)
+                    'short_electrode:{}'.format(short),
+                    'start'
                 ]
             }
-            print("send_to_neurostimulator_via_ble->send_via_ble", data)
+            print("start_stimulation->send_via_ble", data)
             App.get_running_app().send_via_ble(data)
+
+            # print("start_stimulation->send_via_wifi", host, port, data)
+            # result = App.get_running_app().send_via_wifi(host, port, data)
+            # if result:
+            #     SUCCESS_POPUP = MessagePopup()
+            #     title = "Success! Neurostimulator has received your input:"
+            #     for i in result:
+            #         title = title + '\n' + str(i)
+            #     SUCCESS_POPUP.title = title
+            #     SUCCESS_POPUP.open()
 
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
@@ -333,11 +411,10 @@ live_update_references = {
         'phase_1_time_input',
         'phase_2_time_input',
         'channel_1_frequency_input',
-        'start_button'
+        'start_button',
+        'stop_button'
     ]
 }
-
-
 
 class MainWindow(FloatLayout):
     pass
@@ -370,6 +447,9 @@ class TerminationTabs(TabbedPanel):
     pass
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
+    pass
+
+class MessagePopup(Popup):
     pass
 
 class ValueError(Popup):
@@ -441,6 +521,18 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior,Label):
         if is_selected and rv.data[index]['text'] not in devices_dict:
             devices_dict[rv.data[index]['text']] = True
 
+class NumericInput(TextInput):
+    def __init__(self, *args, **kwargs):
+        super(NumericInput, self).__init__(*args, **kwargs)
+        self.min = 0
+        self.max = UINT32_MAX
+
+    def insert_text(self, string, from_undo=False):
+        new_text = self.text + string
+        new_text = re.sub("[^0-9]", "", new_text)
+        if new_text != "":
+            if self.min <= float(new_text) <= self.max:
+                super(NumericInput, self).insert_text(string, from_undo=from_undo)
 
 class DeviceRV(RecycleView):
     def __init__(self, **kwargs):
@@ -489,7 +581,9 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                 if 'toggle' in i:
                     App.get_running_app().get_components(i).bind(state=update_graph_on_toggle_channel_1)
                 if 'start_button' == i:
-                    App.get_running_app().get_components(i).bind(state=send_to_neurostimulator_via_ble)
+                    App.get_running_app().get_components(i).bind(state=start_stimulation)
+                if 'stop_button' == i:
+                    App.get_running_app().get_components(i).bind(state=stop_stimulation)
 
                 print(i,App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
@@ -557,7 +651,7 @@ class NeuroStimApp(App):
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
         round = 0
-        while self.thread:
+        while len(self.device_char_data.keys()) < 1:
             msg = conn.recv()
 
             if isinstance(msg, list):
@@ -571,18 +665,19 @@ class NeuroStimApp(App):
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
-            if round % 2 == 0:
-                print("Updating reading from chars")
-                for j in devices_dict.keys():
-                    self.send_via_ble(j)
+            # if round % 2 == 0:
+            #     print("Updating reading from chars")
+            #     for j in devices_dict.keys():
+            #         self.send_via_ble(j)
             round += 1
         listener.close()
 
     def get_graph_variables(self):
         def digit_clean(input):
             # Enforce the digit cleaning on the UI components as well
-            input.text = re.sub("[^0-9]", "",input.text)
+            # input.text = re.sub("[^0-9]", "",input.text)
             return input.text
+
         return {
             'termination_tabs': self.get_components('termination_tabs').current_tab.text,
             'phase_time_frequency_tab': self.get_components('phase_time_frequency_tab').current_tab.text,
