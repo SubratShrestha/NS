@@ -491,32 +491,21 @@
     stop_button:stop_button
     save_button:save_button
     start_button:start_button
-    output_current_input:output_current_input
+    phase_1_output_current_input:phase_1_output_current_input
+    phase_2_output_current_input:phase_2_output_current_input
     termination_tabs:termination_tabs
     cathodic_anodic_toggle:cathodic_anodic_toggle
     # ramp_up_toggle:ramp_up_toggle
     # short_electrode_toggle:short_electrode_toggle
 
-
-    channel_2_stop_button:channel_2_stop_button
-    channel_2_save_button:channel_2_save_button
-    channel_2_start_button:channel_2_start_button
-    channel_2_output_current_input:channel_2_output_current_input
-    channel_2_termination_tabs:channel_2_termination_tabs
-    channel_2_cathodic_anodic_toggle:channel_2_cathodic_anodic_toggle
-    channel_2_ramp_up_toggle:channel_2_ramp_up_toggle
-    channel_2_short_electrode_toggle:channel_2_short_electrode_toggle
-
     stimulation_graph_display: stimulation_graph_display
-    channel_2_stimulation_graph_display: channel_2_stimulation_graph_display
 
     phase_time_frequency_tab:phase_time_frequency_tab
     burst_continous_stimulation_tab:burst_continous_stimulation_tab
-    channel_2_phase_time_frequency_tab:channel_2_phase_time_frequency_tab
-    channel_2_burst_continous_stimulation_tab:channel_2_burst_continous_stimulation_tab
+
 
     TabbedPanelItem:
-        text: "Channel 1"
+        text: ""
         background_color: 0,0,0,0
         BoxLayout:
             orientation: 'vertical'
@@ -580,12 +569,28 @@
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (\u03BCA)"
+                        text: "Phase 1 Output Current (\u03BCA)"
                         color: .1,.1,.1,1
                     NumericInput:
-                        id:output_current_input
+                        id:phase_1_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
+                        text: "0"
+                        hint_text: "0"
+                        max: 3000
+                        input_type: 'number'
+                        input_filter: 'float'
+                        font_size: self.height*0.55
+                        multiline: False
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.075, "top":.75}
+                        text: "Phase 2 Output Current (\u03BCA)"
+                        color: .1,.1,.1,1
+                    NumericInput:
+                        id:phase_2_output_current_input
+                        size_hint: .4,.08
+                        pos_hint: {"x":0.075, "top":.7}
                         text: "0"
                         hint_text: "0"
                         max: 3000
@@ -610,140 +615,18 @@
                         size: self.size
                         pos: self.pos
                 size_hint: 1,.5
-                pos_hint: {"x":0, "top":1}
-                BoxLayout:
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "Burst frequency: \n {}" # .format(burst_frequency)
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "Burst Duration: \n {}" # .format(burst_duration)
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "Inter Burst_Delay \n {}" # .format(inter_burst_delay)
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "pulse_number: \n {}" # .format(pulse_number)
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        # text: root.burst_number_interchange_stimulation_duration()
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        # text: root.frequency_interchange_inter_phase_delay()
-            BoxLayout:
-                canvas:
-                    Color:
-                        rgba: 1,1,1,1
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-                size_hint: 1,.5
-                pos_hint: {"x":0, "top":1}
-                id: stimulation_graph_display
+                # pos_hint: {"x":0, "top":1}
 
-    TabbedPanelItem:
-        text: "Channel 2"
-        background_color: 0,0,0,0
-        BoxLayout:
-            orientation: 'vertical'
-            canvas:
-                Color:
-                    rgba:.925,.925,.925,1
-                Rectangle:
-                    size:self.size
-                    pos: self.pos
-            BoxLayout:
-                orientation: 'horizontal'
-                canvas:
-                    Color:
-                        rgba:.925,.925,.925,1
-                    Rectangle:
-                        size:self.size
-                        pos: self.pos
                 BoxLayout:
-                    orientation: 'vertical'
                     canvas:
                         Color:
-                            rgba:.925,.925,.925,1
+                            rgba: 1,1,1,1
                         Rectangle:
-                            size:self.size
+                            size: self.size
                             pos: self.pos
-                    PhaseTimeFrequencyTabs:
-                        id: channel_2_phase_time_frequency_tab
-                    BurstContinousStimulationTabs:
-                        id: channel_2_burst_continous_stimulation_tab
-                FloatLayout:
-                    Button:
-                        id: channel_2_stop_button
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.675, "top":.99}
-                        text: "Stop"
-                        background_color: 1,0,0,1
-                    Button:
-                        id: channel_2_save_button
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.375, "top":.99}
-                        text: "Save"
-                        background_color: 0.420,0.864,1.773,1
-                    Button:
-                        id: channel_2_start_button
-                        size_hint: .25,.06
-                        pos_hint: {"x":0.075, "top":.99}
-                        text: "Start"
-                        background_color: 0.420,0.864,1.773,1
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.9}
-                        text: "Output Current (mA)"
-                        color: .1,.1,.1,1
-                    NumericInput:
-                        id: channel_2_output_current_input
-                        size_hint: .4,.08
-                        pos_hint: {"x":0.075, "top":.85}
-                        text: "0"
-                        hint_text: "0"
-                        input_type: 'number'
-                        input_filter: 'float'
-                        font_size: self.height*0.55
-                        multiline: False
-                    Label:
-                        size_hint: .4,.05
-                        pos_hint: {"x":0.075, "top":.5}
-                        text: "End Stimulation By:"
-                        color: .1,.1,.1,1
-                    TerminationTabs:
-                        id: channel_2_termination_tabs
-                    CathodicAnodicToggle:
-                        id: channel_2_cathodic_anodic_toggle
-                    ToggleButton:
-                        id: channel_2_ramp_up_toggle
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.075, "top":0.7}
-                        text: "Ramp Up"
-                        group: "ramp_up"
-                        background_clor: 0.420,0.864,1.773,1
-                    ToggleButton:
-                        id: channel_2_short_electrode_toggle
-                        size_hint: .4,.06
-                        pos_hint: {"x":0.525, "top":0.7}
-                        text: "Short Electrode"
-                        group: "electrode"
-            BoxLayout:
-                canvas:
-                    Color:
-                        rgba: 1,1,1,1
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-                size_hint: 1,.5
-                pos_hint: {"x":0, "top":1}
-                id: channel_2_stimulation_graph_display
+                    size_hint: 1,1
+                    pos_hint: {"x":0, "top":1}
+                    id: stimulation_graph_display
 
 <BurstUniformStimulationTabs@TabbedPanelStrip>
 #change the background color of the tab
