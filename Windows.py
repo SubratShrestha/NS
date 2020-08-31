@@ -107,6 +107,8 @@ ids = [
     'number_of_burst',
     'phase_1_output_current_input',
     'phase_2_output_current_input',
+    'vref_lower_output_input',
+    'vref_upper_output_input',
     'cathodic_toggle',
     'anodic_toggle',
     'duty_cycle_input',
@@ -187,8 +189,16 @@ def get_stimulator_input():
         interburst = burstperiod - burstduration
 
     anodic = settings['anodic_toggle'] != 'down'
-    phase_1_current = int(settings['phase_1_output_current_input']) if settings['phase_1_output_current_input'] != "" else 0
-    phase_2_current = int(settings['phase_2_output_current_input']) if settings['phase_2_output_current_input'] != "" else 0
+    phase_1_current = int(settings['phase_1_output_current_input']) if settings[
+                                                                           'phase_1_output_current_input'] != "" else 0
+    phase_2_current = int(settings['phase_2_output_current_input']) if settings[
+                                                                           'phase_2_output_current_input'] != "" else 0
+
+    vref_lower_output_input = int(settings['vref_lower_output_input']) if settings[
+                                                                              'vref_lower_output_input'] != "" else 0
+    vref_upper_output_input = int(settings['vref_upper_output_input']) if settings[
+                                                                              'vref_upper_output_input'] != "" else 0
+
     phasetime1 = int(settings['phase_1_time_input']) if settings['phase_1_time_input'] != "" else 0
     phasetime2 = int(settings['phase_2_time_input']) if settings['phase_2_time_input'] != "" else 0
     interphase = int(settings['inter_phase_delay_input']) if settings['inter_phase_delay_input'] != "" else 0
@@ -222,17 +232,20 @@ def get_stimulator_input():
         if stimduration:
             pulsenumber = stimduration // pulseperiod
     return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(
-        anodic), int(phase_1_current), int(phase_2_current), int(interphase), int(phasetime1), int(phasetime2), int(interstim), int(frequency), 0 if \
-           settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(
-        burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod)
+        anodic), int(phase_1_current), int(phase_2_current), int(interphase), int(phasetime1), int(phasetime2), int(
+        interstim), int(frequency), 0 if \
+               settings['ramp_up_button'] == 'normal' else 1, 0 if settings['short_button'] == 'normal' else 1, int(
+        burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod), int(
+        vref_lower_output_input), int(vref_upper_output_input)
 
 
 def get_squarewave_plot():
-    settings, burstmode, burstperiod, burstduration,\
+    settings, burstmode, burstperiod, burstduration, \
     dutycycle, interburst, anodic, phase_1_current, \
     phase_2_current, interphase, phasetime1, phasetime2, \
     interstim, frequency, ramp_up, short, burstfrequency, \
-    pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
+    pulsenumber, stimduration, burstnumber, pulseperiod, \
+    vref_lower_output_input, vref_upper_output_input = get_stimulator_input()
 
     # points on y-axis
     # andoic = [0, phase_1_current, phase_1_current, 0, 0, -phase_2_current, -phase_2_current, 0, 0]
@@ -301,6 +314,25 @@ def stop_stimulation(button, state):
         #     SUCCESS_POPUP.open()
 
 
+def calculate_dac_value(phase_1_current, phase_2_current, vref_low, vref_high, anodic):
+    step_voltage = float((vref_high - vref_low) / int(math.pow(2, 16) - 1))
+    print("step_voltage: ", step_voltage)
+    steps = int(3000 / step_voltage)
+    print("steps: ",steps)
+    dac_gap = steps / 2
+    print("dac_gap: ",dac_gap)
+    amp_step = 3000 / dac_gap
+    print("amp_step: ", amp_step)
+    if anodic:
+        dac_phase_one = dac_gap - phase_1_current / amp_step
+        dac_phase_two = dac_gap + phase_2_current / amp_step
+        return int(dac_phase_one), int(dac_phase_two)
+    else:
+        dac_phase_one = dac_gap + phase_1_current / amp_step
+        dac_phase_two = dac_gap - phase_2_current / amp_step
+        return int(dac_phase_one), int(dac_phase_two)
+
+
 def start_stimulation(button, state):
     if state == 'down':
         print("start_stimulation")
@@ -308,7 +340,8 @@ def start_stimulation(button, state):
         dutycycle, interburst, anodic, phase_1_current, \
         phase_2_current, interphase, phasetime1, phasetime2, \
         interstim, frequency, ramp_up, short, burstfrequency, \
-        pulsenumber, stimduration, burstnumber, pulseperiod = get_stimulator_input()
+        pulsenumber, stimduration, burstnumber, pulseperiod, \
+        vref_lower_output_input, vref_upper_output_input = get_stimulator_input()
         error_messages = []
 
         if phasetime1 < 10 or phasetime1 > UINT32_MAX:
@@ -349,6 +382,14 @@ def start_stimulation(button, state):
         # elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
         #     error_messages.append("One pulse period is bigger than a burst!")
 
+        dac_phase_one, dac_phase_two = calculate_dac_value(
+            phase_1_current,
+            phase_2_current,
+            vref_lower_output_input,
+            vref_upper_output_input,
+            anodic
+        )
+
         if len(error_messages) > 0:
             print("ERROR_MESSAGES:", error_messages)
             ERR_POPUP = MessagePopup()
@@ -358,33 +399,12 @@ def start_stimulation(button, state):
             ERR_POPUP.title = title
             ERR_POPUP.open()
         else:
-            # if uuid_format:
-            #     data = {
-            #         'mac_addr': App.get_running_app().connected_device_mac_addr,
-            #         PHASE_ONE_WRITE_CHAR: phasetime1,
-            #         PHASE_TWO_WRITE_CHAR: phasetime2,
-            #         ANODIC_CATHOLIC_FIRST_WRITE_CHAR: anodic,
-            #         STIM_AMP_WRITE_CHAR: current,
-            #         STIM_TYPE_WRITE_CHAR: burstmode,
-            #         INTER_PHASE_GAP_WRITE_CHAR: interphase,
-            #         INTER_BURST_DELAY_WRITE_CHAR: interburst,
-            #         # BURST_NUM_WRITE_CHAR: int(burstmode/burstperiod) if burstperiod != 0 else 0,
-            #         BURST_NUM_WRITE_CHAR: burstnumber,
-            #         INTER_STIM_DELAY_WRITE_CHAR: interstim,
-            #         # PULSE_NUM_WRITE_CHAR: int(burstduration/burstperiod) if burstperiod != 0 else 0,
-            #         PULSE_NUM_WRITE_CHAR: pulsenumber,
-            #         # PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR:pulsenumber, # Mitchell
-            #         RAMP_UP_WRITE_CHAR: ramp_up,
-            #         SHORT_ELECTRODE_WRITE_CHAR: short
-            #     }
-            #     print("send_to_neurostimulator_via_ble->send_via_ble", data)
-            #     App.get_running_app().send_via_ble(data)
-            # else:
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 SERIAL_COMMAND_INPUT_CHAR: [
                     'stop',
-                    'stim_amp:{}'.format(current),
+                    'dac_phase_one:{}'.format(dac_phase_one),
+                    'dac_phase_two:{}'.format(dac_phase_two),
                     'stim_type:{}'.format(burstmode),
                     'anodic_cathodic:{}'.format(anodic),
                     'phase_one_time:{}'.format(phasetime1),
@@ -741,6 +761,8 @@ class NeuroStimApp(App):
             'channel_1_frequency_input': digit_clean(self.get_components('channel_1_frequency_input')),
             'phase_1_output_current_input': digit_clean(self.get_components('phase_1_output_current_input')),
             'phase_2_output_current_input': digit_clean(self.get_components('phase_2_output_current_input')),
+            'vref_lower_output_input': digit_clean(self.get_components('vref_lower_output_input')),
+            'vref_upper_output_input': digit_clean(self.get_components('vref_upper_output_input')),
             'stimulation_duration': digit_clean(self.get_components('stimulation_duration')),
             'number_of_burst': digit_clean(self.get_components('number_of_burst')),
             'anodic_toggle': self.get_components('anodic_toggle').state,
@@ -786,6 +808,11 @@ class NeuroStimApp(App):
             return self.get_components('stimulation_tabs').phase_1_output_current_input
         if id == 'phase_2_output_current_input':
             return self.get_components('stimulation_tabs').phase_2_output_current_input
+
+        if id == 'vref_lower_output_input':
+            return self.get_components('stimulation_tabs').vref_lower_output_input
+        if id == 'vref_upper_output_input':
+            return self.get_components('stimulation_tabs').vref_upper_output_input
 
         if id == 'termination_tabs':
             return self.get_components('stimulation_tabs').termination_tabs

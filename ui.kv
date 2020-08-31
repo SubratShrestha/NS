@@ -503,6 +503,8 @@
     phase_time_frequency_tab:phase_time_frequency_tab
     burst_continous_stimulation_tab:burst_continous_stimulation_tab
 
+    vref_lower_output_input:vref_lower_output_input
+    vref_upper_output_input:vref_upper_output_input
 
     TabbedPanelItem:
         text: ""
@@ -569,7 +571,10 @@
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.9}
-                        text: "Phase 1 Output Current (\u03BCA)"
+                        text: "Phase 1 Current (\u03BCA)"
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
                         color: .1,.1,.1,1
                     NumericInput:
                         id:phase_1_output_current_input
@@ -585,7 +590,10 @@
                     Label:
                         size_hint: .4,.05
                         pos_hint: {"x":0.075, "top":.75}
-                        text: "Phase 2 Output Current (\u03BCA)"
+                        text: "Phase 2 Current (\u03BCA)"
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
                         color: .1,.1,.1,1
                     NumericInput:
                         id:phase_2_output_current_input
@@ -594,6 +602,44 @@
                         text: "0"
                         hint_text: "0"
                         max: 3000
+                        input_type: 'number'
+                        input_filter: 'float'
+                        font_size: self.height*0.55
+                        multiline: False
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.525, "top":.9}
+                        text: "VREF 0"
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+                        color: .1,.1,.1,1
+                    NumericInput:
+                        id:vref_lower_output_input
+                        size_hint: .4,.08
+                        pos_hint: {"x":0.525, "top":.85}
+                        text: "0"
+                        hint_text: "0"
+                        max: 65534
+                        input_type: 'number'
+                        input_filter: 'float'
+                        font_size: self.height*0.55
+                        multiline: False
+                    Label:
+                        size_hint: .4,.05
+                        pos_hint: {"x":0.525, "top":.75}
+                        text: "VREF 65535"
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+                        color: .1,.1,.1,1
+                    NumericInput:
+                        id:vref_upper_output_input
+                        size_hint: .4,.08
+                        pos_hint: {"x":0.525, "top":.7}
+                        text: "3000"
+                        hint_text: "0"
+                        max: 65535
                         input_type: 'number'
                         input_filter: 'float'
                         font_size: self.height*0.55
