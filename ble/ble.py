@@ -31,7 +31,8 @@ ANODIC_CATHOLIC_FIRST_WRITE_CHAR = '02000000-0000-0000-0000-000000000108'
 STIM_TYPE_WRITE_CHAR = '02000000-0000-0000-0000-000000000109'
 BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
 INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
-SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
+# SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
+SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
 
 RAMP_UP_READ_CHAR = '02000000-0000-0000-0000-00000000000d'
 SHORT_ELECTRODE_READ_CHAR = '02000000-0000-0000-0000-00000000000e'
@@ -180,12 +181,12 @@ class BluetoothComms():
                                     k = SERIAL_COMMAND_INPUT_CHAR
                                     for v in data[k]:
                                         print("sending", v)
-                                        await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                        await client.write_gatt_char(k, str(v).encode('utf-8'), False)
                                         await asyncio.sleep(0.1, loop=loop)
                                 else:
                                     for k,v in data.items():
                                         print(v)
-                                        await client.write_gatt_char(k, str(v).encode('utf-8'), True)
+                                        await client.write_gatt_char(k, str(v).encode('utf-8'), False)
                                         await asyncio.sleep(0.1, loop=loop)
                             return client
                     print("NOT CONNECTED")
@@ -291,8 +292,10 @@ class BluetoothComms():
                 devices = r1.result()
 
                 if self.prune:
+                    # for i in devices:
+                    #     print(i)
                     data = [{'text': str(i.address)} for i in devices if
-                            i.address is not None and "NeuroStimulator" in str(i)]
+                            i.address is not None and "Neuro" in str(i)]
                 else:
                     data = [{'text': str(i.address)} for i in devices if i.address is not None]
                 if time < 10:
