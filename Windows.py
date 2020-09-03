@@ -402,7 +402,7 @@ def start_stimulation(button, state):
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 SERIAL_COMMAND_INPUT_CHAR: [
-                    'stop',
+                    # 'stop',
                     'dac_phase_one:{}'.format(dac_phase_one),
                     'dac_phase_two:{}'.format(dac_phase_two),
                     'stim_type:{}'.format(burstmode),
@@ -699,10 +699,28 @@ class NeuroStimApp(App):
         self.discover_thread = threading.Thread(target=self.discover)
         self.discover_thread.start()
 
+        self.stream_thread = threading.Thread(target=self.stream)
+        self.stream_thread.start()
+
         self.send_address = None
         self.send_conn = None
 
         self.device_char_data = {}
+
+    def stream(self, device):
+        try:
+            address = ('localhost', 6002)
+            listener = Listener(address, authkey=b'password')
+            conn = listener.accept()
+        except Exception as e:
+            print("Stream Error:\n", e)
+
+        try:
+            msg = conn.recv()
+            print(msg)
+        except Exception as e:
+            print("Stream Receive Error: ", e)
+
 
     def send_via_ble(self, data):
         try:
@@ -720,7 +738,6 @@ class NeuroStimApp(App):
         address = ('localhost', 6000)
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
-        round = 0
         while len(self.device_char_data.keys()) < 1:
             msg = conn.recv()
 
@@ -735,11 +752,6 @@ class NeuroStimApp(App):
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
-            # if round % 2 == 0:
-            #     print("Updating reading from chars")
-            #     for j in devices_dict.keys():
-            #         self.send_via_ble(j)
-            round += 1
         listener.close()
 
     def get_graph_variables(self):
