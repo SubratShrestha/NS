@@ -24,6 +24,12 @@ from scipy import signal
 import numpy as np
 import pprint
 import math
+from scipy.interpolate import interp1d
+
+
+SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
+FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
+STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'
 
 UINT32_MAX = math.pow(2, 32) - 1
 from kivy.config import Config
@@ -39,41 +45,6 @@ import matplotlib
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
 from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
-
-RAMP_UP_WRITE_CHAR = '02000000-0000-0000-0000-00000000010d'
-SHORT_ELECTRODE_WRITE_CHAR = '02000000-0000-0000-0000-00000000010e'
-RAMP_UP_READ_CHAR = '02000000-0000-0000-0000-00000000000d'
-SHORT_ELECTRODE_READ_CHAR = '02000000-0000-0000-0000-00000000000e'
-
-BATTERY_LEVEL_CHAR = '00002a19-0000-1000-8000-00805f9b34fb'
-CHANNEL_NUM_CHAR = '01000000-0000-0000-0000-000000000006'
-MAX_FREQ_CHAR = '01000000-0000-0000-0000-000000000007'
-OTA_SUPPORT_CHAR = '01000000-0000-0000-0000-000000000008'
-
-PHASE_ONE_WRITE_CHAR = '02000000-0000-0000-0000-000000000103'
-PHASE_TWO_WRITE_CHAR = '02000000-0000-0000-0000-000000000105'
-STIM_AMP_WRITE_CHAR = '02000000-0000-0000-0000-000000000102'
-INTER_PHASE_GAP_WRITE_CHAR = '02000000-0000-0000-0000-000000000104'
-INTER_STIM_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-000000000106'
-PULSE_NUM_WRITE_CHAR = '02000000-0000-0000-0000-000000000107'
-ANODIC_CATHOLIC_FIRST_WRITE_CHAR = '02000000-0000-0000-0000-000000000108'
-STIM_TYPE_WRITE_CHAR = '02000000-0000-0000-0000-000000000109'
-BURST_NUM_WRITE_CHAR = '02000000-0000-0000-0000-00000000010a'
-INTER_BURST_DELAY_WRITE_CHAR = '02000000-0000-0000-0000-00000000010b'
-# SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
-SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
-# PULSE_NUM_IN_ONE_BRUST_WRITE_CHAR = # Mitchell
-
-INTER_PHASE_GAP_READ_CHAR = '02000000-0000-0000-0000-000000000004'
-PHASE_ONE_READ_CHAR = '02000000-0000-0000-0000-000000000003'
-PHASE_TWO_READ_CHAR = '02000000-0000-0000-0000-000000000005'
-STIM_AMP_READ_CHAR = '02000000-0000-0000-0000-000000000002'
-INTER_STIM_DELAY_READ_CHAR = '02000000-0000-0000-0000-000000000006'
-PULSE_NUM_READ_CHAR = '02000000-0000-0000-0000-000000000007'
-ANODIC_CATHODIC_FIRST_READ_CHAR = '02000000-0000-0000-0000-000000000008'
-STIM_TYPE_READ_CHAR = '02000000-0000-0000-0000-000000000009'
-BURST_NUM_READ_CHAR = '02000000-0000-0000-0000-00000000000a'
-INTER_BURST_DELAY_READ_CHAR = '02000000-0000-0000-0000-00000000000b'
 
 """======================================================================
 Don't change this to match App.py
@@ -95,7 +66,7 @@ ids = [
     'device_screen_device_tabs',
     'device_settings',
     'device_advanced_settings',
-    'electrode_recording_tab',
+    'electrode_voltage_tab',
     'stimulation_graph_display',
     'stop_button',
     'save_button',
@@ -118,12 +89,12 @@ ids = [
     'phase_1_time_input',
     'phase_2_time_input',
     'channel_1_frequency_input',
-    'electrode_recording_tab_top_graph',
-    'electrode_recording_tab_bottom_graph',
-    'electrode_recording_tab_sample_info',
-    'electrode_recording_tab_log_stop_button',
-    'electrode_recording_tab_log_recording_button',
-    'electrode_recording_save_log_button',
+    'electrode_voltage_tab_top_graph',
+    'electrode_voltage_tab_bottom_graph',
+    'electrode_voltage_tab_sample_info',
+    'electrode_voltage_tab_log_stop_button',
+    'electrode_voltage_tab_log_recording_button',
+    'electrode_voltage_save_log_button',
     'auto_shutdown_when_stim_is_finished',
     'auto_shutdown_when_surge_is_detected',
     'firmware_info_button',
@@ -148,16 +119,13 @@ ids = [
     'triggered_mode_toggle_inter_stim_time_button',
 ]
 
-
 class custom_test(TextInput):
     pass
-
 
 def update_graph():
     graph = get_squarewave_plot()
     App.get_running_app().get_components('stimulation_graph_display').clear_widgets()
     App.get_running_app().get_components('stimulation_graph_display').add_widget(graph)
-
 
 def get_stimulator_input():
     burstmode = False
@@ -238,7 +206,6 @@ def get_stimulator_input():
         burstfrequency), int(pulsenumber), int(stimduration), int(burstnumber), int(pulseperiod), int(
         vref_lower_output_input), int(vref_upper_output_input)
 
-
 def get_squarewave_plot():
     settings, burstmode, burstperiod, burstduration, \
     dutycycle, interburst, anodic, phase_1_current, \
@@ -291,12 +258,13 @@ def get_squarewave_plot():
 
     return FigureCanvasKivyAgg(plt.gcf())
 
-
 def stop_stimulation(button, state):
     if state == 'down':
         host = App.get_running_app().connected_device_mac_addr
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
+            'send': True,
+            'read': False,
             SERIAL_COMMAND_INPUT_CHAR: [
                 'stop'
             ]
@@ -304,23 +272,28 @@ def stop_stimulation(button, state):
 
         print("stop_stimulation->send_via_ble", data)
         App.get_running_app().send_via_ble(data)
-        # result = App.get_running_app().send_via_ble(data)
-        # if result:
-        #     SUCCESS_POPUP = MessagePopup()
-        #     title = "Success! Neurostimulator has received your input:"
-        #     for i in result:
-        #         title = title + '\n' + str(i)
-        #     SUCCESS_POPUP.title = title
-        #     SUCCESS_POPUP.open()
 
+def electrode_voltage_graph(button, state):
+    if state == 'down':
+        data = {
+            'mac_addr': App.get_running_app().connected_device_mac_addr,
+            'send': True,
+            'read': True,
+            SERIAL_COMMAND_INPUT_CHAR: [
+                'electrode_voltage'
+            ]
+        }
+
+        print("electrode_voltage_graph->send_via_ble", data)
+        App.get_running_app().send_via_ble(data)
 
 def calculate_dac_value(phase_1_current, phase_2_current, vref_low, vref_high, anodic):
     step_voltage = float((vref_high - vref_low) / int(math.pow(2, 16) - 1))
     print("step_voltage: ", step_voltage)
     steps = int(3000 / step_voltage)
-    print("steps: ",steps)
+    print("steps: ", steps)
     dac_gap = steps / 2
-    print("dac_gap: ",dac_gap)
+    print("dac_gap: ", dac_gap)
     amp_step = 3000 / dac_gap
     print("amp_step: ", amp_step)
     if anodic:
@@ -331,7 +304,6 @@ def calculate_dac_value(phase_1_current, phase_2_current, vref_low, vref_high, a
         dac_phase_one = dac_gap + phase_1_current / amp_step
         dac_phase_two = dac_gap - phase_2_current / amp_step
         return int(dac_phase_one), int(dac_phase_two)
-
 
 def start_stimulation(button, state):
     if state == 'down':
@@ -373,15 +345,6 @@ def start_stimulation(button, state):
         if (phasetime1 + phasetime2 + interphase + interstim) > UINT32_MAX:
             error_messages.append("Sum of phase one, phase two, inter-phase gap, and stimulation delay are too large")
 
-        # if int(interstim + phasetime1 + phasetime2 + interphase) == 0 or int(burstduration) % int(interstim + phasetime1 + phasetime2 + interphase) != 0:
-        #     error_messages.append("Burst period is not dividable by Stimulation duration, one or more bursts are reduced!")
-        # elif burstperiod != 0 and int(stimduration) % int(burstperiod) != 0:
-        #     error_messages.append("One pulse period is bigger than a burst!")
-        # elif phasetime1 != phasetime2:
-        #     error_messages.append("Charge is imbalanced, potentially damaging tissue!")
-        # elif burstduration > interstim + phasetime1 + phasetime2 + interphase:
-        #     error_messages.append("One pulse period is bigger than a burst!")
-
         dac_phase_one, dac_phase_two = calculate_dac_value(
             phase_1_current,
             phase_2_current,
@@ -401,8 +364,10 @@ def start_stimulation(button, state):
         else:
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
+                'send': True,
+                'read': False,
                 SERIAL_COMMAND_INPUT_CHAR: [
-                    # 'stop',
+                    'stop',
                     'dac_phase_one:{}'.format(dac_phase_one),
                     'dac_phase_two:{}'.format(dac_phase_two),
                     'stim_type:{}'.format(burstmode),
@@ -423,24 +388,11 @@ def start_stimulation(button, state):
             print("start_stimulation->send_via_ble", data)
             App.get_running_app().send_via_ble(data)
 
-            # print("start_stimulation->send_via_ble", host, port, data)
-            # result = App.get_running_app().send_via_ble(host, port, data)
-            # if result:
-            #     SUCCESS_POPUP = MessagePopup()
-            #     title = "Success! Neurostimulator has received your input:"
-            #     for i in result:
-            #         title = title + '\n' + str(i)
-            #     SUCCESS_POPUP.title = title
-            #     SUCCESS_POPUP.open()
-
-
 def update_graph_on_text_channel_1(instance, value):
     update_graph()
 
-
 def update_graph_on_toggle_channel_1(button, state):
     update_graph()
-
 
 live_update_references = {
     'stimulation_graph_display': [
@@ -459,6 +411,12 @@ live_update_references = {
         'channel_1_frequency_input',
         'start_button',
         'stop_button'
+    ],
+    'electrode_voltage': [
+        'get_latest_electrode_voltage_button',
+        'save_log_button',
+        'log_recording_button',
+        'log_stop_button'
     ]
 }
 
@@ -466,70 +424,53 @@ live_update_references = {
 class MainWindow(FloatLayout):
     pass
 
-
 class SideBar(FloatLayout):
     pass
-
 
 class ScreenManagement(ScreenManager):
     pass
 
-
 class HomeScreen(Screen, FloatLayout):
     pass
-
 
 class DeviceScreen(Screen):
     pass
 
-
 class PhaseTimeFrequencyTabs(TabbedPanel):
     pass
-
 
 class ChannelStimulationTabs(TabbedPanel):
     pass
 
-
 class BurstContinousStimulationTabs(TabbedPanel):
     pass
-
 
 class BurstUniformStimulationTabs(TabbedPanel):
     pass
 
-
 class TerminationTabs(TabbedPanel):
     pass
-
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
-
 class MessagePopup(Popup):
     pass
-
 
 class ValueError(Popup):
     pass
 
-
 class BurstLostError(Popup):
     pass
-
 
 class periodLostError(Popup):
     pass
 
-
 class ChargeImbalanceError(Popup):
     pass
 
-
 class PeriodBiggerError(Popup):
     pass
-
 
 class AddDevicePopup(Popup):
 
@@ -550,7 +491,7 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
-                # App.get_running_app().send_via_ble(j)
+                App.get_running_app().send_via_ble(str(j))
         self.dismiss()
 
 
@@ -654,9 +595,13 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                     App.get_running_app().get_components(i).bind(state=start_stimulation)
                 if 'stop_button' == i:
                     App.get_running_app().get_components(i).bind(state=stop_stimulation)
-
                 print(i, App.get_running_app().get_components(i))
                 App.get_running_app().connected_device_mac_addr = self.text
+
+            for i in live_update_references['electrode_voltage']:
+                if 'get_latest_electrode_voltage_button' == i:
+                    App.get_running_app().get_components(i).bind(state=electrode_voltage_graph)
+
             # set_graph_default_values(self.text)
             device_char_data = App.get_running_app().device_char_data
             print("device_char_data:\t", device_char_data)
@@ -690,6 +635,7 @@ class NeuroStimApp(App):
         super(NeuroStimApp, self).__init__()
         self.kvloader = kvloader
         self.device_data = []
+        self.device_electrode_voltage = {}
 
         """======================================================================
         Don't change this to match App.py
@@ -721,12 +667,10 @@ class NeuroStimApp(App):
         except Exception as e:
             print("Stream Receive Error: ", e)
 
-
     def send_via_ble(self, data):
         try:
             if self.send_conn is not None and not self.send_conn.closed:
                 self.send_conn.send(data)
-                print("send_via_ble->ble.py: ", data)
         except Exception as e:
             print(e)
 
@@ -747,12 +691,39 @@ class NeuroStimApp(App):
                 print(msg)
                 mac_addr = msg.pop('mac_addr')
                 data = msg
-                self.device_char_data[mac_addr] = data
+                if 'electrode_voltage' in data:
+                    self.device_electrode_voltage[mac_addr] = data
+                    if self.connected_device_mac_addr == mac_addr:
+                        self.set_bottom_electrode_graph(data)
+
+
+                else:
+                    self.device_char_data[mac_addr] = data
 
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
         listener.close()
+
+    def set_bottom_electrode_graph(self, data):
+        x = []
+        y = []
+        for i, j in enumerate(data['electrode_voltage']):
+            x.append(i)
+            y.append(j)
+        x = np.array(x)
+        y = np.array(y)
+        x_new = np.linspace(x.min(), x.max(), 500)
+        f = interp1d(x, y, kind='quadratic')
+        y_smooth = f(x_new)
+        plt.plot(x_new, y_smooth)
+        plt.scatter(x, y)
+        plt.xlabel('Instance')
+        plt.ylabel('Signal')
+
+        graph = FigureCanvasKivyAgg(plt.gcf())
+        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
+        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
 
     def get_graph_variables(self):
         def digit_clean(input):
@@ -770,7 +741,7 @@ class NeuroStimApp(App):
             'inter_stim_delay_input': digit_clean(self.get_components('inter_stim_delay_input')),
             'phase_1_time_input': digit_clean(self.get_components('phase_1_time_input')),
             'phase_2_time_input': digit_clean(self.get_components('phase_2_time_input')),
-            'channel_1_frequency_input': digit_clean(self.get_components('channel_1_frequency_input')),
+            'frequency_input': digit_clean(self.get_components('channel_1_frequency_input')),
             'phase_1_output_current_input': digit_clean(self.get_components('phase_1_output_current_input')),
             'phase_2_output_current_input': digit_clean(self.get_components('phase_2_output_current_input')),
             'vref_lower_output_input': digit_clean(self.get_components('vref_lower_output_input')),
@@ -805,8 +776,8 @@ class NeuroStimApp(App):
             return self.root.screen_manager.device_screen.device_tabs.device_settings
         if id == 'device_advanced_settings':
             return self.root.screen_manager.device_screen.device_tabs.advanced_settings
-        if id == 'electrode_recording_tab':
-            return self.root.screen_manager.device_screen.device_tabs.electrode_recording_tab
+        if id == 'electrode_voltage_tab':
+            return self.root.screen_manager.device_screen.device_tabs.electrode_voltage_tab
         if id == 'stimulation_tabs':
             return self.get_components('device_settings').stimulation_tabs
 
@@ -840,18 +811,20 @@ class NeuroStimApp(App):
         if id == 'number_of_burst':
             return self.get_components('termination_tabs').number_of_burst
 
-        if id == 'electrode_recording_tab_top_graph':
-            return self.get_components('electrode_recording_tab').top_graph
-        if id == 'electrode_recording_tab_bottom_graph':
-            return self.get_components('electrode_recording_tab').bottom_graph
-        if id == 'electrode_recording_tab_sample_info':
-            return self.get_components('electrode_recording_tab').sample_info
-        if id == 'electrode_recording_tab_log_stop_button':
-            return self.get_components('electrode_recording_tab').log_stop_button
-        if id == 'electrode_recording_tab_log_recording_button':
-            return self.get_components('electrode_recording_tab').log_recording_button
-        if id == 'electrode_recording_save_log_button':
-            return self.get_components('electrode_recording_tab').save_log_button
+        if id == 'get_latest_electrode_voltage_button':
+            return self.get_components('electrode_voltage_tab').get_latest_electrode_voltage_button
+        if id == 'electrode_voltage_tab_top_graph':
+            return self.get_components('electrode_voltage_tab').top_graph
+        if id == 'electrode_voltage_tab_bottom_graph':
+            return self.get_components('electrode_voltage_tab').bottom_graph
+        if id == 'electrode_voltage_tab_sample_info':
+            return self.get_components('electrode_voltage_tab').sample_info
+        if id == 'electrode_voltage_tab_log_stop_button':
+            return self.get_components('electrode_voltage_tab').log_stop_button
+        if id == 'electrode_voltage_tab_log_recording_button':
+            return self.get_components('electrode_voltage_tab').log_recording_button
+        if id == 'electrode_voltage_save_log_button':
+            return self.get_components('electrode_voltage_tab').save_log_button
 
         if id == 'auto_shutdown_when_stim_is_finished':
             return self.get_components('device_advanced_settings').auto_shutdown_when_stim_is_finished

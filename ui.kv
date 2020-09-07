@@ -467,7 +467,7 @@
                 input_type: 'number'
                 input_filter: 'float'
                 multiline: False
-                disabled: True if inter_stim_delay_input.text != "" else False
+                disabled: False if inter_stim_delay_input.text == "" else True
 
 
 <ChannelStimulationTabs@TabbedPanelStrip>
@@ -749,7 +749,7 @@
         color: .1,.1,.1,1 #color of text
 
 <DeviceTabs@TabbedPanel+DT_TPS>:
-    electrode_recording_tab: electrode_recording_tab
+    electrode_voltage_tab: electrode_voltage_tab
     advanced_settings: advanced_settings
     device_settings: device_settings
     size_hint: 1,1
@@ -766,7 +766,7 @@
         text: "Electrode Recording"
         background_color: (.69,.77,.87,.3) if self.state=='down' else (0, 0, 0, 0)
         StimulationLogTab:
-            id: electrode_recording_tab
+            id: electrode_voltage_tab
     TabbedPanelItem:
         text: "Neural recording"
         background_color: (.69,.77,.87,.3) if self.state=='down' else (0, 0, 0, 0)
@@ -796,6 +796,7 @@
     log_stop_button:log_stop_button
     log_recording_button:log_recording_button
     save_log_button:save_log_button
+    get_latest_electrode_voltage_button:get_latest_electrode_voltage_button
 
     Label:
         text: "Sample info (1k)"
@@ -827,8 +828,12 @@
         size_hint: .16,0.06
         pos_hint: {"x":0.79,"top":0.85}
         text: "Save Log"
+    Button:
+        id: get_latest_electrode_voltage_button
+        size_hint: .16,0.06
+        pos_hint: {"x":0.59,"top":0.85}
+        text: "Show Latest"
     FloatLayout:
-        id: top_graph
         canvas.before:
             Color:
                 rgba: 1, 1, 1, 1
@@ -837,8 +842,17 @@
                 size: self.size
         size_hint: .9,0.33
         pos_hint: {"x":0.05,"top":0.75}
+        BoxLayout:
+            id: top_graph
+            canvas:
+                Color:
+                    rgba: 1,1,1,1
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint: 1,1
+            pos_hint: {"x":0, "top":1}
     FloatLayout:
-        id: bottom_graph
         canvas.before:
             Color:
                 rgba: 1, 1, 1, 1
@@ -847,6 +861,16 @@
                 size: self.size
         size_hint: .9,0.33
         pos_hint: {"x":0.05,"top":0.375}
+        BoxLayout:
+            id: bottom_graph
+            canvas:
+                Color:
+                    rgba: 1,1,1,1
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint: 1,1
+            pos_hint: {"x":0, "top":1}
 
 <DeviceAdvancedSettings@FloatLayout>:
     size_hint: 1,1
