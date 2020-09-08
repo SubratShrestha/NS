@@ -6,6 +6,8 @@ from multiprocessing.connection import Listener, Client
 import sys
 import ast
 import time
+import csv
+
 
 if '-esp' in sys.argv:
     SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
@@ -50,12 +52,22 @@ class BluetoothComms():
                         print("Stream: Connected")
                         stop_event = asyncio.Event()
 
+                        # full = open('{}.stream'.format(address), 'a')
+                        # full_out = csv.writer(full, delimiter=',', quoting=csv.QUOTE_ALL)
 
                         def notification_handler(sender, data):
                             """Simple notification handler which prints the data received."""
                             print("Notifictation Stream {0}: {1}".format(sender, list(data)))
                             loop.call_soon_threadsafe(stop_event.set)
-                            print("NOTIFICATION")
+                            # f.write((list(data)))
+                            # full_out.writerow(list(data))
+
+                            self.client_conn.send(
+                                {
+                                    'mac_addr': address,
+                                    'stream': [int(i) for i in list(data)]
+                                }
+                            )
 
                         await client.start_notify(STREAM_READ_CHAR, notification_handler)
                         # i = 0
@@ -68,7 +80,8 @@ class BluetoothComms():
                             # print("count: ", i)
                         # await asyncio.sleep(120, loop=loop)
 
-                        # await client.stop_notify(STREAM_READ_CHAR)
+                        await client.stop_notify(STREAM_READ_CHAR)
+                        f.close()
 
                         print("END STREAM")
 
@@ -253,9 +266,9 @@ class BluetoothComms():
                         t = threading.Thread(target=self.s, args=(address, data))
                         t.start()
 
-                        # time.sleep(40)
-                        # t = threading.Thread(target=self.r, args=(address,))
-                        # t.start()
+                        time.sleep(20)
+                        t = threading.Thread(target=self.r, args=(address,))
+                        t.start()
                     elif send and read:
 
                         address = msg.pop('mac_addr')

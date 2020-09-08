@@ -29,7 +29,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ble/ble.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/ble.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

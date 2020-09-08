@@ -24,6 +24,7 @@ from scipy import signal
 import numpy as np
 import pprint
 import math
+import pandas as pd
 from scipy.interpolate import interp1d
 
 
@@ -273,7 +274,7 @@ def stop_stimulation(button, state):
         print("stop_stimulation->send_via_ble", data)
         App.get_running_app().send_via_ble(data)
 
-def electrode_voltage_graph(button, state):
+def get_electrode_voltage(button, state):
     if state == 'down':
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
@@ -284,8 +285,34 @@ def electrode_voltage_graph(button, state):
             ]
         }
 
-        print("electrode_voltage_graph->send_via_ble", data)
+        print("get_electrode_voltage->send_via_ble", data)
         App.get_running_app().send_via_ble(data)
+
+def set_streaming_graph(button, state):
+
+        mac_addr = App.get_running_app().connected_device_mac_addr
+        data = App.get_running_app().device_streams[mac_addr]
+        print(data)
+
+
+        x = []
+        y = []
+        for i, j in enumerate(data):
+            x.append(i)
+            y.append(j)
+        x = np.array(x)
+        y = np.array(y)
+        x_new = np.linspace(x.min(), x.max(), 500)
+        f = interp1d(x, y, kind='quadratic')
+        y_smooth = f(x_new)
+        plt.plot(x_new, y_smooth)
+        plt.scatter(x, y)
+        plt.xlabel('Instance')
+        plt.ylabel('Signal')
+
+        graph = FigureCanvasKivyAgg(plt.gcf())
+        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
+        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
 
 def calculate_dac_value(phase_1_current, phase_2_current, vref_low, vref_high, anodic):
     step_voltage = float((vref_high - vref_low) / int(math.pow(2, 16) - 1))
@@ -414,9 +441,9 @@ live_update_references = {
     ],
     'electrode_voltage': [
         'get_latest_electrode_voltage_button',
-        'save_log_button',
-        'log_recording_button',
-        'log_stop_button'
+        'electrode_voltage_tab_save_log_button',
+        'electrode_voltage_tab_log_recording_button',
+        'electrode_voltage_tab_log_stop_button'
     ]
 }
 
@@ -600,7 +627,9 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
 
             for i in live_update_references['electrode_voltage']:
                 if 'get_latest_electrode_voltage_button' == i:
-                    App.get_running_app().get_components(i).bind(state=electrode_voltage_graph)
+                    App.get_running_app().get_components(i).bind(state=get_electrode_voltage)
+                if 'electrode_voltage_tab_log_recording_button' == i:
+                    App.get_running_app().get_components(i).bind(state=set_streaming_graph)
 
             # set_graph_default_values(self.text)
             device_char_data = App.get_running_app().device_char_data
@@ -650,6 +679,7 @@ class NeuroStimApp(App):
         self.send_conn = None
 
         self.device_char_data = {}
+        self.device_streams = {}
 
     def send_via_ble(self, data):
         try:
@@ -666,7 +696,7 @@ class NeuroStimApp(App):
         address = ('localhost', 6000)
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
-        while len(self.device_char_data.keys()) < 1:
+        while self.thread:
             msg = conn.recv()
 
             if isinstance(msg, list):
@@ -681,8 +711,7 @@ class NeuroStimApp(App):
                     popup.title = "Latest Electrode Voltage: " + str(data['electrode_voltage']) + "mV"
                     popup.open()
                 if 'stream' in data:
-                    if self.connected_device_mac_addr == mac_addr:
-                        self.set_bottom_electrode_graph(data)
+                    self.device_streams[mac_addr] = data['stream']
 
 
                 else:
@@ -693,25 +722,7 @@ class NeuroStimApp(App):
                 self.send_conn = Client(self.send_address, authkey=b'password')
         listener.close()
 
-    def set_bottom_electrode_graph(self, data):
-        x = []
-        y = []
-        for i, j in enumerate(data['electrode_voltage']):
-            x.append(i)
-            y.append(j)
-        x = np.array(x)
-        y = np.array(y)
-        x_new = np.linspace(x.min(), x.max(), 500)
-        f = interp1d(x, y, kind='quadratic')
-        y_smooth = f(x_new)
-        plt.plot(x_new, y_smooth)
-        plt.scatter(x, y)
-        plt.xlabel('Instance')
-        plt.ylabel('Signal')
 
-        graph = FigureCanvasKivyAgg(plt.gcf())
-        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
-        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
 
     def get_graph_variables(self):
         def digit_clean(input):
