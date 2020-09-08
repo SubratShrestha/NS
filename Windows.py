@@ -645,27 +645,11 @@ class NeuroStimApp(App):
         self.discover_thread = threading.Thread(target=self.discover)
         self.discover_thread.start()
 
-        self.stream_thread = threading.Thread(target=self.stream)
-        self.stream_thread.start()
 
         self.send_address = None
         self.send_conn = None
 
         self.device_char_data = {}
-
-    def stream(self, device):
-        try:
-            address = ('localhost', 6002)
-            listener = Listener(address, authkey=b'password')
-            conn = listener.accept()
-        except Exception as e:
-            print("Stream Error:\n", e)
-
-        try:
-            msg = conn.recv()
-            print(msg)
-        except Exception as e:
-            print("Stream Receive Error: ", e)
 
     def send_via_ble(self, data):
         try:
@@ -692,7 +676,11 @@ class NeuroStimApp(App):
                 mac_addr = msg.pop('mac_addr')
                 data = msg
                 if 'electrode_voltage' in data:
-                    self.device_electrode_voltage[mac_addr] = data
+                    self.device_electrode_voltage[mac_addr] = data['electrode_voltage']
+                    popup = MessagePopup()
+                    popup.title = "Latest Electrode Voltage: " + str(data['electrode_voltage']) + "mV"
+                    popup.open()
+                if 'stream' in data:
                     if self.connected_device_mac_addr == mac_addr:
                         self.set_bottom_electrode_graph(data)
 

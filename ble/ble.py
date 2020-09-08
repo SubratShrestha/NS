@@ -53,19 +53,19 @@ class BluetoothComms():
 
                         def notification_handler(sender, data):
                             """Simple notification handler which prints the data received."""
-                            # print("Notifictation Stream {0}: {1}".format(sender, list(data)))
-                            # loop.call_soon_threadsafe(stop_event.set)
+                            print("Notifictation Stream {0}: {1}".format(sender, list(data)))
+                            loop.call_soon_threadsafe(stop_event.set)
                             print("NOTIFICATION")
 
                         await client.start_notify(STREAM_READ_CHAR, notification_handler)
-                        i = 0
+                        # i = 0
                         while True:
                             if not await client.is_connected():
                                 await client.connect(timeout=10)
                                 print("RECONNECTING")
                                 continue
                             await stop_event.wait()
-                            print("count: ", i)
+                            # print("count: ", i)
                         # await asyncio.sleep(120, loop=loop)
 
                         # await client.stop_notify(STREAM_READ_CHAR)
@@ -169,15 +169,21 @@ class BluetoothComms():
 
                                 def notification_handler(sender, data):
                                     """Simple notification handler which prints the data received."""
-                                    print("Notifictation Stream {0}: {1}".format(sender, list(data)))
+
+                                    text = str(data.decode('utf-8').rstrip('\x00'))
+                                    t1 = text.split(':')[0]
+                                    t2 = int(text.split(':')[1])
+                                    print(t1, t2)
+                                    print("Notifictation Stream {0}: {1}".format(sender, text))
                                     self.client_conn.send(
                                         {
                                             'mac_addr': address,
-                                            'electrode_voltage':list(data)
+                                            t1:t2
                                         }
                                     )
 
                                 await client.start_notify(FEEDBACK_CHAR, notification_handler)
+                                await asyncio.sleep(0.5, loop=loop)
 
                                 print("send_then_read:CONNECTED", client)
 
@@ -187,7 +193,7 @@ class BluetoothComms():
                                     for v in data[k]:
                                         print("send_then_read:sending", v)
                                         await client.write_gatt_char(k, str(v).encode('utf-8'), False)
-                                        await asyncio.sleep(0.05, loop=loop)
+                                        await asyncio.sleep(1, loop=loop)
 
                                 await client.stop_notify(FEEDBACK_CHAR)
 
@@ -200,7 +206,7 @@ class BluetoothComms():
             depth = depth + 1
             await asyncio.sleep(depth, loop=loop)
             print("send_then_read:SEND AGAIN")
-            return await self.send(address, loop, data, depth)
+            return await self.send_then_read(address, loop, data, depth)
         return None
 
     def r(self, msg):
