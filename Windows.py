@@ -266,6 +266,7 @@ def stop_stimulation(button, state):
             'mac_addr': App.get_running_app().connected_device_mac_addr,
             'send': True,
             'read': False,
+            'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
                 'stop'
             ]
@@ -280,6 +281,7 @@ def get_electrode_voltage(button, state):
             'mac_addr': App.get_running_app().connected_device_mac_addr,
             'send': True,
             'read': True,
+            'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
                 'electrode_voltage'
             ]
@@ -288,41 +290,70 @@ def get_electrode_voltage(button, state):
         print("get_electrode_voltage->send_via_ble", data)
         App.get_running_app().send_via_ble(data)
 
+def start_recording(button, state):
+    if state == 'down':
+        data = {
+            'mac_addr': App.get_running_app().connected_device_mac_addr,
+            'send': True,
+            'read': False,
+            'stream': True,
+            SERIAL_COMMAND_INPUT_CHAR: [
+                'start_recording'
+            ]
+        }
+
+        print("get_electrode_voltage->send_via_ble", data)
+        App.get_running_app().send_via_ble(data)
+
+def stop_recording(button, state):
+    if state == 'down':
+        data = {
+            'mac_addr': App.get_running_app().connected_device_mac_addr,
+            'send': True,
+            'read': False,
+            'stream': False,
+            SERIAL_COMMAND_INPUT_CHAR: [
+                'stop_recording'
+            ]
+        }
+
+        print("get_electrode_voltage->send_via_ble", data)
+        App.get_running_app().send_via_ble(data)
+
 def set_streaming_graph(button, state):
+    if state == 'down':
+        plt.close("all")
 
         mac_addr = App.get_running_app().connected_device_mac_addr
-        data = App.get_running_app().device_streams[mac_addr]
-        print(data)
+        if mac_addr in App.get_running_app().device_streams:
+            data = App.get_running_app().device_streams[mac_addr]
+            print(data)
 
 
-        x = []
-        y = []
-        for i, j in enumerate(data):
-            x.append(i)
-            y.append(j)
-        x = np.array(x)
-        y = np.array(y)
-        x_new = np.linspace(x.min(), x.max(), 500)
-        f = interp1d(x, y, kind='quadratic')
-        y_smooth = f(x_new)
-        plt.plot(x_new, y_smooth)
-        plt.scatter(x, y)
-        plt.xlabel('Instance')
-        plt.ylabel('Signal')
+            x = []
+            y = []
+            for i, j in enumerate(data):
+                x.append(i)
+                y.append(j)
+            x = np.array(x)
+            y = np.array(y)
+            x_new = np.linspace(x.min(), x.max(), 500)
+            f = interp1d(x, y, kind='quadratic')
+            y_smooth = f(x_new)
+            plt.plot(x_new, y_smooth)
+            plt.scatter(x, y)
+            plt.xlabel('Instance')
+            plt.ylabel('Signal')
 
-        graph = FigureCanvasKivyAgg(plt.gcf())
-        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
-        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
+            graph = FigureCanvasKivyAgg(plt.gcf())
+            App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
+            App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
 
 def calculate_dac_value(phase_1_current, phase_2_current, vref_low, vref_high, anodic):
     step_voltage = float((vref_high - vref_low) / int(math.pow(2, 16) - 1))
-    print("step_voltage: ", step_voltage)
     steps = int(3000 / step_voltage)
-    print("steps: ", steps)
     dac_gap = steps / 2
-    print("dac_gap: ", dac_gap)
     amp_step = 3000 / dac_gap
-    print("amp_step: ", amp_step)
     if anodic:
         dac_phase_one = dac_gap - phase_1_current / amp_step
         dac_phase_two = dac_gap + phase_2_current / amp_step
@@ -393,6 +424,7 @@ def start_stimulation(button, state):
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 'send': True,
                 'read': False,
+                'stream': False,
                 SERIAL_COMMAND_INPUT_CHAR: [
                     'stop',
                     'dac_phase_one:{}'.format(dac_phase_one),
@@ -628,8 +660,12 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             for i in live_update_references['electrode_voltage']:
                 if 'get_latest_electrode_voltage_button' == i:
                     App.get_running_app().get_components(i).bind(state=get_electrode_voltage)
-                if 'electrode_voltage_tab_log_recording_button' == i:
+                if 'electrode_voltage_tab_save_log_button' == i:
                     App.get_running_app().get_components(i).bind(state=set_streaming_graph)
+                if 'electrode_voltage_tab_log_recording_button' == i:
+                    App.get_running_app().get_components(i).bind(state=start_recording)
+                if 'electrode_voltage_tab_log_stop_button' == i:
+                    App.get_running_app().get_components(i).bind(state=stop_recording)
 
             # set_graph_default_values(self.text)
             device_char_data = App.get_running_app().device_char_data
@@ -822,7 +858,7 @@ class NeuroStimApp(App):
             return self.get_components('electrode_voltage_tab').log_stop_button
         if id == 'electrode_voltage_tab_log_recording_button':
             return self.get_components('electrode_voltage_tab').log_recording_button
-        if id == 'electrode_voltage_save_log_button':
+        if id == 'electrode_voltage_tab_save_log_button':
             return self.get_components('electrode_voltage_tab').save_log_button
 
         if id == 'auto_shutdown_when_stim_is_finished':

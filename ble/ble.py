@@ -6,8 +6,15 @@ from multiprocessing.connection import Listener, Client
 import sys
 import ast
 import time
+from bitstring import BitArray
 import csv
 
+
+def int_to_bytes(x: int) -> bytes:
+    return x.to_bytes((x.bit_length() + 7) // 8, 'little')
+
+def int_from_bytes(xbytes: bytes) -> int:
+    return int.from_bytes(xbytes, 'little')
 
 if '-esp' in sys.argv:
     SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
@@ -27,6 +34,7 @@ class BluetoothComms():
         self.receive_thread.start()
         self.discover_thread = threading.Thread(target=self.ble_discover_loop)
         self.discover_thread.start()
+        self.is_recording = False
         self.connected = {}
 
     async def ble_discover(self, loop, time):
@@ -50,38 +58,61 @@ class BluetoothComms():
                 finally:
                     if await client.is_connected():
                         print("Stream: Connected")
-                        stop_event = asyncio.Event()
 
-                        # full = open('{}.stream'.format(address), 'a')
-                        # full_out = csv.writer(full, delimiter=',', quoting=csv.QUOTE_ALL)
+                        await client.write_gatt_char(SERIAL_COMMAND_INPUT_CHAR, 'start_recording'.encode('utf-8'), False)
+
+                        stop_event = asyncio.Event()
 
                         def notification_handler(sender, data):
                             """Simple notification handler which prints the data received."""
-                            print("Notifictation Stream {0}: {1}".format(sender, list(data)))
+                            # print("Notifictation Stream {0}: {1}".format(sender, list(data)))
                             loop.call_soon_threadsafe(stop_event.set)
-                            # f.write((list(data)))
-                            # full_out.writerow(list(data))
+
+
+                            bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
+                            bytes_as_bits = str(bytes_as_bits)
+
+                            n = 16
+                            bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
+
+                            endian_on_last = True
+                            if endian_on_last:
+                                last = str(bitstring.pop())
+                                f_half = last[:8]
+                                s_half = last[8:]
+
+                                print(last, f_half, s_half)
+                                last = str(s_half)+str(f_half)
+                                bitstring.append(last)
+
+
+                            result = []
+                            for bits in bitstring:
+                                if not endian_on_last:
+                                    f_half = bits[:8]
+                                    s_half = bits[8:]
+                                    bits = str(s_half) + str(f_half)
+
+                                result.append(int(bits, 2))
+
 
                             self.client_conn.send(
                                 {
                                     'mac_addr': address,
-                                    'stream': [int(i) for i in list(data)]
+                                    'stream': result #[int(i) for i in list(data)]
                                 }
                             )
 
                         await client.start_notify(STREAM_READ_CHAR, notification_handler)
-                        # i = 0
-                        while True:
+                        self.is_recording = True
+                        while self.is_recording:
                             if not await client.is_connected():
                                 await client.connect(timeout=10)
-                                print("RECONNECTING")
+                                print("Stream: RECONNECTING")
                                 continue
                             await stop_event.wait()
-                            # print("count: ", i)
-                        # await asyncio.sleep(120, loop=loop)
 
                         await client.stop_notify(STREAM_READ_CHAR)
-                        f.close()
 
                         print("END STREAM")
 
@@ -103,7 +134,12 @@ class BluetoothComms():
             async with BleakClient(address, loop=loop) as client:
                 try:
                     print("Send:TRY TO CONNECT")
-                    await client.connect(timeout=10)
+                    count = 0
+                    while not await client.is_connected():
+                        count += 1
+                        if count > 5:
+                            break
+                        await client.connect(timeout=10)
                 except Exception as e:
                     print("Send:Exception", e)
                 except BleakDotNetTaskError as e:
@@ -111,6 +147,13 @@ class BluetoothComms():
                 except BleakError as e:
                     print("Send:BleakError", e)
                 finally:
+
+                    count = 0
+                    while not await client.is_connected():
+                        count += 1
+                        if count > 5:
+                            break
+                        await client.connect(timeout=10)
                     if await client.is_connected():
 
                         try:
@@ -130,9 +173,9 @@ class BluetoothComms():
                                     print("Send:SERIAL COMMAND INPUT")
                                     k = SERIAL_COMMAND_INPUT_CHAR
                                     for v in data[k]:
-                                        print("Send:sending", v)
                                         await client.write_gatt_char(k, str(v).encode('utf-8'), False)
                                         await asyncio.sleep(0.05, loop=loop)
+                                        print("Send:sending", v)
                                 else:
                                     for k, v in data.items():
                                         print(v)
@@ -142,7 +185,6 @@ class BluetoothComms():
                                 # t.start()
                             return client
                     print("Send:NOT CONNECTED")
-                    return None
         except BleakError as e:
             print("Send:BLEAK ERROR", e)
         if depth < 5:
@@ -158,7 +200,13 @@ class BluetoothComms():
             async with BleakClient(address, loop=loop) as client:
                 try:
                     print("send_then_read:TRY TO CONNECT")
-                    await client.connect(timeout=10)
+                    count = 0
+                    while not await client.is_connected():
+                        count += 1
+                        if count > 5:
+                            break
+                        await client.connect(timeout=10)
+
                 except Exception as e:
                     print("send_then_read:Exception", e)
                 except BleakDotNetTaskError as e:
@@ -178,6 +226,12 @@ class BluetoothComms():
                         except BleakError as e:
                             print("send_then_read:BleakError", e)
                         finally:
+                            count = 0
+                            while not await client.is_connected():
+                                count += 1
+                                if count > 5:
+                                    break
+                                await client.connect(timeout=10)
                             if await client.is_connected():
 
                                 def notification_handler(sender, data):
@@ -204,15 +258,14 @@ class BluetoothComms():
                                     print("send_then_read:SERIAL COMMAND INPUT")
                                     k = SERIAL_COMMAND_INPUT_CHAR
                                     for v in data[k]:
-                                        print("send_then_read:sending", v)
                                         await client.write_gatt_char(k, str(v).encode('utf-8'), False)
+                                        print("send_then_read:sending", v)
                                         await asyncio.sleep(1, loop=loop)
 
                                 await client.stop_notify(FEEDBACK_CHAR)
 
                             return client
                     print("send_then_read:NOT CONNECTED")
-                    return None
         except BleakError as e:
             print("send_then_read:BLEAK ERROR", e)
         if depth < 5:
@@ -254,20 +307,24 @@ class BluetoothComms():
                 else:
                     send = msg.pop('send')
                     read = msg.pop('read')
+                    stream = msg.pop('stream')
 
-                    print("send", send)
-                    print("read", read)
+                    print("send: ", send)
+                    print("read: ", read)
+                    print("stream: ", stream)
 
-                    if send and not read:
+                    if send and stream and not read:
+                        address = msg.pop('mac_addr')
+
+                        t = threading.Thread(target=self.r, args=(address,))
+                        t.start()
+
+                    elif send and not read:
 
                         address = msg.pop('mac_addr')
 
                         data = msg
                         t = threading.Thread(target=self.s, args=(address, data))
-                        t.start()
-
-                        time.sleep(20)
-                        t = threading.Thread(target=self.r, args=(address,))
                         t.start()
                     elif send and read:
 
