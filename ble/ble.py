@@ -19,6 +19,7 @@ def int_from_bytes(xbytes: bytes) -> int:
 if '-esp' in sys.argv:
     SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
 elif '-stm' in sys.argv:
+    # from consts import SERIAL_COMMAND_INPUT_CHAR, FEEDBACK_CHAR, STREAM_READ_CHAR
     SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
     FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
     STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'

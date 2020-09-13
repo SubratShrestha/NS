@@ -1,42 +1,36 @@
+from kivy.uix.label import Label
+from kivy.uix.recycleview import RecycleView
+
 uuid_format = False  # True
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.label import Label
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.behaviors import DragBehavior
-from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import BooleanProperty
-from kivy.uix.recycleview import RecycleView
-from kivy.uix.recycleview.layout import LayoutSelectionBehavior
-from kivy.uix.behaviors import FocusBehavior
-from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelStrip, TabbedPanelItem
 from kivy.uix.popup import Popup
-from kivy.uix.widget import Widget
-from kivy.uix.textinput import TextInput
-import re
-import asyncio
-import threading
-from scipy import signal
 import numpy as np
-import pprint
-import math
-import pandas as pd
 from scipy.interpolate import interp1d
 
+from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
+    SideBar, ScreenManagement, HomeScreen, DeviceScreen, PhaseTimeFrequencyTabs, \
+    ChannelStimulationTabs, BurstContinousStimulationTabs, BurstUniformStimulationTabs, \
+    TerminationTabs, SelectableRecycleBoxLayout, MessagePopup, ValueError, BurstLostError, \
+    periodLostError, ChargeImbalanceError, PeriodBiggerError
 
-SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
-FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
-STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'
+# from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
+#     SideBar, ScreenManagement, HomeScreen, DeviceScreen, PhaseTimeFrequencyTabs, \
+#     ChannelStimulationTabs, BurstContinousStimulationTabs, BurstUniformStimulationTabs, \
+#     TerminationTabs, SelectableRecycleBoxLayout, MessagePopup, ValueError, BurstLostError, \
+#     periodLostError, ChargeImbalanceError, PeriodBiggerError
 
-UINT32_MAX = math.pow(2, 32) - 1
+from consts import SERIAL_COMMAND_INPUT_CHAR, UINT32_MAX, SCREEN_WIDTH, SCREEN_HEIGHT
+
+from utils.utils import calculate_dac_value
+
 from kivy.config import Config
 
-Config.set('graphics', 'width', 1024)
-Config.set('graphics', 'height', 768)
+Config.set('graphics', 'width', SCREEN_WIDTH)
+Config.set('graphics', 'height', SCREEN_HEIGHT)
 Config.set('graphics', 'resizable', 'False')
 
 """Must be below config setting, otherwise it's reset"""
@@ -45,7 +39,6 @@ import matplotlib
 
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
-from kivy_matplotlib import MatplotFigure, MatplotNavToolbar
 
 """======================================================================
 Don't change this to match App.py
@@ -55,73 +48,32 @@ from multiprocessing.connection import Listener, Client
 import threading
 
 devices_dict = {}
-ids = [
-    'screen_manager',
-    'side_bar',
-    'device_rv',
-    'home_button',
-    'new_device_button',
-    'home_screen',
-    'device_screen',
-    'home_screen_windows',
-    'device_screen_device_tabs',
-    'device_settings',
-    'device_advanced_settings',
-    'electrode_voltage_tab',
-    'stimulation_graph_display',
-    'stop_button',
-    'save_button',
-    'start_button',
-    'termination_tabs',
-    'cathodic_anodic_toggle',
-    'stimulation_graph_display',
-    'stimulation_duration',
-    'number_of_burst',
-    'phase_1_output_current_input',
-    'phase_2_output_current_input',
-    'vref_lower_output_input',
-    'vref_upper_output_input',
-    'cathodic_toggle',
-    'anodic_toggle',
-    'duty_cycle_input',
-    'burst_period_input',
-    'inter_stim_delay_input',
-    'inter_phase_delay_input',
-    'phase_1_time_input',
-    'phase_2_time_input',
-    'channel_1_frequency_input',
-    'electrode_voltage_tab_top_graph',
-    'electrode_voltage_tab_bottom_graph',
-    'electrode_voltage_tab_sample_info',
-    'electrode_voltage_tab_log_stop_button',
-    'electrode_voltage_tab_log_recording_button',
-    'electrode_voltage_save_log_button',
-    'auto_shutdown_when_stim_is_finished',
-    'auto_shutdown_when_surge_is_detected',
-    'firmware_info_button',
-    'hardware_info_button',
-    'bootloader_access_button',
-    'ramp_up_button',
-    'short_button',
-    'continuity_check_button',
-    'triggered_mode_button',
-    'triggered_mode_toggle',
-    'ramp_dac_button',
-    'null_command_button',
-    'debug_mode_button',
-    'test_trigger_button',
-    'all_off_button',
-    'phase_2_button',
-    'phase_1_button',
-    'triggered_mode_toggle_none_button',
-    'triggered_mode_toggle_phase_1_button',
-    'triggered_mode_toggle_phase_2_button',
-    'triggered_mode_toggle_phase_1_and_2_button',
-    'triggered_mode_toggle_inter_stim_time_button',
-]
 
-class custom_test(TextInput):
-    pass
+live_update_references = {
+    'stimulation_graph_display': [
+        'stimulation_duration',
+        'number_of_burst',
+        'phase_1_output_current_input',
+        'phase_2_output_current_input',
+        'cathodic_toggle',
+        'inter_stim_delay_input',
+        'anodic_toggle',
+        'duty_cycle_input',
+        'burst_period_input',
+        'inter_phase_delay_input',
+        'phase_1_time_input',
+        'phase_2_time_input',
+        'channel_1_frequency_input',
+        'start_button',
+        'stop_button'
+    ],
+    'electrode_voltage': [
+        'get_latest_electrode_voltage_button',
+        'electrode_voltage_tab_save_log_button',
+        'electrode_voltage_tab_log_recording_button',
+        'electrode_voltage_tab_log_stop_button'
+    ]
+}
 
 def update_graph():
     graph = get_squarewave_plot()
@@ -349,20 +301,6 @@ def set_streaming_graph(button, state):
             App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
             App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
 
-def calculate_dac_value(phase_1_current, phase_2_current, vref_low, vref_high, anodic):
-    step_voltage = float((vref_high - vref_low) / int(math.pow(2, 16) - 1))
-    steps = int(3000 / step_voltage)
-    dac_gap = steps / 2
-    amp_step = 3000 / dac_gap
-    if anodic:
-        dac_phase_one = dac_gap - phase_1_current / amp_step
-        dac_phase_two = dac_gap + phase_2_current / amp_step
-        return int(dac_phase_one), int(dac_phase_two)
-    else:
-        dac_phase_one = dac_gap + phase_1_current / amp_step
-        dac_phase_two = dac_gap - phase_2_current / amp_step
-        return int(dac_phase_one), int(dac_phase_two)
-
 def start_stimulation(button, state):
     if state == 'down':
         print("start_stimulation")
@@ -453,117 +391,6 @@ def update_graph_on_text_channel_1(instance, value):
 def update_graph_on_toggle_channel_1(button, state):
     update_graph()
 
-live_update_references = {
-    'stimulation_graph_display': [
-        'stimulation_duration',
-        'number_of_burst',
-        'phase_1_output_current_input',
-        'phase_2_output_current_input',
-        'cathodic_toggle',
-        'inter_stim_delay_input',
-        'anodic_toggle',
-        'duty_cycle_input',
-        'burst_period_input',
-        'inter_phase_delay_input',
-        'phase_1_time_input',
-        'phase_2_time_input',
-        'channel_1_frequency_input',
-        'start_button',
-        'stop_button'
-    ],
-    'electrode_voltage': [
-        'get_latest_electrode_voltage_button',
-        'electrode_voltage_tab_save_log_button',
-        'electrode_voltage_tab_log_recording_button',
-        'electrode_voltage_tab_log_stop_button'
-    ]
-}
-
-
-class MainWindow(FloatLayout):
-    pass
-
-class SideBar(FloatLayout):
-    pass
-
-class ScreenManagement(ScreenManager):
-    pass
-
-class HomeScreen(Screen, FloatLayout):
-    pass
-
-class DeviceScreen(Screen):
-    pass
-
-class PhaseTimeFrequencyTabs(TabbedPanel):
-    pass
-
-class ChannelStimulationTabs(TabbedPanel):
-    pass
-
-class BurstContinousStimulationTabs(TabbedPanel):
-    pass
-
-class BurstUniformStimulationTabs(TabbedPanel):
-    pass
-
-class TerminationTabs(TabbedPanel):
-    pass
-
-class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
-    pass
-
-class MessagePopup(Popup):
-    pass
-
-class ValueError(Popup):
-    pass
-
-class BurstLostError(Popup):
-    pass
-
-class periodLostError(Popup):
-    pass
-
-class ChargeImbalanceError(Popup):
-    pass
-
-class PeriodBiggerError(Popup):
-    pass
-
-class AddDevicePopup(Popup):
-
-    def BluetoothDiscoverLoop(self):
-        data = []
-        for i in App.get_running_app().device_data:
-            if i['text'] not in devices_dict:
-                data.append(i)
-        self.ble_rv.data = data
-
-    def Close(self):
-        data = App.get_running_app().root.side_bar.device_rv.data
-
-        for j in devices_dict.keys():
-            adding = True
-            for i in data:
-                if i['text'] == j:
-                    adding = False
-            if adding and devices_dict[j]:
-                App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
-                App.get_running_app().send_via_ble(str(j))
-        self.dismiss()
-
-
-class DT_TPS(TabbedPanelStrip):
-    pass
-
-
-class DeviceTabs(TabbedPanel, DT_TPS):
-    def __init__(self, **kargs):
-        super(DeviceTabs, self).__init__(**kargs)
-        self._tab_layout.padding = '2dp', '-1dp', '2dp', '-2dp'
-
-
 class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
     index = None  # this is the index of the label in the recyclerview
     selected = BooleanProperty(False)  # true if selected, false otherwise
@@ -588,20 +415,27 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
         if is_selected and rv.data[index]['text'] not in devices_dict:
             devices_dict[rv.data[index]['text']] = True
 
+class AddDevicePopup(Popup):
 
-class NumericInput(TextInput):
-    def __init__(self, *args, **kwargs):
-        super(NumericInput, self).__init__(*args, **kwargs)
-        self.min = 0
-        self.max = UINT32_MAX
+    def BluetoothDiscoverLoop(self):
+        data = []
+        for i in App.get_running_app().device_data:
+            if i['text'] not in devices_dict:
+                data.append(i)
+        self.ble_rv.data = data
 
-    def insert_text(self, string, from_undo=False):
-        new_text = self.text + string
-        new_text = re.sub("[^0-9]", "", new_text)
-        if new_text != "":
-            if self.min <= float(new_text) <= self.max:
-                super(NumericInput, self).insert_text(string, from_undo=from_undo)
+    def Close(self):
+        data = App.get_running_app().root.side_bar.device_rv.data
 
+        for j in devices_dict.keys():
+            adding = True
+            for i in data:
+                if i['text'] == j:
+                    adding = False
+            if adding and devices_dict[j]:
+                App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
+                App.get_running_app().send_via_ble(str(j))
+        self.dismiss()
 
 class DeviceRV(RecycleView):
     def __init__(self, **kwargs):
@@ -609,7 +443,6 @@ class DeviceRV(RecycleView):
         self.selected_count = 0
         self.buffer_count = 0
         self.deselected_clock = {}
-
 
 class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
     index = None  # this is the index of the label in the recyclerview
@@ -693,7 +526,6 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         keys = App.get_running_app().root.side_bar.device_rv.deselected_clock.keys()
         for k in keys:
             App.get_running_app().root.side_bar.device_rv.deselected_clock[k] += 1
-
 
 class NeuroStimApp(App):
     def __init__(self, kvloader):

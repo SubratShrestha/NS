@@ -26,10 +26,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/consts.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ui/UI_Component_ids.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ui/components.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ble/ble.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/ble.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui.kv" beforeDir="false" afterPath="$PROJECT_DIR$/ui.kv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +64,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ui" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="C:\Users\profx\projects\NS\ble" />
     </key>
   </component>
@@ -168,6 +173,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599184834491" />
+    <state x="765" y="268" width="446" height="569" key="#com.jetbrains.python.refactoring.move.PyMoveModuleMembersDialog" timestamp="1600008765637">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="765" y="268" width="446" height="569" key="#com.jetbrains.python.refactoring.move.PyMoveModuleMembersDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1600008765637" />
     <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl" timestamp="1596699710177">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
