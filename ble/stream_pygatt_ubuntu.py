@@ -21,6 +21,8 @@ adapter = pygatt.GATTToolBackend()
 adapter.start()
 device = adapter.connect("80:E1:26:08:05:56")
 
+device.exchange_mtu(120)
+
 response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'start_recording'), wait_for_response=False)
 print("start_recording", response)
 
@@ -28,6 +30,6 @@ device.subscribe(STREAM_READ_CHAR,
                          callback=feedback_handler,
                          indication=False)
 
-time.sleep(300)
+time.sleep(600)
 
 adapter.stop()

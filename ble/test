@@ -1,0 +1,8 @@
+MTU -> NUM BEFORE STALLING
+
+500 -> 4
+400 -> 9
+240 -> 122
+120 -> 5787
+
+100 -> no stall for 10 minutes
