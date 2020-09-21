@@ -26,13 +26,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/consts.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/UI_Component_ids.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/components.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Windows.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windows.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ble/ble.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/ble.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ble/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/stream.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,9 +197,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="922" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1593709192199" />
-    <state x="1119" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1596698153259">
+    <state x="1119" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1600650442589">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="1119" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1596698153259" />
+    <state x="1119" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1600650442589" />
   </component>
 </project>

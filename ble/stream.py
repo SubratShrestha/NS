@@ -1,42 +1,33 @@
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
-loop.set_debug(1)
-loop.run_until_complete(self.send(address, loop, data))
-async with BleakClient(address='80:E1:26:08:05:56', loop=loop) as client:
-    try:
-        print("Stream:TRY TO CONNECT")
-        await client.connect(timeout=10)
-    except Exception as e:
-        print("Stream:Exception", e)
-    except BleakDotNetTaskError as e:
-        print("Stream:BleakDotNetTaskError", e)
-    except BleakError as e:
-        print("Stream:BleakError", e)
-    finally:
-        if await client.is_connected():
-            print("Stream: Connected")
+import binascii
+import uuid
+import pygatt
+import time
+
+SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
+FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
+STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'
+
+COUNT = 0
+
+def feedback_handler(handle, value):
+    global COUNT
+    COUNT += 1
+    print("COUNT: ", COUNT)
+    print("Data: {}".format(value.hex()))
+    print("Handle: {}".format(handle))
 
 
-            # stop_event = asyncio.Event()
+adapter = pygatt.GATTToolBackend()
+adapter.start()
+device = adapter.connect("80:E1:26:08:05:56")
 
-            def notification_handler(sender, data):
-                """Simple notification handler which prints the data received."""
-                # print("Notifictation Stream {0}: {1}".format(sender, list(data)))
-                # loop.call_soon_threadsafe(stop_event.set)
-                print("NOTIFICATION")
+response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'start_recording'), wait_for_response=False)
+print("start_recording", response)
 
+device.subscribe(STREAM_READ_CHAR,
+                         callback=feedback_handler,
+                         indication=False)
 
-            await client.start_notify(STREAM_READ_CHAR, notification_handler)
+time.sleep(300)
 
-            # while True:
-            # if not await client.is_connected():
-            #     await client.connect(timeout=10)
-            #     continue
-            # await stop_event.wait()
-            await asyncio.sleep(120, loop=loop)
-
-            await client.stop_notify(STREAM_READ_CHAR)
-
-            print("END STREAM")
-
-
+adapter.stop()
