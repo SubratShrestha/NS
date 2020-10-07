@@ -26,13 +26,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ble/ble112_scanner.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ble/stream_bleson.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ble/stream_pybluez.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ble/stream_pygatt_windows.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ble/stream_pygattlib" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ble/ble_pygatt.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ble/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/stream_pygatt_ubuntu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ble/ble.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/ble.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +138,7 @@
       <item itemvalue="Python.ns" />
     </list>
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -173,19 +169,20 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599184834491" />
-    <state x="701" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1600661923629">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="744" y="353" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1602041969094">
+      <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="701" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1600661923629" />
+    <state x="744" y="353" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053@67.27.1853.1053" timestamp="1602041969094" />
     <state x="765" y="268" width="446" height="569" key="#com.jetbrains.python.refactoring.move.PyMoveModuleMembersDialog" timestamp="1600008765637">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="765" y="268" width="446" height="569" key="#com.jetbrains.python.refactoring.move.PyMoveModuleMembersDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1600008765637" />
-    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl" timestamp="1596699710177">
+    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl" timestamp="1601480975390">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1593708238146" />
-    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1596699710177" />
+    <state x="781" y="305" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1601480975390" />
     <state width="1899" height="281" key="GridCell.Tab.0.bottom" timestamp="1599202911851">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

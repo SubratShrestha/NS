@@ -146,7 +146,7 @@ class BluetoothComms():
             bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
             bytes_as_bits = str(bytes_as_bits)
 
-            n = 16
+            n = 16.3
 
             bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
 
@@ -381,24 +381,18 @@ class BluetoothComms():
                     print("send: ", send)
                     print("read: ", read)
                     print("stream: ", stream)
+                    address = msg.pop('mac_addr')
+
 
                     if send and stream and not read:
-                        address = msg.pop('mac_addr')
-
                         t = threading.Thread(target=self.r, args=(address,))
                         t.start()
 
                     elif send and not read:
-
-                        address = msg.pop('mac_addr')
-
                         data = msg
                         t = threading.Thread(target=self.s, args=(address, data))
                         t.start()
                     elif send and read:
-
-                        address = msg.pop('mac_addr')
-
                         data = msg
                         t = threading.Thread(target=self.s_t_r, args=(address, data))
                         t.start()
