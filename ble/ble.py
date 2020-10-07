@@ -44,156 +44,155 @@ class BluetoothComms():
         await asyncio.wait([task1])
         return task1
 
-    # async def stream(self, address, loop, depth=0):
-    #     print("STREAM")
-    #     try:
-    #         async with BleakClient(address, loop=loop) as client:
-    #             try:
-    #                 print("Stream:TRY TO CONNECT")
-    #                 await client.connect(timeout=10)
-    #             except Exception as e:
-    #                 print("Stream:Exception", e)
-    #             except BleakDotNetTaskError as e:
-    #                 print("Stream:BleakDotNetTaskError", e)
-    #             except BleakError as e:
-    #                 print("Stream:BleakError", e)
-    #             finally:
-    #                 if await client.is_connected():
-    #                     print("Stream: Connected")
-    #
-    #                     await client.write_gatt_char(SERIAL_COMMAND_INPUT_CHAR, 'start_recording'.encode('utf-8'), False)
-    #
-    #                     stop_event = asyncio.Event()
-    #
-    #                     def notification_handler(sender, data):
-    #                         """Simple notification handler which prints the data received."""
-    #                         # print("Notifictation Stream {0}: {1}".format(sender, list(data)))
-    #                         loop.call_soon_threadsafe(stop_event.set)
-    #
-    #
-    #                         bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
-    #                         bytes_as_bits = str(bytes_as_bits)
-    #
-    #                         n = 16
-    #                         bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
-    #
-    #                         endian_on_last = True
-    #                         if endian_on_last:
-    #                             last = str(bitstring.pop())
-    #                             f_half = last[:8]
-    #                             s_half = last[8:]
-    #
-    #                             print(last, f_half, s_half)
-    #                             last = str(s_half)+str(f_half)
-    #                             bitstring.append(last)
-    #
-    #
-    #                         result = []
-    #                         for bits in bitstring:
-    #                             if not endian_on_last:
-    #                                 f_half = bits[:8]
-    #                                 s_half = bits[8:]
-    #                                 bits = str(s_half) + str(f_half)
-    #
-    #                             result.append(int(bits, 2))
-    #
-    #
-    #                         self.client_conn.send(
-    #                             {
-    #                                 'mac_addr': address,
-    #                                 'stream': result #[int(i) for i in list(data)]
-    #                             }
-    #                         )
-    #
-    #                     await client.start_notify(STREAM_READ_CHAR, notification_handler)
-    #                     self.is_recording = True
-    #                     while self.is_recording:
-    #                         if not await client.is_connected():
-    #                             await client.connect(timeout=10)
-    #                             print("Stream: RECONNECTING")
-    #                             continue
-    #                         await stop_event.wait()
-    #
-    #                     await client.stop_notify(STREAM_READ_CHAR)
-    #
-    #                     print("END STREAM")
-    #
-    #                     return client
-    #
-    #                 print("Stream:NOT CONNECTED")
-    #     except BleakError as e:
-    #         print("Stream:BLEAK ERROR", e)
-    #     if depth < 10:
-    #         depth = depth + 1
-    #         await asyncio.sleep(depth, loop=loop)
-    #         print("Stream:TRY AGAIN")
-    #         return await self.stream(address, loop, depth)
-    #     return None
-
     async def stream(self, address, loop, depth=0):
+        print("STREAM")
+        try:
+            async with BleakClient(address, loop=loop) as client:
+                try:
+                    print("Stream:TRY TO CONNECT")
+                    await client.connect(timeout=10)
+                except Exception as e:
+                    print("Stream:Exception", e)
+                except BleakDotNetTaskError as e:
+                    print("Stream:BleakDotNetTaskError", e)
+                except BleakError as e:
+                    print("Stream:BleakError", e)
+                finally:
+                    if await client.is_connected():
+                        print("Stream: Connected")
 
-        stop_event = asyncio.Event()
+                        await client.write_gatt_char(SERIAL_COMMAND_INPUT_CHAR, 'start_recording'.encode('utf-8'), False)
 
-        def notification_handler(sender, data):
-            """Simple notification handler which prints the data received."""
+                        stop_event = asyncio.Event()
 
-            # print(str(data.hex()).hex())
-            # print(data)
-            #
-            # print(len(list(data)))
+                        def notification_handler(sender, data):
+                            """Simple notification handler which prints the data received."""
+                            # print("Notifictation Stream {0}: {1}".format(sender, list(data)))
+                            loop.call_soon_threadsafe(stop_event.set)
 
+                            n = 16
+                            bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
+                            bytes_as_bits = str(bytes_as_bits)
 
-            bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
-            bytes_as_bits = str(bytes_as_bits)
+                            bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
 
-            n = 16.3
+                            endian_on_last = True
+                            if endian_on_last:
+                                last = str(bitstring.pop())
+                                f_half = last[:8]
+                                s_half = last[8:]
 
-            bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
-
-            endian_on_last = False
-            if endian_on_last:
-                last = str(bitstring.pop())
-                f_half = last[:8]
-                s_half = last[8:]
-
-                print(last, f_half, s_half)
-                last = str(s_half)+str(f_half)
-                bitstring.append(last)
+                                print(last, f_half, s_half)
+                                last = str(s_half)+str(f_half)
+                                bitstring.append(last)
 
 
-            result = []
-            for bits in bitstring:
-                if not endian_on_last:
-                    f_half = bits[:8]
-                    s_half = bits[8:]
-                    bits = str(s_half) + str(f_half)
+                            result = []
+                            for bits in bitstring:
+                                if not endian_on_last:
+                                    f_half = bits[:8]
+                                    s_half = bits[8:]
+                                    bits = str(s_half) + str(f_half)
 
-                result.append(int(bits, 2))
+                                result.append(int(bits, 2))
 
 
-            self.client_conn.send(
-                {
-                    'mac_addr': address,
-                    'stream': result #[int(i) for i in list(data)]
-                }
-            )
+                            self.client_conn.send(
+                                {
+                                    'mac_addr': address,
+                                    'stream': result #[int(i) for i in list(data)]
+                                }
+                            )
 
-        adapter = pygatt.GATTToolBackend()
-        adapter.start()
-        device = adapter.connect(address)
+                        await client.start_notify(STREAM_READ_CHAR, notification_handler)
+                        self.is_recording = True
+                        while self.is_recording:
+                            if not await client.is_connected():
+                                await client.connect(timeout=10)
+                                print("Stream: RECONNECTING")
+                                continue
+                            await stop_event.wait()
 
-        device.exchange_mtu(500)
+                        await client.stop_notify(STREAM_READ_CHAR)
 
-        response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'start_recording'), wait_for_response=False)
-        print("start_recording", response)
+                        print("END STREAM")
 
-        device.subscribe(STREAM_READ_CHAR,
-                         callback=notification_handler,
-                         indication=False)
+                        return client
 
-        time.sleep(60)
+                    print("Stream:NOT CONNECTED")
+        except BleakError as e:
+            print("Stream:BLEAK ERROR", e)
+        if depth < 10:
+            depth = depth + 1
+            await asyncio.sleep(depth, loop=loop)
+            print("Stream:TRY AGAIN")
+            return await self.stream(address, loop, depth)
+        return None
 
-        adapter.stop()
+    # async def stream(self, address, loop, depth=0):
+    #
+    #     stop_event = asyncio.Event()
+    #
+    #     def notification_handler(sender, data):
+    #         """Simple notification handler which prints the data received."""
+    #
+    #         # print(str(data.hex()).hex())
+    #         # print(data)
+    #         #
+    #         # print(len(list(data)))
+    #
+    #
+    #         bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
+    #         bytes_as_bits = str(bytes_as_bits)
+    #
+    #         n = 16
+    #
+    #         bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
+    #
+    #         endian_on_last = False
+    #         if endian_on_last:
+    #             last = str(bitstring.pop())
+    #             f_half = last[:8]
+    #             s_half = last[8:]
+    #
+    #             print(last, f_half, s_half)
+    #             last = str(s_half)+str(f_half)
+    #             bitstring.append(last)
+    #
+    #
+    #         result = []
+    #         for bits in bitstring:
+    #             if not endian_on_last:
+    #                 f_half = bits[:8]
+    #                 s_half = bits[8:]
+    #                 bits = str(s_half) + str(f_half)
+    #
+    #             result.append(int(bits, 2))
+    #
+    #
+    #         self.client_conn.send(
+    #             {
+    #                 'mac_addr': address,
+    #                 'stream': result #[int(i) for i in list(data)]
+    #             }
+    #         )
+    #
+    #     adapter = pygatt.GATTToolBackend()
+    #     adapter.start()
+    #     device = adapter.connect(address)
+    #
+    #     device.exchange_mtu(500)
+    #
+    #     response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'start_recording'), wait_for_response=False)
+    #     print("start_recording", response)
+    #
+    #     device.subscribe(STREAM_READ_CHAR,
+    #                      callback=notification_handler,
+    #                      indication=False)
+    #
+    #     time.sleep(60)
+    #
+    #     adapter.stop()
 
 
 

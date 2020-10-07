@@ -26,7 +26,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b3d2e8b-1a75-4238-8663-758f640cd1fc" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/ble/ble_pygatt.py" afterDir="false" />
+=======
+>>>>>>> 5c392e27126981252fa6047d95a0722312affff8
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ble/ble.py" beforeDir="false" afterPath="$PROJECT_DIR$/ble/ble.py" afterDir="false" />
     </list>

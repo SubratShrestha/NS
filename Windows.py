@@ -532,7 +532,7 @@ class NeuroStimApp(App):
         super(NeuroStimApp, self).__init__()
         self.kvloader = kvloader
         self.device_data = []
-        self.device_electrode_voltage = {}
+        # self.device_electrode_voltage = {}
 
         """======================================================================
         Don't change this to match App.py
@@ -570,16 +570,21 @@ class NeuroStimApp(App):
             if isinstance(msg, list):
                 self.device_data = msg
             elif isinstance(msg, dict):
-                print(msg)
+                # print(msg)
                 mac_addr = msg.pop('mac_addr')
                 data = msg
                 if 'electrode_voltage' in data:
-                    self.device_electrode_voltage[mac_addr] = data['electrode_voltage']
+                    # self.device_electrode_voltage[mac_addr] = data['electrode_voltage']
                     popup = MessagePopup()
                     popup.title = "Latest Electrode Voltage: " + str(data['electrode_voltage']) + "mV"
                     popup.open()
                 if 'stream' in data:
                     self.device_streams[mac_addr] = data['stream']
+                if 'start' in data:
+                    print(msg)
+                    popup = MessagePopup()
+                    popup.title = "Successfully Sent: " + str(data['start'])
+                    popup.open()
 
 
                 else:
