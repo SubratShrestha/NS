@@ -25,4 +25,4 @@ def calculate_adv_to_mv(adc_value):
     else:
         adc += 2048
         voltage = int(float(float(adc - float(4096 / 2)) / float(4096 / 2)) * 18000)
-        return int(-1*voltage)
+        return int(-1*int(18000-voltage))
