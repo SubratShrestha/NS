@@ -11,11 +11,18 @@ import csv
 import pygatt
 
 
+# import logging
+#
+# logging.basicConfig()
+# logging.getLogger('pygatt').setLevel(logging.DEBUG)
+
 def int_to_bytes(x: int) -> bytes:
     return x.to_bytes((x.bit_length() + 7) // 8, 'little')
 
+
 def int_from_bytes(xbytes: bytes) -> int:
     return int.from_bytes(xbytes, 'little')
+
 
 if '-esp' in sys.argv:
     SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
@@ -40,7 +47,8 @@ class BluetoothComms():
         self.discover_thread.start()
         self.is_recording = False
         self.connected_devices = {}
-        self.last_activity = time.time()
+
+    #         self.last_activity = time.time()
 
     async def ble_discover(self, loop, time):
         task1 = loop.create_task(discover(time))
@@ -50,19 +58,15 @@ class BluetoothComms():
     async def stream(self, address, loop, depth=0):
 
         stop_event = asyncio.Event()
+        fh = open("streaming_data.txt", "a")
 
         def notification_handler(sender, data):
             """Simple notification handler which prints the data received."""
 
             # print(str(data.hex()).hex())
-            # print(data)
+            #             print(data)
             #
             # print(len(list(data)))
-
-
-            bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
-            bytes_as_bits = str(bytes_as_bits)
-
             n = 16
 
             bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
@@ -76,9 +80,8 @@ class BluetoothComms():
                 s_half = last[8:]
 
                 print(last, f_half, s_half)
-                last = str(s_half)+str(f_half)
+                last = str(s_half) + str(f_half)
                 bitstring.append(last)
-
 
             result = []
             for bits in bitstring:
@@ -89,17 +92,17 @@ class BluetoothComms():
 
                 result.append(int(bits, 2))
 
+            for i in data:
+                fh.write(str(i) + '\n')
 
             self.client_conn.send(
                 {
                     'mac_addr': address,
-                    'stream': result #[int(i) for i in list(data)]
+                    'stream': result  # [int(i) for i in list(data)]
                 }
             )
 
         device = self.connected_devices[address]
-
-        device.exchange_mtu(115)
 
         response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'start_recording'), wait_for_response=False)
         print("start_recording", response)
@@ -111,155 +114,104 @@ class BluetoothComms():
     async def send(self, address, loop, data, depth=0):
         print("SEND")
         try:
-            device = self.connected_devices[address]
 
+            device = self.connected_devices[address]
 
             k = SERIAL_COMMAND_INPUT_CHAR
             for v in data[k]:
                 device.char_write(k, str(v).encode('utf-8'), False)
-                await asyncio.sleep(0.01, loop=loop)
+                await asyncio.sleep(0.1, loop=loop)
                 print("Sent:sending", v)
-
+        except pygatt.exceptions.NotConnectedError as e:
+            print("pygatt.exceptions.NotConnectedError", e)
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send(address, loop, data, depth=1)
         except Exception as e:
-            print(e)
-
-#     async def send_then_read(self, address, loop, data, depth=0):
-#         print("SEND")
-#         try:
-#             device = self.connected_devices[address]
-#
-#             def notification_handler(sender, data):
-#                 """Simple notification handler which prints the data received."""
-# #                 print(sender, data)
-#
-#                 text = str(data.decode('utf-8').rstrip('\x00'))
-#                 result = text.split(':')
-#                 if len(result) == 2:
-#                     t1 = result[0]
-#                     t2 = result[1]
-#                     print(t1, t2)
-#                     print("Notifictation Stream {0}: {1}".format(t1, t2))
-#                     self.client_conn.send(
-#                         {
-#                             'mac_addr': address,
-#                             t1:t2
-#                         }
-#                     )
-#
-#
-#             device.subscribe(FEEDBACK_CHAR,
-#                          callback=notification_handler,
-#                          indication=False, wait_for_response=True)
-#
-#             k = SERIAL_COMMAND_INPUT_CHAR
-#             for v in data[k]:
-#                 device.char_write(k, str(v).encode('utf-8'), False)
-#                 await asyncio.sleep(0.01, loop=loop)
-#                 print("Sent:sending", v)
-#
-#             device.unsubscribe(FEEDBACK_CHAR)
-#
-#         except Exception as e:
-#             print(e)
+            print("Exception", e)
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send(address, loop, data, depth=1)
+        else:
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send(address, loop, data, depth=1)
 
     async def send_then_read(self, address, loop, data, depth=0):
-        print("send_then_read")
+        print("SEND")
         try:
-            async with BleakClient(address, loop=loop) as client:
-                try:
-                    print("send_then_read:TRY TO CONNECT")
-                    count = 0
-                    while not await client.is_connected():
-                        count += 1
-                        if count > 5:
-                            break
-                        await client.connect(timeout=10)
+            device = self.connected_devices[address]
 
-                except Exception as e:
-                    print("send_then_read:Exception", e)
-                except BleakDotNetTaskError as e:
-                    print("send_then_read:BleakDotNetTaskError", e)
-                except BleakError as e:
-                    print("send_then_read:BleakError", e)
-                finally:
-                    if await client.is_connected():
+            def notification_handler(sender, data):
+                """Simple notification handler which prints the data received."""
+                #                 print(sender, data)
 
-                        try:
-                            print("send_then_read:TRY TO CONNECT")
-                            await client.connect(timeout=10)
-                        except Exception as e:
-                            print("send_then_read:Exception", e)
-                        except BleakDotNetTaskError as e:
-                            print("send_then_read:BleakDotNetTaskError", e)
-                        except BleakError as e:
-                            print("send_then_read:BleakError", e)
-                        finally:
-                            count = 0
-                            while not await client.is_connected():
-                                count += 1
-                                if count > 5:
-                                    break
-                                await client.connect(timeout=10)
-                            if await client.is_connected():
+                text = str(data.decode('utf-8').rstrip('\x00'))
+                result = text.split(':')
+                if len(result) == 2:
+                    t1 = result[0]
+                    t2 = result[1]
+                    print(t1, t2)
+                    print("Notifictation Stream {0}: {1}".format(t1, t2))
+                    self.client_conn.send(
+                        {
+                            'mac_addr': address,
+                            t1: t2
+                        }
+                    )
 
-                                def notification_handler(sender, data):
-                                    """Simple notification handler which prints the data received."""
+            device.subscribe(FEEDBACK_CHAR,
+                             callback=notification_handler,
+                             indication=False, wait_for_response=True)
+            await asyncio.sleep(0.1, loop=loop)
+            k = SERIAL_COMMAND_INPUT_CHAR
+            for v in data[k]:
+                device.char_write(k, str(v).encode('utf-8'), False)
+                await asyncio.sleep(0.1, loop=loop)
+                print("Sent:sending", v)
+            await asyncio.sleep(0.1, loop=loop)
+            device.unsubscribe(FEEDBACK_CHAR)
 
-                                    text = str(data.decode('utf-8').rstrip('\x00'))
-                                    t1 = text.split(':')[0]
-                                    t2 = int(text.split(':')[1])
-                                    print(t1, t2)
-                                    print("Notifictation Stream {0}: {1}".format(sender, text))
-                                    self.client_conn.send(
-                                        {
-                                            'mac_addr': address,
-                                            t1:t2
-                                        }
-                                    )
-
-                                await client.start_notify(FEEDBACK_CHAR, notification_handler)
-                                await asyncio.sleep(0.5, loop=loop)
-
-                                print("send_then_read:CONNECTED", client)
-
-                                if SERIAL_COMMAND_INPUT_CHAR in data:
-                                    print("send_then_read:SERIAL COMMAND INPUT")
-                                    k = SERIAL_COMMAND_INPUT_CHAR
-                                    for v in data[k]:
-                                        await client.write_gatt_char(k, str(v).encode('utf-8'), False)
-                                        print("send_then_read:sending", v)
-                                        await asyncio.sleep(1, loop=loop)
-
-                                await client.stop_notify(FEEDBACK_CHAR)
-
-                            return client
-                    print("send_then_read:NOT CONNECTED")
-        except BleakError as e:
-            print("send_then_read:BLEAK ERROR", e)
-        if depth < 5:
-            depth = depth + 1
-            await asyncio.sleep(depth, loop=loop)
-            print("send_then_read:SEND AGAIN")
-            return await self.send_then_read(address, loop, data, depth)
-        return None
+        except pygatt.exceptions.NotConnectedError as e:
+            print("pygatt.exceptions.NotConnectedError", e)
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send_then_read(address, loop, data, depth=1)
+        except Exception as e:
+            print("Exception", e)
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send_then_read(address, loop, data, depth=1)
+        else:
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send_then_read(address, loop, data, depth=1)
 
     def r(self, msg):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.set_debug(1)
+        loop.set_debug(0)
         loop.run_until_complete(self.stream(msg, loop))
 
     def s(self, address, data):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.set_debug(1)
+        loop.set_debug(0)
         loop.run_until_complete(self.send(address, loop, data))
 
     def s_t_r(self, address, data):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.set_debug(1)
+        loop.set_debug(0)
         loop.run_until_complete(self.send_then_read(address, loop, data))
+
+    def connect_to_device(self, address):
+        device = self.adapter.connect(address)
+        device.exchange_mtu(115)
+        self.connected_devices[address] = device
+
+    def is_connected_to_device(self, address):
+        return address in self.connected_devices
 
     def receive_loop(self):
         try:
@@ -283,10 +235,9 @@ class BluetoothComms():
 
                     address = msg.pop('mac_addr', None)
                     if address is not None:
-                        self.last_activity = time.time()
-                        if address not in self.connected_devices:
-                            device = self.adapter.connect(address)
-                            self.connected_devices[address] = device
+                        #                         self.last_activity = time.time()
+                        if not self.is_connected_to_device(address):
+                            self.connect_to_device(address)
 
                         if send and stream and not read:
                             t = threading.Thread(target=self.r, args=(address,))
@@ -307,12 +258,13 @@ class BluetoothComms():
             print(e)
 
     def disconnect_from_devices(self):
-#         print("disconnect_from_devices")
-        for k,v in self.connected_devices.items():
+        #         print("disconnect_from_devices")
+        for k, v in self.connected_devices.items():
             v.disconnect()
             print("Disconnected Device", k, v)
         self.connected_devices = {}
-#         print("end disconnect from services")
+
+    #         print("end disconnect from services")
 
     def ble_discover_loop(self):
         try:
@@ -326,11 +278,11 @@ class BluetoothComms():
                 r1 = loop.run_until_complete(self.ble_discover(loop, delay))
                 devices = r1.result()
 
-                current = time.time()
-                difference = int(current-self.last_activity)
-                print("since last activity: ", difference)
-                if difference > 60:
-                    self.disconnect_from_devices()
+                #                 current = time.time()
+                #                 difference = int(current-self.last_activity)
+                #                 print("since last activity: ", difference)
+                #                 if difference > 60:
+                #                     self.disconnect_from_devices()
 
                 if self.prune:
                     data = [{'text': str(i.address)} for i in devices if

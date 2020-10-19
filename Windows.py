@@ -25,13 +25,13 @@ from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
 
 from consts import SERIAL_COMMAND_INPUT_CHAR, UINT32_MAX, SCREEN_WIDTH, SCREEN_HEIGHT
 
-from utils.utils import calculate_dac_value
+from utils.utils import calculate_dac_value,calculate_adv_to_mv
 
 from kivy.config import Config
 
 Config.set('graphics', 'width', SCREEN_WIDTH)
 Config.set('graphics', 'height', SCREEN_HEIGHT)
-Config.set('graphics', 'resizable', 'False')
+# Config.set('graphics', 'resizable', 'False')
 
 """Must be below config setting, otherwise it's reset"""
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
@@ -39,6 +39,7 @@ import matplotlib
 
 matplotlib.use("module://kivy.garden.matplotlib.backend_kivy")
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 """======================================================================
 Don't change this to match App.py
@@ -48,7 +49,7 @@ from multiprocessing.connection import Listener, Client
 import threading
 
 devices_dict = {}
-
+device_streams = {}
 live_update_references = {
     'stimulation_graph_display': [
         'stimulation_duration',
@@ -277,8 +278,8 @@ def set_streaming_graph(button, state):
         plt.close("all")
 
         mac_addr = App.get_running_app().connected_device_mac_addr
-        if mac_addr in App.get_running_app().device_streams:
-            data = App.get_running_app().device_streams[mac_addr]
+        if mac_addr in device_streams:
+            data = device_streams[mac_addr]
             print(data)
 
 
@@ -300,6 +301,34 @@ def set_streaming_graph(button, state):
             graph = FigureCanvasKivyAgg(plt.gcf())
             App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
             App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
+
+def update_streaming_graph():
+    plt.close("all")
+    plt.clf()
+    plt.cla()
+
+    mac_addr = App.get_running_app().connected_device_mac_addr
+    if mac_addr in device_streams:
+        data = device_streams[mac_addr]
+
+        x = []
+        y = []
+        for i, j in enumerate(data):
+            x.append(i)
+            y.append(j)
+        x = np.array(x)
+        y = np.array(y)
+        x_new = np.linspace(x.min(), x.max(), 500)
+        f = interp1d(x, y, kind='quadratic')
+        y_smooth = f(x_new)
+        plt.plot(x_new, y_smooth)
+        plt.scatter(x, y)
+        plt.xlabel('Instance')
+        plt.ylabel('Signal')
+
+        graph = FigureCanvasKivyAgg(plt.gcf())
+        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').clear_widgets()
+        App.get_running_app().get_components('electrode_voltage_tab_bottom_graph').add_widget(graph)
 
 def start_stimulation(button, state):
     if state == 'down':
@@ -361,7 +390,7 @@ def start_stimulation(button, state):
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 'send': True,
-                'read': False,
+                'read': True,
                 'stream': False,
                 SERIAL_COMMAND_INPUT_CHAR: [
                     'stop',
@@ -493,8 +522,8 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             for i in live_update_references['electrode_voltage']:
                 if 'get_latest_electrode_voltage_button' == i:
                     App.get_running_app().get_components(i).bind(state=get_electrode_voltage)
-                if 'electrode_voltage_tab_save_log_button' == i:
-                    App.get_running_app().get_components(i).bind(state=set_streaming_graph)
+                # if 'electrode_voltage_tab_save_log_button' == i:
+                #     App.get_running_app().get_components(i).bind(state=set_streaming_graph)
                 if 'electrode_voltage_tab_log_recording_button' == i:
                     App.get_running_app().get_components(i).bind(state=start_recording)
                 if 'electrode_voltage_tab_log_stop_button' == i:
@@ -555,7 +584,6 @@ class NeuroStimApp(App):
                 self.send_conn.send(data)
         except Exception as e:
             print(e)
-
     def discover(self):
         """======================================================================
         Don't change this to match App.py
@@ -564,22 +592,31 @@ class NeuroStimApp(App):
         address = ('localhost', 6000)
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
+        x = 0
         while self.thread:
             msg = conn.recv()
 
             if isinstance(msg, list):
                 self.device_data = msg
             elif isinstance(msg, dict):
-                # print(msg)
+                print(msg)
                 mac_addr = msg.pop('mac_addr')
                 data = msg
                 if 'electrode_voltage' in data:
-                    # self.device_electrode_voltage[mac_addr] = data['electrode_voltage']
                     popup = MessagePopup()
-                    popup.title = "Latest Electrode Voltage: " + str(data['electrode_voltage']) + "mV"
+                    voltage = calculate_adv_to_mv(data['electrode_voltage'])
+                    popup.title = "Latest Electrode Voltage: " + str(voltage) + "mV"
                     popup.open()
                 if 'stream' in data:
-                    self.device_streams[mac_addr] = data['stream']
+                    if mac_addr in device_streams:
+                        for i in data['stream']:
+                            device_streams[mac_addr].append(i)
+                        while len(device_streams[mac_addr]) > 1150:
+                            device_streams[mac_addr].pop(0)
+                    else:
+                        device_streams[mac_addr] = data['stream']
+                    # if x % 10 == 0:
+                    #     update_streaming_graph()
                 if 'start' in data:
                     print(msg)
                     popup = MessagePopup()
@@ -593,6 +630,7 @@ class NeuroStimApp(App):
             if self.send_address is None:
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
+            x += 1
         listener.close()
 
 
