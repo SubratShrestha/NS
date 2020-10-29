@@ -27,10 +27,12 @@ def int_from_bytes(xbytes: bytes) -> int:
 # if '-esp' in sys.argv:
 #     SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
 # elif '-stm' in sys.argv:
-    # from consts import SERIAL_COMMAND_INPUT_CHAR, FEEDBACK_CHAR, STREAM_READ_CHAR
+# from consts import SERIAL_COMMAND_INPUT_CHAR, FEEDBACK_CHAR, STREAM_READ_CHAR
 SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
 FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
 STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'
+
+
 # else:
 #     print("DEVICE NOT SUPPORTED/SPECIFIED, only allow -stm and -esp")
 
@@ -55,58 +57,59 @@ class BluetoothComms():
         await asyncio.wait([task1])
         return task1
 
-    async def stream(self, address, loop, depth=0):
+    async def stream(self, address, loop, data, depth=0):
 
         stop_event = asyncio.Event()
         fh = open("streaming_data.txt", "a")
 
-        def notification_handler(sender, data):
+        def notification_handler(sender, not_data):
             """Simple notification handler which prints the data received."""
 
-            # print(str(data.hex()).hex())
-            #             print(data)
+            print(sender, not_data)
+            # n = 16
             #
-            # print(len(list(data)))
-            n = 16
-
-            bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
-            bytes_as_bits = str(bytes_as_bits)
-
-            bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
-            endian_on_last = False
-            if endian_on_last:
-                last = str(bitstring.pop())
-                f_half = last[:8]
-                s_half = last[8:]
-
-                print(last, f_half, s_half)
-                last = str(s_half) + str(f_half)
-                bitstring.append(last)
-
-            result = []
-            for bits in bitstring:
-                if not endian_on_last:
-                    f_half = bits[:8]
-                    s_half = bits[8:]
-                    bits = str(s_half) + str(f_half)
-
-                result.append(int(bits, 2))
-
-            for i in data:
-                fh.write(str(i) + '\n')
-
-            self.client_conn.send(
-                {
-                    'mac_addr': address,
-                    'stream': result  # [int(i) for i in list(data)]
-                }
-            )
+            # bytes_as_bits = ''.join(format(byte, '08b') for byte in data)
+            # bytes_as_bits = str(bytes_as_bits)
+            #
+            # bitstring = [bytes_as_bits[i:i + n] for i in range(0, len(bytes_as_bits), n)]
+            # endian_on_last = False
+            # if endian_on_last:
+            #     last = str(bitstring.pop())
+            #     f_half = last[:8]
+            #     s_half = last[8:]
+            #
+            #     print(last, f_half, s_half)
+            #     last = str(s_half) + str(f_half)
+            #     bitstring.append(last)
+            #
+            # result = []
+            # for bits in bitstring:
+            #     if not endian_on_last:
+            #         f_half = bits[:8]
+            #         s_half = bits[8:]
+            #         bits = str(s_half) + str(f_half)
+            #
+            #     result.append(int(bits, 2))
+            #
+            # for i in data:
+            #     fh.write(str(i) + '\n')
+            #
+            # self.client_conn.send(
+            #     {
+            #         'mac_addr': address,
+            #         'stream': result  # [int(i) for i in list(data)]
+            #     }
+            # )
 
         device = self.connected_devices[address]
 
         # response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'start_recording'), wait_for_response=False)
-        response = device.char_write(SERIAL_COMMAND_INPUT_CHAR, bytearray(b'b'), wait_for_response=False)
-        print("start_recording", response)
+        k = SERIAL_COMMAND_INPUT_CHAR
+        for v in data[k]:
+            device.char_write(k, v, False)  # str(v).encode('utf-8')
+            await asyncio.sleep(0.1, loop=loop)
+            print("Streaming:sending", v)
+        await asyncio.sleep(0.1, loop=loop)
 
         device.subscribe(STREAM_READ_CHAR,
                          callback=notification_handler,
@@ -124,7 +127,12 @@ class BluetoothComms():
                 await asyncio.sleep(0.1, loop=loop)
                 print("Sent:sending", v)
             await asyncio.sleep(0.1, loop=loop)
-        except pygatt.exceptions.NotConnectedError as e:
+        except pygatt.exceptions.ExpectedResponseTimeout as e:
+            print("pygatt.exceptions.NotConnectedError", e)
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send(address, loop, data, depth=1)
+        except pygatt.backends.bgapi.exceptions.NotConnectedError as e:
             print("pygatt.exceptions.NotConnectedError", e)
             if depth == 0:
                 self.connect_to_device(address)
@@ -146,21 +154,19 @@ class BluetoothComms():
 
             def notification_handler(sender, data):
                 """Simple notification handler which prints the data received."""
-                print("notification_handler", sender, data)
+                if len(data) == 5:
+                    print("notification_handler", sender, data[:1], data[1:])
 
-                # text = str(data.decode('utf-8').rstrip('\x00'))
-                # result = text.split(':')
-                # if len(result) == 2:
-                #     t1 = result[0]
-                #     t2 = result[1]
-                #     print(t1, t2)
-                #     print("Notifictation Stream {0}: {1}".format(t1, t2))
-                #     self.client_conn.send(
-                #         {
-                #             'mac_addr': address,
-                #             t1: t2
-                #         }
-                #     )
+                    if bytearray(b'\x15') == data[:1]:
+                        print("electrode_voltage")
+
+                    self.client_conn.send(
+                        {
+                            'mac_addr': address,
+                            'command': data[:1],
+                            'data': data[1:]
+                        }
+                    )
 
             device.subscribe(FEEDBACK_CHAR,
                              callback=notification_handler,
@@ -168,12 +174,16 @@ class BluetoothComms():
             await asyncio.sleep(0.1, loop=loop)
             k = SERIAL_COMMAND_INPUT_CHAR
             for v in data[k]:
-                device.char_write(k, v, False) #str(v).encode('utf-8')
+                device.char_write(k, v, False)  # str(v).encode('utf-8')
                 await asyncio.sleep(0.1, loop=loop)
                 print("Sent:sending", v)
             await asyncio.sleep(0.1, loop=loop)
             device.unsubscribe(FEEDBACK_CHAR)
-
+        except pygatt.backends.bgapi.exceptions.ExpectedResponseTimeout as e:
+            print("pygatt.exceptions.NotConnectedError", e)
+            if depth == 0:
+                self.connect_to_device(address)
+                await self.send_then_read(address, loop, data, depth=1)
         except pygatt.exceptions.NotConnectedError as e:
             print("pygatt.exceptions.NotConnectedError", e)
             if depth == 0:
@@ -189,11 +199,11 @@ class BluetoothComms():
                 self.connect_to_device(address)
                 await self.send_then_read(address, loop, data, depth=1)
 
-    def r(self, msg):
+    def r(self, msg, data):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.set_debug(0)
-        loop.run_until_complete(self.stream(msg, loop))
+        loop.run_until_complete(self.stream(msg, loop, data))
 
     def s(self, address, data):
         loop = asyncio.new_event_loop()
@@ -242,7 +252,8 @@ class BluetoothComms():
                             self.connect_to_device(address)
 
                         if send and stream and not read:
-                            t = threading.Thread(target=self.r, args=(address,))
+                            data = msg
+                            t = threading.Thread(target=self.r, args=(address, data))
                             t.start()
 
                         elif send and not read:

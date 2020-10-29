@@ -222,10 +222,10 @@ def stop_stimulation(button, state):
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
             'send': True,
-            'read': False,
+            'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                bytearray(b'\x02\x00\x00\x00\x00\x00')
+                bytearray(b'\x02\x00\x00\x00\x00'),  # 'stop',
             ]
         }
 
@@ -257,7 +257,7 @@ def start_recording(button, state):
             'read': False,
             'stream': True,
             SERIAL_COMMAND_INPUT_CHAR: [
-                'b',  # 'start_recording'
+                bytearray(b'\x13\x00\x00\x00\x00'),  # 'start_recording'
             ]
         }
 
@@ -270,10 +270,10 @@ def stop_recording(button, state):
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
             'send': True,
-            'read': False,
+            'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                'c'  # 'stop_recording'
+                bytearray(b'\x14\x00\x00\x00\x00')  # 'stop_recording'
             ]
         }
 
@@ -400,7 +400,7 @@ def start_stimulation(button, state):
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 'send': True,
-                'read': False,
+                'read': True,
                 'stream': False,
                 SERIAL_COMMAND_INPUT_CHAR: [
                     bytearray(b'\x02\x00\x00\x00\x00'),  # 'stop',
@@ -618,27 +618,44 @@ class NeuroStimApp(App):
             elif isinstance(msg, dict):
                 print(msg)
                 mac_addr = msg.pop('mac_addr')
-                data = msg
-                if 'ev' in data:
+                command = msg.pop('command')
+                data = msg.pop('data')
+                if command == bytearray(b'\x15'):
                     popup = MessagePopup()
-                    voltage = calculate_adv_to_mv(data['ev'])
+                    voltage = calculate_adv_to_mv(int.from_bytes(data, byteorder='big', signed=False))
                     popup.title = "Latest Electrode Voltage: " + str(voltage) + "mV"
                     popup.open()
-                if 'stream' in data:
-                    if mac_addr in device_streams:
-                        for i in data['stream']:
-                            device_streams[mac_addr].append(i)
-                        while len(device_streams[mac_addr]) > 1150:
-                            device_streams[mac_addr].pop(0)
-                    else:
-                        device_streams[mac_addr] = data['stream']
-                    # if x % 10 == 0:
-                    #     update_streaming_graph()
-                if 'start' in data:
-                    print(msg)
+                if command == bytearray(b'\x01'):
                     popup = MessagePopup()
-                    popup.title = "Successfully Sent: " + str(data['start'])
+                    popup.title = "Successfully sent parameters and started stimulation"
                     popup.open()
+                if command == bytearray(b'\x02'):
+                    popup = MessagePopup()
+                    popup.title = "Successfully sent stop stimulation"
+                    popup.open()
+                if command == bytearray(b'\x14'):
+                    popup = MessagePopup()
+                    popup.title = "Successfully stopped recording"
+                    popup.open()
+                if command == bytearray(b'\x13'):
+                    popup = MessagePopup()
+                    popup.title = "Successfully started recording"
+                    popup.open()
+                # if 'stream' in data:
+                #     if mac_addr in device_streams:
+                #         for i in data['stream']:
+                #             device_streams[mac_addr].append(i)
+                #         while len(device_streams[mac_addr]) > 1150:
+                #             device_streams[mac_addr].pop(0)
+                #     else:
+                #         device_streams[mac_addr] = data['stream']
+                #     # if x % 10 == 0:
+                #     #     update_streaming_graph()
+                # if 'start' in data:
+                #     print(msg)
+                #     popup = MessagePopup()
+                #     popup.title = "Successfully Sent: " + str(data['start'])
+                #     popup.open()
 
 
                 else:
