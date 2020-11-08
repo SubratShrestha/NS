@@ -383,8 +383,8 @@
                 id: inter_phase_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.25}
-                text: "0"
-                hint_text: "0"
+                text: "1000"
+                hint_text: "1000"
                 input_type: 'number'
                 font_size: self.height*0.55
                 input_filter: 'float'
@@ -401,8 +401,8 @@
                 id: phase_1_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                text: "10"
-                hint_text: "10"
+                text: "1000"
+                hint_text: "1000"
                 font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
@@ -419,8 +419,8 @@
                 id: phase_2_time_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.75}
-                text: "10"
-                hint_text: "10"
+                text: "1000"
+                hint_text: "1000"
                 font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
@@ -437,8 +437,8 @@
                 id: inter_stim_delay_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.55, "top":0.25}
-                text: "0"
-                hint_text: "0"
+                text: "1000"
+                hint_text: "1000"
                 input_type: 'number'
                 font_size: self.height*0.55
                 input_filter: 'float'
@@ -462,7 +462,7 @@
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
                 #text: "0"
-                hint_text: "0"
+                hint_text: "100"
                 font_size: self.height*0.55
                 input_type: 'number'
                 input_filter: 'float'
@@ -580,8 +580,8 @@
                         id:phase_1_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.85}
-                        text: "0"
-                        hint_text: "0"
+                        text: "1500"
+                        hint_text: "0-3000"
                         max: 3000
                         input_type: 'number'
                         input_filter: 'float'
@@ -599,8 +599,8 @@
                         id:phase_2_output_current_input
                         size_hint: .4,.08
                         pos_hint: {"x":0.075, "top":.7}
-                        text: "0"
-                        hint_text: "0"
+                        text: "3000"
+                        hint_text: "0-3000"
                         max: 3000
                         input_type: 'number'
                         input_filter: 'float'
@@ -619,7 +619,7 @@
                         size_hint: .4,.08
                         pos_hint: {"x":0.525, "top":.85}
                         text: "0"
-                        hint_text: "0"
+                        hint_text: "0-65534"
                         max: 65534
                         input_type: 'number'
                         input_filter: 'float'
@@ -638,7 +638,7 @@
                         size_hint: .4,.08
                         pos_hint: {"x":0.525, "top":.7}
                         text: "3000"
-                        hint_text: "0"
+                        hint_text: "0-65535"
                         max: 65535
                         input_type: 'number'
                         input_filter: 'float'

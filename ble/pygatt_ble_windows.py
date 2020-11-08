@@ -11,11 +11,6 @@ import csv
 import pygatt
 
 
-# import logging
-#
-# logging.basicConfig()
-# logging.getLogger('pygatt').setLevel(logging.DEBUG)
-
 def int_to_bytes(x: int) -> bytes:
     return x.to_bytes((x.bit_length() + 7) // 8, 'little')
 
@@ -24,17 +19,9 @@ def int_from_bytes(xbytes: bytes) -> int:
     return int.from_bytes(xbytes, 'little')
 
 
-# if '-esp' in sys.argv:
-#     SERIAL_COMMAND_INPUT_CHAR = '02000000-0000-0000-0000-000000000101'
-# elif '-stm' in sys.argv:
-# from consts import SERIAL_COMMAND_INPUT_CHAR, FEEDBACK_CHAR, STREAM_READ_CHAR
 SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
 FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
 STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'
-
-
-# else:
-#     print("DEVICE NOT SUPPORTED/SPECIFIED, only allow -stm and -esp")
 
 
 class BluetoothComms():
@@ -271,13 +258,10 @@ class BluetoothComms():
             print(e)
 
     def disconnect_from_devices(self):
-        #         print("disconnect_from_devices")
         for k, v in self.connected_devices.items():
             v.disconnect()
             print("Disconnected Device", k, v)
         self.connected_devices = {}
-
-    #         print("end disconnect from services")
 
     def ble_discover_loop(self):
         try:
@@ -291,12 +275,6 @@ class BluetoothComms():
                 r1 = loop.run_until_complete(self.ble_discover(loop, delay))
                 devices = r1.result()
 
-                #                 current = time.time()
-                #                 difference = int(current-self.last_activity)
-                #                 print("since last activity: ", difference)
-                #                 if difference > 60:
-                #                     self.disconnect_from_devices()
-
                 if self.prune:
                     data = [{'text': str(i.address)} for i in devices if
                             i.address is not None and "Neuro" in str(i)]
@@ -308,8 +286,6 @@ class BluetoothComms():
                     break
                 else:
                     self.client_conn.send(data)
-                    # for i in data:
-                    #     print(i)
                 loop.close()
         except Exception as e:
             print(e)
