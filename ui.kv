@@ -135,6 +135,9 @@
             size: self.size
     battery_icon:battery_icon
     battery_percentage:battery_percentage
+    dot_1:dot_1
+    dot_2:dot_2
+    dot_3:dot_3
     Label:
         id: _label
         size_hint: 1, .2
@@ -144,17 +147,20 @@
         halign: 'center'
         pos_hint: {"x":0, "top":.95}
     Image:
+        id:dot_1
         size_hint: .125, .125
         pos_hint: {"x":0.05, "top":0.6}
-        source: './icons/working.png'
+        source: './icons/circle_yellow.png'
     Image:
+        id:dot_2
         size_hint: .125, .125
         pos_hint: {"x":0.2, "top":0.6}
-        source: './icons/working.png'
+        source: './icons/circle_yellow.png'
     Image:
+        id:dot_3
         size_hint: .125, .125
         pos_hint: {"x":0.35, "top":0.6}
-        source: './icons/not_working.png'
+        source: './icons/circle_yellow.png'
     Image:
         size_hint: .125, .125
         pos_hint: {"x":0.825, "top":0.6}
@@ -461,7 +467,7 @@
                 id: channel_1_frequency_input
                 size_hint: .4,.25
                 pos_hint: {"x":0.05, "top":0.75}
-                #text: "0"
+                text: ""
                 hint_text: "100"
                 font_size: self.height*0.55
                 input_type: 'number'

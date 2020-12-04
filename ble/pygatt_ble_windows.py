@@ -119,25 +119,46 @@ class BluetoothComms():
             if depth == 0:
                 self.connect_to_device(address)
                 await self.send(address, loop, data, depth=1)
+            else:
+                self.send_error(address, e)
         except pygatt.backends.bgapi.exceptions.NotConnectedError as e:
             print("pygatt.exceptions.NotConnectedError", e)
             if depth == 0:
                 self.connect_to_device(address)
                 await self.send(address, loop, data, depth=1)
+            else:
+                self.send_error(address, e)
         except Exception as e:
             print("Exception", e)
             if depth == 0:
                 self.connect_to_device(address)
                 await self.send(address, loop, data, depth=1)
+            else:
+                self.send_error(address, e)
         else:
             if depth == 0:
                 self.connect_to_device(address)
                 await self.send(address, loop, data, depth=1)
+            else:
+                self.send_error(address, "Could Not Connect. Please Try Again")
 
-    async def send_then_read(self, address, loop, data, depth=0):
+    def send_error(self, address, e):
+        self.client_conn.send(
+            {
+                'mac_addr': address,
+                'command': 'error',
+                'data': str(e)
+            }
+        )
+
+    def send_then_read(self, address, loop, data, depth=0):
         print("SEND")
         try:
             device = self.connected_devices[address]
+
+            rssi = device.get_rssi()
+            # await asyncio.sleep(0.1, loop=loop)
+            time.sleep(0.1)
 
             def notification_handler(sender, data):
                 """Simple notification handler which prints the data received."""
@@ -151,40 +172,46 @@ class BluetoothComms():
                         {
                             'mac_addr': address,
                             'command': data[:1],
-                            'data': data[1:]
+                            'data': data[1:],
+                            'rssi': rssi
                         }
                     )
 
             device.subscribe(FEEDBACK_CHAR,
                              callback=notification_handler,
                              indication=False, wait_for_response=True)
-            await asyncio.sleep(0.1, loop=loop)
+            # await asyncio.sleep(0.1, loop=loop)
+            time.sleep(0.1)
             k = SERIAL_COMMAND_INPUT_CHAR
             for v in data[k]:
                 device.char_write(k, v, False)  # str(v).encode('utf-8')
-                await asyncio.sleep(0.1, loop=loop)
+                # await asyncio.sleep(0.1, loop=loop)
+                time.sleep(0.1)
                 print("Sent:sending", v)
-            await asyncio.sleep(0.1, loop=loop)
+            # await asyncio.sleep(0.1, loop=loop)
+            time.sleep(0.1)
             device.unsubscribe(FEEDBACK_CHAR)
         except pygatt.backends.bgapi.exceptions.ExpectedResponseTimeout as e:
             print("pygatt.exceptions.NotConnectedError", e)
             if depth == 0:
                 self.connect_to_device(address)
-                await self.send_then_read(address, loop, data, depth=1)
+                self.send_then_read(address, loop, data, depth=1)
+            else:
+                self.send_error(address, e)
         except pygatt.exceptions.NotConnectedError as e:
             print("pygatt.exceptions.NotConnectedError", e)
             if depth == 0:
                 self.connect_to_device(address)
-                await self.send_then_read(address, loop, data, depth=1)
+                self.send_then_read(address, loop, data, depth=1)
+            else:
+                self.send_error(address, e)
         except Exception as e:
             print("Exception", e)
             if depth == 0:
                 self.connect_to_device(address)
-                await self.send_then_read(address, loop, data, depth=1)
-        else:
-            if depth == 0:
-                self.connect_to_device(address)
-                await self.send_then_read(address, loop, data, depth=1)
+                self.send_then_read(address, loop, data, depth=1)
+            else:
+                self.send_error(address, e)
 
     def r(self, msg, data):
         loop = asyncio.new_event_loop()
@@ -202,12 +229,20 @@ class BluetoothComms():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.set_debug(0)
-        loop.run_until_complete(self.send_then_read(address, loop, data))
+        # loop.run_until_complete(self.send_then_read(address, loop, data))
+        self.send_then_read(address, None, data)
 
     def connect_to_device(self, address):
-        device = self.adapter.connect(address)
-        # device.exchange_mtu(115)
-        self.connected_devices[address] = device
+        try:
+            device = self.adapter.connect(address)
+            # device.exchange_mtu(115)
+            self.connected_devices[address] = device
+        except pygatt.exceptions.NotConnectedError as e:
+            print("connect_to_device error:", e)
+            self.send_error(address, e)
+        except pygatt.backends.bgapi.exceptions.ExpectedResponseTimeout as e:
+            print("ExpectedResponseTimeout: ", e)
+            # self.send_error(address, e)
 
     def is_connected_to_device(self, address):
         return address in self.connected_devices
@@ -236,6 +271,7 @@ class BluetoothComms():
                     if address is not None:
                         #                         self.last_activity = time.time()
                         if not self.is_connected_to_device(address):
+                            print("================ CONNECTING FOR THE FIRST TIME ========================")
                             self.connect_to_device(address)
 
                         if send and stream and not read:
@@ -250,8 +286,9 @@ class BluetoothComms():
 
                         elif send and read:
                             data = msg
-                            t = threading.Thread(target=self.s_t_r, args=(address, data))
-                            t.start()
+                            # t = threading.Thread(target=self.s_t_r, args=(address, data))
+                            # t.start()
+                            self.s_t_r(address, data)
 
             listener.close()
         except Exception as e:
@@ -288,7 +325,8 @@ class BluetoothComms():
                     self.client_conn.send(data)
                 loop.close()
         except Exception as e:
-            print(e)
+            print("Discovery Error", e)
+            self.adapter.stop()
 
 
 if __name__ == '__main__':

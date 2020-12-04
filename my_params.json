@@ -1,0 +1,23 @@
+{
+    "80:E1:26:08:05:56": {
+        "termination_tabs": "Stimulation duration (s)",
+        "phase_time_frequency_tab": "Frequency",
+        "burst_continous_stimulation_tab": "Burst Stimulation",
+        "duty_cycle_input": "100",
+        "burst_period_input": "100",
+        "inter_phase_delay_input": "500",
+        "inter_stim_delay_input": "",
+        "phase_1_time_input": "1000",
+        "phase_2_time_input": "1000",
+        "channel_1_frequency_input": "200",
+        "phase_1_output_current_input": "3000",
+        "phase_2_output_current_input": "1500",
+        "vref_lower_output_input": "0",
+        "vref_upper_output_input": "3000",
+        "stimulation_duration": "0",
+        "number_of_burst": "0",
+        "anodic_toggle": "normal",
+        "ramp_up_button": "normal",
+        "short_button": "normal"
+    }
+}

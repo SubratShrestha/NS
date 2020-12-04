@@ -1,5 +1,5 @@
 ('C:\\users\\profx\\projects\\ns\\build\\windows_pygatt\\windows_pygatt.exe',
- True,
+ False,
  False,
  True,
  None,
@@ -61,7 +61,7 @@
  [],
  False,
  False,
- 1603700082,
- [('run.exe',
-   'C:\\Python37\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\run.exe',
+ 1606632056,
+ [('runw.exe',
+   'C:\\Python37\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\runw.exe',
    'EXECUTABLE')])

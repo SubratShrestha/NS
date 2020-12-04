@@ -9,14 +9,16 @@ from kivy.properties import BooleanProperty
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.popup import Popup
 import numpy as np
+import os
 from scipy.interpolate import interp1d
-
+import json
 from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
     SideBar, ScreenManagement, HomeScreen, DeviceScreen, PhaseTimeFrequencyTabs, \
     ChannelStimulationTabs, BurstContinousStimulationTabs, BurstUniformStimulationTabs, \
     TerminationTabs, SelectableRecycleBoxLayout, MessagePopup, ValueError, BurstLostError, \
     periodLostError, ChargeImbalanceError, PeriodBiggerError
-
+from kivy.clock import Clock
+Clock.max_iteration = 1000000
 # from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
 #     SideBar, ScreenManagement, HomeScreen, DeviceScreen, PhaseTimeFrequencyTabs, \
 #     ChannelStimulationTabs, BurstContinousStimulationTabs, BurstUniformStimulationTabs, \
@@ -66,7 +68,8 @@ live_update_references = {
         'phase_2_time_input',
         'channel_1_frequency_input',
         'start_button',
-        'stop_button'
+        'stop_button',
+        'save_button'
     ],
     'electrode_voltage': [
         'get_latest_electrode_voltage_button',
@@ -130,7 +133,7 @@ def get_stimulator_input():
     if settings['phase_time_frequency_tab'] == 'Phase Time':
         interstim = int(settings['inter_stim_delay_input']) if settings['inter_stim_delay_input'] != "" else 0
     if settings['phase_time_frequency_tab'] == 'Frequency':
-        frequency = int(settings['frequency_input']) if settings['frequency_input'] != "" else 0
+        frequency = int(settings['channel_1_frequency_input']) if settings['channel_1_frequency_input'] != "" else 0
         if frequency != 0:
             interstim = 1000000 / frequency - phasetime1 - phasetime2 - interphase
     pulseperiod = phasetime1 + phasetime2 + interphase + interstim
@@ -147,6 +150,10 @@ def get_stimulator_input():
     if 'Number' in settings['termination_tabs'] and 'burst' in settings['termination_tabs']:
         burstnumber = int(settings['number_of_burst']) if settings['number_of_burst'] != "" else 0
 
+    # print(
+    #     "\n\n\n\n\n\n==============================STIM DURATION:{}===============================================\n\n\n\n\n".format(
+    #         stimduration))
+
     if burstmode:
         if burstduration and burstperiod:
             pulsenumber = burstduration // pulseperiod
@@ -154,6 +161,7 @@ def get_stimulator_input():
             burstfrequency = 10000000 / burstduration
     else:
         if stimduration:
+            stimduration = stimduration*1000000
             pulsenumber = stimduration // pulseperiod
     return settings, int(burstmode), int(burstperiod), int(burstduration), int(dutycycle), int(interburst), int(
         anodic), int(phase_1_current), int(phase_2_current), int(interphase), int(phasetime1), int(phasetime2), int(
@@ -233,6 +241,46 @@ def stop_stimulation(button, state):
         App.get_running_app().send_via_ble(data)
 
 
+def get_stimulator_state():
+    device =  App.get_running_app().connected_device_mac_addr
+    if device is not None:
+        data = {
+            'mac_addr':device,
+            'send': True,
+            'read': True,
+            'stream': False,
+            SERIAL_COMMAND_INPUT_CHAR: [
+                bytearray(b'\x19\x00\x00\x00\x00'),  # 'get_state',
+            ]
+        }
+
+        print("get_stimulator_state->send_via_ble", data)
+        App.get_running_app().send_via_ble(data)
+
+
+def write_json(data, filename):
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def save_stimulation_parameters(button, state):
+    if state == 'down':
+        settings = App.get_running_app().get_graph_variables()
+        device = App.get_running_app().connected_device_mac_addr
+        settings = {device: settings}
+        file_name = 'my_params.json'
+        if os.path.getsize(file_name) > 0:
+            with open(file_name) as json_file:
+                data = json.load(json_file)
+                data.update(settings)
+            write_json(data, file_name)
+        else:
+            write_json(settings, file_name)
+        popup = MessagePopup()
+        popup.title = "Saved Variables for device " + str(device)
+        popup.open()
+
+
 def get_electrode_voltage(button, state):
     if state == 'down':
         data = {
@@ -241,7 +289,7 @@ def get_electrode_voltage(button, state):
             'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                bytearray(b'\x15\x00\x00\x00\x00') # 'electrode_voltage'
+                bytearray(b'\x15\x00\x00\x00\x00')  # 'electrode_voltage'
             ]
         }
 
@@ -396,7 +444,7 @@ def start_stimulation(button, state):
             ERR_POPUP.title = title
             ERR_POPUP.open()
         else:
-            print(dac_phase_one, dac_phase_two, dac_phase_one==dac_phase_two)
+            print(dac_phase_one, dac_phase_two, dac_phase_one == dac_phase_two)
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 'send': True,
@@ -404,24 +452,29 @@ def start_stimulation(button, state):
                 'stream': False,
                 SERIAL_COMMAND_INPUT_CHAR: [
                     bytearray(b'\x02\x00\x00\x00\x00'),  # 'stop',
-                    bytearray(b'\x05') + bytearray(b'\x00\x00') + int(dac_phase_one).to_bytes(2, 'big') , # 'dac_phase_one:{}'.format(dac_phase_one),
-                    bytearray(b'\x06') + bytearray(b'\x00\x00') + int(dac_phase_two).to_bytes(2, 'big'), # 'dac_phase_two:{}'.format(dac_phase_two),
+                    bytearray(b'\x05') + bytearray(b'\x00\x00') + int(dac_phase_one).to_bytes(2, 'big'),
+                    # 'dac_phase_one:{}'.format(dac_phase_one),
+                    bytearray(b'\x06') + bytearray(b'\x00\x00') + int(dac_phase_two).to_bytes(2, 'big'),
+                    # 'dac_phase_two:{}'.format(dac_phase_two),
                     bytearray(b'\x03') + int(burstmode).to_bytes(4, 'big'),  # 'stim_type:{}'.format(burstmode),
                     bytearray(b'\x04') + int(anodic).to_bytes(4, 'big'),  # 'anodic_cathodic:{}'.format(anodic),
                     bytearray(b'\x08') + int(phasetime1).to_bytes(4, 'big'),  # 'phase_one_time:{}'.format(phasetime1),
                     bytearray(b'\x0a') + int(phasetime2).to_bytes(4, 'big'),  # 'phase_two_time:{}'.format(phasetime2),
                     bytearray(b'\x09') + int(interphase).to_bytes(4, 'big'),  # 'inter_phase_gap:{}'.format(interphase),
                     bytearray(b'\x0b') + int(interstim).to_bytes(4, 'big'),  # 'inter_stim_delay:{}'.format(interstim),
-                    bytearray(b'\x0c') + int(interburst).to_bytes(4, 'big'),  # 'inter_burst_delay:{}'.format(interburst)
-                    bytearray(b'\x0d') + int(pulsenumber).to_bytes(4, 'big'), # 'pulse_num:{}'.format(pulsenumber),
-                    bytearray(b'\x0e') + int(pulsenumber).to_bytes(4, 'big'), # 'pulse_num_in_one_burst:{}'.format(pulsenumber),
-                    bytearray(b'\x0f') + int(burstnumber).to_bytes(4, 'big'), # 'burst_num:{}'.format(burstnumber),
-                    bytearray(b'\x10') + int(ramp_up).to_bytes(4, 'big'), # 'ramp_up:{}'.format(ramp_up),
-                    bytearray(b'\x11') + int(short).to_bytes(4, 'big'), # 'short_electrode:{}'.format(short),
+                    bytearray(b'\x0c') + int(interburst).to_bytes(4, 'big'),
+                    # 'inter_burst_delay:{}'.format(interburst)
+                    bytearray(b'\x0d') + int(pulsenumber).to_bytes(4, 'big'),  # 'pulse_num:{}'.format(pulsenumber),
+                    bytearray(b'\x0e') + int(pulsenumber).to_bytes(4, 'big'),
+                    # 'pulse_num_in_one_burst:{}'.format(pulsenumber),
+                    bytearray(b'\x0f') + int(burstnumber).to_bytes(4, 'big'),  # 'burst_num:{}'.format(burstnumber),
+                    bytearray(b'\x10') + int(ramp_up).to_bytes(4, 'big'),  # 'ramp_up:{}'.format(ramp_up),
+                    bytearray(b'\x11') + int(short).to_bytes(4, 'big'),  # 'short_electrode:{}'.format(short),
                     bytearray(b'\x01\x00\x00\x00\x00')  # 'start'
                 ]
             }
             print("start_stimulation->send_via_ble", data)
+            App.get_running_app().dont_show_stop = True
             App.get_running_app().send_via_ble(data)
 
 
@@ -532,8 +585,11 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                     App.get_running_app().get_components(i).bind(state=start_stimulation)
                 if 'stop_button' == i:
                     App.get_running_app().get_components(i).bind(state=stop_stimulation)
+                if 'save_button' == i:
+                    App.get_running_app().get_components(i).bind(state=save_stimulation_parameters)
                 print(i, App.get_running_app().get_components(i))
-                App.get_running_app().connected_device_mac_addr = self.text
+            App.get_running_app().connected_device_mac_addr = self.text
+            App.set_graph_variables()
 
             for i in live_update_references['electrode_voltage']:
                 if 'get_latest_electrode_voltage_button' == i:
@@ -546,18 +602,20 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                     App.get_running_app().get_components(i).bind(state=stop_recording)
 
             # set_graph_default_values(self.text)
-            device_char_data = App.get_running_app().device_char_data
-            print("device_char_data:\t", device_char_data)
-            if self.text in device_char_data:
-                print("updating device battery level")
-                device_char_data = device_char_data[self.text]
-                if 'BATTERY_LEVEL_CHAR' in device_char_data:
-                    battery_level = int(device_char_data['BATTERY_LEVEL_CHAR'])
-                    self.battery_percentage.text = str(battery_level) + '%'
-                    if battery_level <= 33:
-                        self.battery_icon.source = './icons/battery.png'
-                    else:
-                        self.battery_icon.source = './icons/full_battery.png'
+            # device_char_data = App.get_running_app().device_char_data
+            App.get_running_app().device_selectable_label[self.text] = self
+            # print(App.get_running_app().device_selectable_label[self.text])
+            # print("device_char_data:\t", device_char_data)
+            # if self.text in device_char_data:
+            #     print("updating device battery level")
+            #     device_char_data = device_char_data[self.text]
+            #     if 'BATTERY_LEVEL_CHAR' in device_char_data:
+            #         battery_level = int(device_char_data['BATTERY_LEVEL_CHAR'])
+            #         self.battery_percentage.text = str(battery_level) + '%'
+            #         if battery_level <= 33:
+            #             self.battery_icon.source = './icons/battery.png'
+            #         else:
+            #             self.battery_icon.source = './icons/full_battery.png'
 
 
 
@@ -578,6 +636,11 @@ class NeuroStimApp(App):
         super(NeuroStimApp, self).__init__()
         self.kvloader = kvloader
         self.device_data = []
+        self.device_selectable_label = {}
+        self.device_connection_states = {}
+        self.device_rssi = {}
+        self.last_popup = None
+        self.dont_show_stop = False
         # self.device_electrode_voltage = {}
 
         """======================================================================
@@ -593,6 +656,9 @@ class NeuroStimApp(App):
 
         self.device_char_data = {}
         self.device_streams = {}
+        self.connected_device_mac_addr = None
+
+        Clock.schedule_interval(self.update_device_connection_states, 1)
 
     def send_via_ble(self, data):
         try:
@@ -600,6 +666,22 @@ class NeuroStimApp(App):
                 self.send_conn.send(data)
         except Exception as e:
             print(e)
+
+    def update_device_connection_states(self, value):
+        for k,v in self.device_connection_states.items():
+            print(k,v)
+            mac_addr = k
+            state = v
+            source = "./icons/circle_red.png"
+            if state == 1:
+                source = "./icons/circle_yellow.png"
+            elif state == 2:
+                source = "./icons/circle_green.png"
+            if mac_addr in self.device_selectable_label:
+                label = self.device_selectable_label[mac_addr]
+                label.dot_1.source = source
+                label.dot_2.source = source
+                label.dot_3.source = source
 
     def discover(self):
         """======================================================================
@@ -615,49 +697,57 @@ class NeuroStimApp(App):
 
             if isinstance(msg, list):
                 self.device_data = msg
+                print("get_stimulator_state")
+                get_stimulator_state()
             elif isinstance(msg, dict):
                 print(msg)
                 mac_addr = msg.pop('mac_addr')
                 command = msg.pop('command')
                 data = msg.pop('data')
+                # if self.last_popup is not None:
+                #     self.last_popup.dismiss()
+                if 'rssi' in msg:
+                    rssi = msg.pop('rssi')
+                    if rssi is not None:
+                        self.device_rssi[mac_addr] = int(rssi)
                 if command == bytearray(b'\x15'):
                     popup = MessagePopup()
+                    print("voltage value: ",int.from_bytes(data, byteorder='big', signed=False))
                     voltage = calculate_adv_to_mv(int.from_bytes(data, byteorder='big', signed=False))
                     popup.title = "Latest Electrode Voltage: " + str(voltage) + "mV"
                     popup.open()
+                    self.last_popup = popup
                 if command == bytearray(b'\x01'):
                     popup = MessagePopup()
                     popup.title = "Successfully sent parameters and started stimulation"
                     popup.open()
-                if command == bytearray(b'\x02'):
+                    self.last_popup = popup
+                    self.dont_show_stop = False
+                if command == bytearray(b'\x02') and not self.dont_show_stop:
                     popup = MessagePopup()
                     popup.title = "Successfully sent stop stimulation"
                     popup.open()
+                    self.last_popup = popup
                 if command == bytearray(b'\x14'):
                     popup = MessagePopup()
                     popup.title = "Successfully stopped recording"
                     popup.open()
+                    self.last_popup = popup
                 if command == bytearray(b'\x13'):
                     popup = MessagePopup()
                     popup.title = "Successfully started recording"
                     popup.open()
-                # if 'stream' in data:
-                #     if mac_addr in device_streams:
-                #         for i in data['stream']:
-                #             device_streams[mac_addr].append(i)
-                #         while len(device_streams[mac_addr]) > 1150:
-                #             device_streams[mac_addr].pop(0)
-                #     else:
-                #         device_streams[mac_addr] = data['stream']
-                #     # if x % 10 == 0:
-                #     #     update_streaming_graph()
-                # if 'start' in data:
-                #     print(msg)
-                #     popup = MessagePopup()
-                #     popup.title = "Successfully Sent: " + str(data['start'])
-                #     popup.open()
-
-
+                    self.last_popup = popup
+                if command == bytearray(b'\x19'):
+                    state = int.from_bytes(data, byteorder='big', signed=False)
+                    if mac_addr in App.get_running_app().device_selectable_label:
+                        self.device_connection_states[mac_addr] = int(state)
+                if command == 'error':
+                    popup = MessagePopup()
+                    popup.title = str(data)
+                    popup.open()
+                    self.last_popup = popup
+                    self.device_connection_states[mac_addr] = -1
                 else:
                     self.device_char_data[mac_addr] = data
 
@@ -683,7 +773,7 @@ class NeuroStimApp(App):
             'inter_stim_delay_input': digit_clean(self.get_components('inter_stim_delay_input')),
             'phase_1_time_input': digit_clean(self.get_components('phase_1_time_input')),
             'phase_2_time_input': digit_clean(self.get_components('phase_2_time_input')),
-            'frequency_input': digit_clean(self.get_components('channel_1_frequency_input')),
+            'channel_1_frequency_input': digit_clean(self.get_components('channel_1_frequency_input')),
             'phase_1_output_current_input': digit_clean(self.get_components('phase_1_output_current_input')),
             'phase_2_output_current_input': digit_clean(self.get_components('phase_2_output_current_input')),
             'vref_lower_output_input': digit_clean(self.get_components('vref_lower_output_input')),
@@ -694,6 +784,22 @@ class NeuroStimApp(App):
             'ramp_up_button': self.get_components('ramp_up_button').state,
             'short_button': self.get_components('short_button').state
         }
+
+    def set_graph_variables(self):
+        file_name = 'my_params.json'
+        if os.path.getsize(file_name) > 0:
+            with open(file_name) as json_file:
+                settings = json.load(json_file)
+                device = App.get_running_app().connected_device_mac_addr
+                if device in settings:
+                    for k, v in settings[device].items():
+                        print('setting: ', k, v)
+                        if 'input' in k or 'tab' in k:
+                            if v is None:
+                                v = ""
+                            self.get_components(k).text = v
+                        if 'button' in k or 'toggle' in k:
+                            self.get_components(k).state = v
 
     def get_components(self, id):
         if id == 'screen_manager':
