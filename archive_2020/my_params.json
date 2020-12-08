@@ -1,7 +1,7 @@
 {
     "80:E1:26:08:05:56": {
         "termination_tabs": "Stimulation duration (s)",
-        "phase_time_frequency_tab": "Phase Time",
+        "phase_time_frequency_tab": "Frequency",
         "burst_continous_stimulation_tab": "Burst Stimulation",
         "duty_cycle_input": "100",
         "burst_period_input": "100",

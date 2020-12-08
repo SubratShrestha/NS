@@ -20,7 +20,7 @@ from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
 from kivy.clock import Clock
 Clock.max_iteration = 1000000
 
-from consts import SERIAL_COMMAND_INPUT_CHAR, UINT32_MAX, SCREEN_WIDTH, SCREEN_HEIGHT, Parameters
+from consts import SERIAL_COMMAND_INPUT_CHAR, UINT32_MAX, SCREEN_WIDTH, SCREEN_HEIGHT
 
 from utils.utils import calculate_dac_value, calculate_adv_to_mv
 
@@ -222,7 +222,7 @@ def stop_stimulation(button, state):
             'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                Parameters.stop,  # 'stop',
+                bytearray(b'\x02\x00\x00\x00\x00'),  # 'stop',
             ]
         }
 
@@ -239,7 +239,7 @@ def get_stimulator_state():
             'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                Parameters.check_state
+                bytearray(b'\x19\x00\x00\x00\x00'),
             ]
         }
 
@@ -278,7 +278,7 @@ def get_electrode_voltage(button, state):
             'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                Parameters.electrode_voltage
+                bytearray(b'\x15\x00\x00\x00\x00')  # 'electrode_voltage'
             ]
         }
 
@@ -294,7 +294,7 @@ def start_recording(button, state):
             'read': False,
             'stream': True,
             SERIAL_COMMAND_INPUT_CHAR: [
-                Parameters.start_recording
+                bytearray(b'\x13\x00\x00\x00\x00'),  # 'start_recording'
             ]
         }
 
@@ -310,7 +310,7 @@ def stop_recording(button, state):
             'read': True,
             'stream': False,
             SERIAL_COMMAND_INPUT_CHAR: [
-                Parameters.stop_recording
+                bytearray(b'\x14\x00\x00\x00\x00')  # 'stop_recording'
             ]
         }
 
@@ -440,22 +440,22 @@ def start_stimulation(button, state):
                 'read': True,
                 'stream': False,
                 SERIAL_COMMAND_INPUT_CHAR: [
-                    Parameters.stop,
-                    Parameters.dac_phase_one + Parameters.two_byte_padding + int(dac_phase_one).to_bytes(2, 'big'),
-                    Parameters.dac_phase_two + Parameters.two_byte_padding + int(dac_phase_two).to_bytes(2, 'big'),
-                    Parameters.stim_type + int(burstmode).to_bytes(4, 'big'),
-                    Parameters.anodic_cathodic + int(anodic).to_bytes(4, 'big'),
-                    Parameters.phase_one_time + int(phasetime1).to_bytes(4, 'big'),
-                    Parameters.phase_two_time + int(phasetime2).to_bytes(4, 'big'),
-                    Parameters.inter_phase_gap + int(interphase).to_bytes(4, 'big'),
-                    Parameters.inter_stim_delay + int(interstim).to_bytes(4, 'big'),
-                    Parameters.inter_burst_delay + int(interburst).to_bytes(4, 'big'),
-                    Parameters.pulse_num + int(pulsenumber).to_bytes(4, 'big'),
-                    Parameters.pulse_num_in_one_burst + int(pulsenumber).to_bytes(4, 'big'),
-                    Parameters.burst_num + int(burstnumber).to_bytes(4, 'big'),
-                    Parameters.ramp_up + int(ramp_up).to_bytes(4, 'big'),
-                    Parameters.short_electrode + int(short).to_bytes(4, 'big'),
-                    Parameters.start
+                    bytearray(b'\x02\x00\x00\x00\x00'),
+                    bytearray(b'\x05') + bytearray(b'\x00\x00') + int(dac_phase_one).to_bytes(2, 'big'),
+                    bytearray(b'\x06') + bytearray(b'\x00\x00') + int(dac_phase_two).to_bytes(2, 'big'),
+                    bytearray(b'\x03') + int(burstmode).to_bytes(4, 'big'),
+                    bytearray(b'\x04') + int(anodic).to_bytes(4, 'big'),
+                    bytearray(b'\x08') + int(phasetime1).to_bytes(4, 'big'),
+                    bytearray(b'\x0a') + int(phasetime2).to_bytes(4, 'big'),
+                    bytearray(b'\x09') + int(interphase).to_bytes(4, 'big'),
+                    bytearray(b'\x0b') + int(interstim).to_bytes(4, 'big'),
+                    bytearray(b'\x0c') + int(interburst).to_bytes(4, 'big'),
+                    bytearray(b'\x0d') + int(pulsenumber).to_bytes(4, 'big'),
+                    bytearray(b'\x0e') + int(pulsenumber).to_bytes(4, 'big'),
+                    bytearray(b'\x0f') + int(burstnumber).to_bytes(4, 'big'),
+                    bytearray(b'\x10') + int(ramp_up).to_bytes(4, 'big'),
+                    bytearray(b'\x11') + int(short).to_bytes(4, 'big'),
+                    bytearray(b'\x01\x00\x00\x00\x00')
                 ]
             }
             print("start_stimulation->send_via_ble", data)
@@ -515,6 +515,7 @@ class AddDevicePopup(Popup):
                     adding = False
             if adding and devices_dict[j]:
                 App.get_running_app().root.side_bar.device_rv.data.append({'text': j})
+                App.get_running_app().send_via_ble(str(j))
         self.dismiss()
 
 
@@ -673,35 +674,35 @@ class NeuroStimApp(App):
                     rssi = msg.pop('rssi')
                     if rssi is not None:
                         self.device_rssi[mac_addr] = int(rssi)
-                if command == Parameters.electrode_voltage[:1]:
+                if command == bytearray(b'\x15'):
                     popup = MessagePopup()
                     print("voltage value: ",int.from_bytes(data, byteorder='big', signed=False))
                     voltage = calculate_adv_to_mv(int.from_bytes(data, byteorder='big', signed=False))
                     popup.title = "Latest Electrode Voltage: " + str(voltage) + "mV"
                     popup.open()
                     self.last_popup = popup
-                if command == Parameters.start[:1]:
+                if command == bytearray(b'\x01'):
                     popup = MessagePopup()
                     popup.title = "Successfully sent parameters and started stimulation"
                     popup.open()
                     self.last_popup = popup
                     self.dont_show_stop = False
-                if command == Parameters.stop[:1] and not self.dont_show_stop:
+                if command == bytearray(b'\x02') and not self.dont_show_stop:
                     popup = MessagePopup()
                     popup.title = "Successfully sent stop stimulation"
                     popup.open()
                     self.last_popup = popup
-                if command == Parameters.stop_recording[:1]:
+                if command == bytearray(b'\x14'):
                     popup = MessagePopup()
                     popup.title = "Successfully stopped recording"
                     popup.open()
                     self.last_popup = popup
-                if command == Parameters.start_recording[:1]:
+                if command == bytearray(b'\x13'):
                     popup = MessagePopup()
                     popup.title = "Successfully started recording"
                     popup.open()
                     self.last_popup = popup
-                if command == Parameters.check_state[:1]:
+                if command == bytearray(b'\x19'):
                     state = int.from_bytes(data, byteorder='big', signed=False)
                     if mac_addr in App.get_running_app().device_selectable_label:
                         self.device_connection_states[mac_addr] = int(state)

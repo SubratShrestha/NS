@@ -7,11 +7,11 @@ import random
 import time
 import math
 
-file_data = open("streaming_data.txt", "r").read()
+file_data = open("./ble/streaming_data.txt", "r").read()
 data = file_data.split('\n')
 
 
-class DynamicPlotter:
+class DynamicPlotter():
 
     def __init__(self, sampleinterval=0.1, timewindow=10., size=(900, 600)):
         # Data stuff

@@ -31,7 +31,6 @@ itemloaders==1.0.2
 jmespath==0.10.0
 Kivy==1.11.1
 Kivy-Garden==0.1.4
-kivy-garden.graph==0.4.1.dev0
 kiwisolver==1.2.0
 lxml==4.5.2
 matplotlib==3.2.1
@@ -42,7 +41,6 @@ opencv-python==4.4.0.44
 pandas==1.1.1
 parsel==1.6.0
 pexpect==4.8.0
-Pillow @ file:///tmp/build/80754af9/pillow_1594307325547/work
 Protego==0.1.16
 psutil==5.7.2
 ptyprocess==0.6.0
@@ -51,7 +49,6 @@ pyasn1-modules==0.2.8
 pycparser==2.20
 PyDispatcher==2.0.5
 pygatt==4.0.5
-Pygments @ file:///tmp/build/80754af9/pygments_1600458456400/work
 PyHamcrest==2.0.2
 pyOpenSSL==19.1.0
 pyparsing==2.4.7
