@@ -205,6 +205,15 @@ class BluetoothComms:
         except Exception as e:
             print(e)
 
+    def send_error(self, address, e):
+        self.client_conn.send(
+            {
+                'mac_addr': address,
+                'command': 'error',
+                'data': str(e)
+            }
+        )
+
     def disconnect_from_devices(self):
         for k, v in self.connected_devices.items():
             v.disconnect()
