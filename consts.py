@@ -1,13 +1,18 @@
 import math
 
+"""Firmware Characterictic UUIDs"""
 SERIAL_COMMAND_INPUT_CHAR = '0000fe41-8e22-4541-9d4c-21edae82ed19'
 FEEDBACK_CHAR = '0000fe42-8e22-4541-9d4c-21edae82ed19'
 STREAM_READ_CHAR = '0000fe51-8e22-4541-9d4c-21edae82ed19'
+
+"""Screen Sizes"""
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
+
 UINT32_MAX = math.pow(2, 32) - 1
 INTER_COMMAND_WAIT_TIME = 0.1 # seconds
 
+"""These are the stimulation parameters used to communicate with the stimulator."""
 class Parameters:
     start = bytearray(b'\x01\x00\x00\x00\x00')
     stop = bytearray(b'\x02\x00\x00\x00\x00')

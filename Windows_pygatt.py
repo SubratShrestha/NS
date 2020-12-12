@@ -18,9 +18,10 @@ from ui.components import NumericInput, DT_TPS, DeviceTabs, MainWindow, \
     TerminationTabs, SelectableRecycleBoxLayout, MessagePopup, ValueError, BurstLostError, \
     periodLostError, ChargeImbalanceError, PeriodBiggerError
 from kivy.clock import Clock
-Clock.max_iteration = 1000000
 
 from consts import SERIAL_COMMAND_INPUT_CHAR, UINT32_MAX, SCREEN_WIDTH, SCREEN_HEIGHT, Parameters
+Clock.max_iteration = 1000000
+
 
 from utils.utils import calculate_dac_value, calculate_adv_to_mv
 
@@ -45,8 +46,9 @@ These are strictly for Windows.py
 from multiprocessing.connection import Listener, Client
 import threading
 
-devices_dict = {}
+devices_dict = {} # dict to store all the devices
 device_streams = {}
+"""This is a dictionary object to hold the user interface component id's that we use to reference for certain clusters of functionality."""
 live_update_references = {
     'stimulation_graph_display': [
         'stimulation_duration',
@@ -82,6 +84,12 @@ def update_graph():
 
 
 def get_stimulator_input():
+
+    """
+    Get the stimulator input by interpreting the input commands and calculating them.
+    :return:
+    """
+
     burstmode = False
     burstperiod = False
     burstduration = False
@@ -163,6 +171,12 @@ def get_stimulator_input():
 
 
 def get_squarewave_plot():
+
+    """
+    Calculate the squarewave plot.
+    :return: kivy compatible matplotlib graph
+    """
+
     settings, burstmode, burstperiod, burstduration, \
     dutycycle, interburst, anodic, phase_1_current, \
     phase_2_current, interphase, phasetime1, phasetime2, \
@@ -214,6 +228,7 @@ def get_squarewave_plot():
 
 
 def stop_stimulation(button, state):
+    """Send stop command to the BLE application"""
     if state == 'down':
         host = App.get_running_app().connected_device_mac_addr
         data = {
@@ -231,6 +246,7 @@ def stop_stimulation(button, state):
 
 
 def get_stimulator_state():
+    """send get state to the BLE application"""
     device =  App.get_running_app().connected_device_mac_addr
     if device is not None:
         data = {
@@ -253,6 +269,7 @@ def write_json(data, filename):
 
 
 def save_stimulation_parameters(button, state):
+    """Save the parameters into a JSON file for the current device"""
     if state == 'down':
         settings = App.get_running_app().get_graph_variables()
         device = App.get_running_app().connected_device_mac_addr
@@ -271,6 +288,7 @@ def save_stimulation_parameters(button, state):
 
 
 def get_electrode_voltage(button, state):
+    """send parameters to get the electrode voltage"""
     if state == 'down':
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
@@ -287,6 +305,7 @@ def get_electrode_voltage(button, state):
 
 
 def start_recording(button, state):
+    """send start recording info to BLE application"""
     if state == 'down':
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
@@ -303,6 +322,7 @@ def start_recording(button, state):
 
 
 def stop_recording(button, state):
+    """send stop recording info to BLE application"""
     if state == 'down':
         data = {
             'mac_addr': App.get_running_app().connected_device_mac_addr,
@@ -319,6 +339,13 @@ def stop_recording(button, state):
 
 
 def set_streaming_graph(button, state):
+    """
+    TODO: use streaming_graph.py as a separate graphing application instead of this function as it's not fast enough
+    in terms of frame rate.
+    Depricated. No longer used.
+
+    :return:
+    """
     if state == 'down':
         plt.close("all")
 
@@ -348,6 +375,15 @@ def set_streaming_graph(button, state):
 
 
 def update_streaming_graph():
+
+    """
+    TODO: use streaming_graph.py as a separate graphing application instead of this function as it's not fast enough
+    in terms of frame rate.
+    Depricated. No longer used.
+
+    :return:
+    """
+
     plt.close("all")
     plt.clf()
     plt.cla()
@@ -377,8 +413,11 @@ def update_streaming_graph():
 
 
 def start_stimulation(button, state):
+    """Check that all the inputs are valid. If valid, send via BLE, else show error msg."""
     if state == 'down':
         print("start_stimulation")
+
+        """Get stimulation data"""
         settings, burstmode, burstperiod, burstduration, \
         dutycycle, interburst, anodic, phase_1_current, \
         phase_2_current, interphase, phasetime1, phasetime2, \
@@ -387,6 +426,7 @@ def start_stimulation(button, state):
         vref_lower_output_input, vref_upper_output_input = get_stimulator_input()
         error_messages = []
 
+        """Validate Stimulation Data"""
         if phasetime1 < 10 or phasetime1 > UINT32_MAX:
             error_messages.append("Phase Time 1 Invalid Value: Range 10 to max_uint32")
         if phasetime2 < 10 or phasetime2 > UINT32_MAX:
@@ -416,6 +456,7 @@ def start_stimulation(button, state):
         if (phasetime1 + phasetime2 + interphase + interstim) > UINT32_MAX:
             error_messages.append("Sum of phase one, phase two, inter-phase gap, and stimulation delay are too large")
 
+        """Calculate dac values via inputs"""
         dac_phase_one, dac_phase_two = calculate_dac_value(
             phase_1_current,
             phase_2_current,
@@ -424,6 +465,7 @@ def start_stimulation(button, state):
             anodic
         )
 
+        """If there's an error, show those errors."""
         if len(error_messages) > 0:
             print("ERROR_MESSAGES:", error_messages)
             ERR_POPUP = MessagePopup()
@@ -433,7 +475,7 @@ def start_stimulation(button, state):
             ERR_POPUP.title = title
             ERR_POPUP.open()
         else:
-            print(dac_phase_one, dac_phase_two, dac_phase_one == dac_phase_two)
+            """Send the paramaters to the BLE application."""
             data = {
                 'mac_addr': App.get_running_app().connected_device_mac_addr,
                 'send': True,
@@ -497,7 +539,7 @@ class AddDeviceSelectableLabel(RecycleDataViewBehavior, Label):
 
 
 class AddDevicePopup(Popup):
-
+    """Create popup that show all the discovered BLE devices in a recycler view."""
     def BluetoothDiscoverLoop(self):
         data = []
         for i in App.get_running_app().device_data:
@@ -519,6 +561,7 @@ class AddDevicePopup(Popup):
 
 
 class DeviceRV(RecycleView):
+    """Recycler view to display the devices"""
     def __init__(self, **kwargs):
         super(DeviceRV, self).__init__(**kwargs)
         self.selected_count = 0
@@ -544,7 +587,10 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
+
+        """Change between device,homescreen and other device pages"""
         if not is_selected and self.selected:
+            """Change to Home Page"""
             self.selected = False
             App.get_running_app().root.screen_manager.transition.direction = 'down'
             App.get_running_app().root.screen_manager.current = 'home'
@@ -555,11 +601,14 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
         elif is_selected and not self.selected and (
                 not self.deselected or App.get_running_app().root.side_bar.device_rv.deselected_clock[
             rv.data[index]['text']] > 0):
+            """Change to device page"""
             self.selected = True
             App.get_running_app().root.screen_manager.transition.direction = 'up'
             App.get_running_app().root.screen_manager.current = 'device'
             App.get_running_app().root.side_bar.device_rv.selected_count += 1
 
+            """TODO: May need to unbind these when handling when handling multiple devices"""
+            """Bind functions for all the stimulation screen"""
             for i in live_update_references['stimulation_graph_display']:
                 if 'input' in i:
                     App.get_running_app().get_components(i).bind(text=update_graph_on_text_channel_1)
@@ -572,14 +621,15 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
                 if 'save_button' == i:
                     App.get_running_app().get_components(i).bind(state=save_stimulation_parameters)
                 print(i, App.get_running_app().get_components(i))
+            """Update the device that we are focused on"""
             App.get_running_app().connected_device_mac_addr = self.text
+            """Update the graph variables"""
             App.set_graph_variables()
 
+            """Bind functions for all the electrode voltage screen"""
             for i in live_update_references['electrode_voltage']:
                 if 'get_latest_electrode_voltage_button' == i:
                     App.get_running_app().get_components(i).bind(state=get_electrode_voltage)
-                # if 'electrode_voltage_tab_save_log_button' == i:
-                #     App.get_running_app().get_components(i).bind(state=set_streaming_graph)
                 if 'electrode_voltage_tab_log_recording_button' == i:
                     App.get_running_app().get_components(i).bind(state=start_recording)
                 if 'electrode_voltage_tab_log_stop_button' == i:
@@ -588,6 +638,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
             App.get_running_app().device_selectable_label[self.text] = self
 
         elif is_selected and self.selected:
+            """Change to home page"""
             App.get_running_app().root.side_bar.device_rv.selected_count -= 1
             self.selected = False
             if App.get_running_app().root.side_bar.device_rv.selected_count == 0:
@@ -600,6 +651,7 @@ class ConnectedDeviceSelectableLabel(RecycleDataViewBehavior, FloatLayout):
 
 
 class NeuroStimApp(App):
+    """Main application object"""
     def __init__(self, kvloader):
         super(NeuroStimApp, self).__init__()
         self.kvloader = kvloader
@@ -611,7 +663,7 @@ class NeuroStimApp(App):
         self.dont_show_stop = False
 
         self.thread = True
-        self.discover_thread = threading.Thread(target=self.discover)
+        self.discover_thread = threading.Thread(target=self.receive_from_ble)
         self.discover_thread.start()
 
         self.send_address = None
@@ -624,6 +676,7 @@ class NeuroStimApp(App):
         Clock.schedule_interval(self.update_device_connection_states, 1)
 
     def send_via_ble(self, data):
+        """Send data to BLE application"""
         try:
             if self.send_conn is not None and not self.send_conn.closed:
                 self.send_conn.send(data)
@@ -631,6 +684,7 @@ class NeuroStimApp(App):
             print(e)
 
     def update_device_connection_states(self, value):
+        """Change the colors of the device tabs based on the state of the device"""
         for k,v in self.device_connection_states.items():
             print(k,v)
             mac_addr = k
@@ -646,34 +700,46 @@ class NeuroStimApp(App):
                 label.dot_2.source = source
                 label.dot_3.source = source
 
-    def discover(self):
-        """======================================================================
-        Don't change this to match App.py
-        These are strictly for Windows.py
-        ========================================================================="""
+    def receive_from_ble(self):
+        """
+        Read data from BLE socket, parse data and then change application variables / create popups as needed.
+        :return:
+        """
+
+        """Create socket connection."""
         address = ('localhost', 6000)
         listener = Listener(address, authkey=b'password')
         conn = listener.accept()
+
         x = 0
         while self.thread:
             msg = conn.recv()
 
             if isinstance(msg, list):
+                """Get the discovered devices and then get the stimulator state for connected devices."""
                 self.device_data = msg
                 print("get_stimulator_state")
                 get_stimulator_state()
             elif isinstance(msg, dict):
                 print(msg)
+
+                """Parse message"""
                 mac_addr = msg.pop('mac_addr')
                 command = msg.pop('command')
                 data = msg.pop('data')
+
                 # if self.last_popup is not None:
                 #     self.last_popup.dismiss()
                 if 'rssi' in msg:
+                    """
+                    TODO: RSSI is the signal strength. This should be used to display the connection strength to the user.
+                    One idea is to change the number of dots used to show to state. 
+                    """
                     rssi = msg.pop('rssi')
                     if rssi is not None:
                         self.device_rssi[mac_addr] = int(rssi)
                 if command == Parameters.electrode_voltage[:1]:
+                    """Parse electrode voltage results"""
                     popup = MessagePopup()
                     print("voltage value: ",int.from_bytes(data, byteorder='big', signed=False))
                     voltage = calculate_adv_to_mv(int.from_bytes(data, byteorder='big', signed=False))
@@ -681,31 +747,37 @@ class NeuroStimApp(App):
                     popup.open()
                     self.last_popup = popup
                 if command == Parameters.start[:1]:
+                    """Show that the stimulator has started"""
                     popup = MessagePopup()
                     popup.title = "Successfully sent parameters and started stimulation"
                     popup.open()
                     self.last_popup = popup
                     self.dont_show_stop = False
                 if command == Parameters.stop[:1] and not self.dont_show_stop:
+                    """Show that the stimulator has stopped"""
                     popup = MessagePopup()
                     popup.title = "Successfully sent stop stimulation"
                     popup.open()
                     self.last_popup = popup
                 if command == Parameters.stop_recording[:1]:
+                    """Stopped recording"""
                     popup = MessagePopup()
                     popup.title = "Successfully stopped recording"
                     popup.open()
                     self.last_popup = popup
                 if command == Parameters.start_recording[:1]:
+                    """Started recording"""
                     popup = MessagePopup()
                     popup.title = "Successfully started recording"
                     popup.open()
                     self.last_popup = popup
                 if command == Parameters.check_state[:1]:
+                    """Change state of each device's connection"""
                     state = int.from_bytes(data, byteorder='big', signed=False)
                     if mac_addr in App.get_running_app().device_selectable_label:
                         self.device_connection_states[mac_addr] = int(state)
                 if command == 'error':
+                    """Show errors in popup"""
                     popup = MessagePopup()
                     popup.title = str(data)
                     popup.open()
@@ -715,12 +787,16 @@ class NeuroStimApp(App):
                     self.device_char_data[mac_addr] = data
 
             if self.send_address is None:
+                """Start socket connection if not existing"""
                 self.send_address = ('localhost', 6001)
                 self.send_conn = Client(self.send_address, authkey=b'password')
             x += 1
         listener.close()
 
     def get_graph_variables(self):
+        """
+        :return: a dictionary containing all of the data from the stimulation and setting inputs
+        """
         def digit_clean(input):
             # Enforce the digit cleaning on the UI components as well
             # input.text = re.sub("[^0-9]", "",input.text)
@@ -749,6 +825,10 @@ class NeuroStimApp(App):
         }
 
     def set_graph_variables(self):
+        """
+        If there are past saved variables, then add those to the input sections in the stimulator.
+        :return:
+        """
         file_name = 'my_params.json'
         if os.path.getsize(file_name) > 0:
             with open(file_name) as json_file:
@@ -765,6 +845,12 @@ class NeuroStimApp(App):
                             self.get_components(k).state = v
 
     def get_components(self, id):
+        """
+        Returns the UI corresponding to the given ID. See ui.kv file for each component that you are referencing.
+
+        :param id: id of ui component that you want to get
+        :return:
+        """
         if id == 'screen_manager':
             return self.root.screen_manager
         if id == 'side_bar':
