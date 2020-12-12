@@ -1,6 +1,11 @@
 import time
 import subprocess
 
+"""
+This file is used as the main application to start the UI and then the BLE before closing them and killing the processes.
+Compiled with PyInstaller on Windows.
+"""
+
 print("run ui")
 ui = subprocess.Popen([".\\windows_pygatt.exe"])
 

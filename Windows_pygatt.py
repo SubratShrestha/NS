@@ -87,7 +87,7 @@ def get_stimulator_input():
 
     """
     Get the stimulator input by interpreting the input commands and calculating them.
-    :return:
+    :return: all stimulation parameters
     """
 
     burstmode = False
