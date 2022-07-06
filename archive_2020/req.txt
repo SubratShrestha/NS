@@ -32,7 +32,7 @@ jmespath==0.10.0
 Kivy==1.11.1
 Kivy-Garden==0.1.4
 kiwisolver==1.2.0
-lxml==4.5.2
+lxml==4.9.1
 matplotlib==3.2.1
 netaddr==0.8.0
 numpy==1.19.2
