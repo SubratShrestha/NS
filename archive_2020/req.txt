@@ -8,7 +8,7 @@ certifi==2020.6.20
 cffi==1.14.1
 chardet==3.0.4
 constantly==15.1.0
-cryptography==3.0
+cryptography==3.2
 cssselect==1.1.0
 cycler==0.10.0
 Cython==0.29.17
